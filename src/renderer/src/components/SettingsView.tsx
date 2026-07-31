@@ -1,10 +1,13 @@
 import React from 'react';
-import { ShieldCheck, HardDrive, Clock, Database, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Clock, Database } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export const SettingsView: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div style={{ maxWidth: 700, margin: '0 auto' }}>
-      <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 20 }}>Ustawienia i stan systemu</h2>
+      <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 20 }}>{t('settings.title')}</h2>
 
       <div className="glass-card" style={{ padding: 24, marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 16 }}>
@@ -23,9 +26,9 @@ export const SettingsView: React.FC = () => {
             <ShieldCheck size={24} />
           </div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>Tryb Fazy 1 — Lokalna baza danych (SQLite)</div>
+            <div style={{ fontSize: 16, fontWeight: 700 }}>{t('settings.sqliteTitle')}</div>
             <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              Aplikacja działa w trybie rodzimym bez zewnętrznego backendu. Wszystkie dane są przechowywane lokalnie na urządzeniu.
+              {t('settings.sqliteDesc')}
             </div>
           </div>
         </div>
@@ -48,9 +51,9 @@ export const SettingsView: React.FC = () => {
             <Clock size={24} />
           </div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>Częstotliwość sprawdzania cen (TTL)</div>
+            <div style={{ fontSize: 16, fontWeight: 700 }}>{t('settings.ttlTitle')}</div>
             <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              Domyślny interwał odświeżania cen wynosi <strong>6 godzin</strong> (z ograniczeniem minimalnego odstępu do 30 minut per produkt).
+              {t('settings.ttlDesc')}
             </div>
           </div>
         </div>
@@ -73,9 +76,9 @@ export const SettingsView: React.FC = () => {
             <Database size={24} />
           </div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>Abstrakcja Repozytorium (PriceRepository)</div>
+            <div style={{ fontSize: 16, fontWeight: 700 }}>{t('settings.repoTitle')}</div>
             <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              Zgodnie ze specyfikacją architektury, kod przygotowany jest pod bezproblemowe podłączenie zsynchronizowanego backendu Node.js + Postgres (Faza 2).
+              {t('settings.repoDesc')}
             </div>
           </div>
         </div>

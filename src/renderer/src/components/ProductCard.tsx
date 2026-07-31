@@ -1,6 +1,7 @@
 import React from 'react';
-import { Product, TrendLabel } from '../../../shared/types';
-import { TrendingUp, TrendingDown, Minus, RefreshCw, Trash2, ExternalLink } from 'lucide-react';
+import { Product } from '../../../shared/types';
+import { RefreshCw, Trash2 } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +16,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onRefresh,
   onDelete
 }) => {
+  const { t } = useLanguage();
+
   const formatCurrency = (amount?: number, currencyCode = 'EUR') => {
     if (amount === undefined || amount === null) return '—';
     const symbol = currencyCode === 'EUR' ? '€' : currencyCode === 'USD' ? '$' : `${currencyCode} `;
@@ -53,7 +56,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   hour: '2-digit',
                   minute: '2-digit'
                 })
-              : 'Nie sprawdzano'}
+              : t('productList.neverChecked')}
           </span>
         </div>
       </div>
@@ -69,7 +72,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               e.stopPropagation();
               onRefresh(product.id);
             }}
-            title="Odśwież cenę"
+            title={t('productList.refreshTooltip')}
             style={{
               background: 'transparent',
               border: 'none',
@@ -83,11 +86,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (window.confirm(`Czy na pewno chcesz usunąć "${product.title}"?`)) {
+              if (window.confirm(t('productList.deleteConfirm', { title: product.title }))) {
                 onDelete(product.id);
               }
             }}
-            title="Usuń śledzenie"
+            title={t('productList.deleteTooltip')}
             style={{
               background: 'transparent',
               border: 'none',

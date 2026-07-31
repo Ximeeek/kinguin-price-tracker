@@ -5,10 +5,13 @@ import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { BottomNavbar, NavTab } from './components/BottomNavbar';
 import { SettingsView } from './components/SettingsView';
+import { LanguageSelector } from './components/LanguageSelector';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles } from 'lucide-react';
 import './styles/theme.css';
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<NavTab>('tracker');
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
@@ -61,10 +64,10 @@ export const App: React.FC = () => {
         <div className="header-bar">
           <div className="app-title">
             <Sparkles color="var(--accent-green)" size={24} />
-            <span>Kinguin Tracker</span>
+            <span>{t('header.title')}</span>
           </div>
 
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <div
               style={{
                 display: 'flex',
@@ -79,7 +82,7 @@ export const App: React.FC = () => {
               <Search size={16} color="var(--text-muted)" />
               <input
                 type="text"
-                placeholder="Szukaj na liście..."
+                placeholder={t('header.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -97,10 +100,12 @@ export const App: React.FC = () => {
               onClick={fetchProducts}
               className="nav-item-btn"
               style={{ width: 36, height: 36 }}
-              title="Odśwież listę"
+              title={t('header.refreshListTooltip')}
             >
               <RefreshCw size={16} />
             </button>
+
+            <LanguageSelector />
           </div>
         </div>
 
@@ -114,23 +119,23 @@ export const App: React.FC = () => {
             {/* List Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
-                Śledzone produkty ({filteredProducts.length})
+                {t('productList.trackedCount', { count: filteredProducts.length })}
               </h3>
             </div>
 
             {/* Product Grid */}
             {loading ? (
               <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-                Wczytywanie śledzonych produktów...
+                {t('productList.loading')}
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="empty-state">
                 <ShoppingBag className="empty-state-icon" />
                 <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
-                  Brak śledzonych gier
+                  {t('productList.emptyTitle')}
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                  Wklej link do oferty z Kinguin w polu powyżej, aby zacząć śledzić jej historię cen.
+                  {t('productList.emptySubtitle')}
                 </div>
               </div>
             ) : (
@@ -151,11 +156,11 @@ export const App: React.FC = () => {
 
         {activeTab === 'analytics' && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 16 }}>Przegląd statystyczny</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 16 }}>{t('analytics.title')}</h2>
             {products.length === 0 ? (
               <div className="empty-state">
                 <TrendingUp className="empty-state-icon" />
-                <div>Dodaj najpierw produkty do listy śledzenia, aby zobaczyć podsumowanie statystyczne.</div>
+                <div>{t('analytics.emptyText')}</div>
               </div>
             ) : (
               <div className="product-grid">
@@ -184,5 +189,13 @@ export const App: React.FC = () => {
       {/* Floating Bottom Glass Navigation Bar */}
       <BottomNavbar activeTab={activeTab} onSelectTab={setActiveTab} />
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 };

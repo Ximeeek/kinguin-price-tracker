@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { ProductDetailResponse, TimePeriod } from '../../../shared/types';
 import { PeriodSelector } from './PeriodSelector';
 import { PriceChart } from './PriceChart';
-import { X, ExternalLink, RefreshCw, TrendingDown, TrendingUp, Info } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ProductDetailModalProps {
   productId: string;
@@ -10,10 +11,10 @@ interface ProductDetailModalProps {
 }
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productId, onClose }) => {
+  const { t } = useLanguage();
   const [detail, setDetail] = useState<ProductDetailResponse | null>(null);
   const [period, setPeriod] = useState<TimePeriod>('month');
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   const loadData = async (selectedPeriod: TimePeriod) => {
     setLoading(true);
@@ -30,18 +31,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
   useEffect(() => {
     loadData(period);
   }, [productId, period]);
-
-  const handleManualRefresh = async () => {
-    setRefreshing(true);
-    try {
-      const res = await window.api.refreshProduct(productId);
-      if (res) setDetail(res);
-    } catch {
-      // ignore
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   const getTrendBadgeStyle = (label: string) => {
     switch (label) {
@@ -60,12 +49,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
     }
   };
 
+  const getTranslatedTrendLabel = (label: string) => {
+    const key = `trend.${label}` as any;
+    return t(key) || label;
+  };
+
   if (loading && !detail) {
     return (
       <div className="modal-overlay" onClick={onClose}>
         <div className="glass-card modal-card" onClick={(e) => e.stopPropagation()}>
           <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-            Ładowanie analizy cenowej...
+            {t('modal.loading')}
           </div>
         </div>
       </div>
@@ -95,8 +89,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
                 {product.title}
               </h2>
               <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
-                Kinguin ID: {product.id} • Pierwsza rejestracja:{' '}
-                {new Date(product.firstTrackedAt).toLocaleDateString()}
+                Kinguin ID: {product.id} • {t('modal.firstTracked', { date: new Date(product.firstTrackedAt).toLocaleDateString() })}
               </div>
             </div>
           </div>
@@ -108,7 +101,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
               onClick={() => window.api.openExternal(product.url)}
             >
               <ExternalLink size={14} />
-              Kinguin.net
+              {t('modal.visitStore')}
             </button>
             <button className="close-btn" onClick={onClose}>
               <X size={18} />
@@ -133,7 +126,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
               border: '1px solid rgba(255,255,255,0.06)'
             }}
           >
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>Obecna cena</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>{t('modal.currentPrice')}</div>
             <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {symbol}
               {(product.currentPrice || 0).toFixed(2)}
@@ -149,7 +142,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
             }}
           >
             <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>
-              Średnia cena w wybranym okresie
+              {t('modal.averagePrice')}
             </div>
             <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {symbol}
@@ -170,7 +163,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
               border: '1px solid rgba(255,255,255,0.06)'
             }}
           >
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>Stosunek do średniej</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>{t('modal.relationToAverage')}</div>
             <div
               style={{
                 fontSize: 18,
@@ -191,7 +184,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
 
         {/* Period Selector & Chart Section */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700 }}>Wykres historii cen</h3>
+          <h3 style={{ fontSize: 16, fontWeight: 700 }}>{t('modal.chartTitle')}</h3>
           <PeriodSelector
             selectedPeriod={period}
             onSelectPeriod={(p) => {
@@ -203,7 +196,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
 
         <PriceChart history={history} currency={product.currency} averagePrice={average.averagePrice} />
 
-        {/* Trend Analysis Section (§8) */}
+        {/* Trend Analysis Section */}
         <div
           style={{
             marginTop: 24,
@@ -215,11 +208,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
-              Analiza trendu i stabilności (ostatnie 14 dni)
+              {t('modal.trendTitle')}
             </div>
             <span className={`badge ${getTrendBadgeStyle(trend.label)}`}>
               <span className="dot" />
-              {trend.label}
+              {getTranslatedTrendLabel(trend.label)}
             </span>
           </div>
 
@@ -230,10 +223,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
           {trend.hasSufficientData && (
             <div style={{ display: 'flex', gap: 20, marginTop: 12, fontSize: 12, color: 'var(--text-muted)' }}>
               <div>
-                Dryf liniowy: <strong style={{ color: 'var(--text-primary)' }}>{trend.totalDriftPct}%</strong>
+                {t('modal.linearDrift')}: <strong style={{ color: 'var(--text-primary)' }}>{trend.totalDriftPct}%</strong>
               </div>
               <div>
-                Zmienność (zakres): <strong style={{ color: 'var(--text-primary)' }}>{trend.rangePct}%</strong>
+                {t('modal.volatilityRange')}: <strong style={{ color: 'var(--text-primary)' }}>{trend.rangePct}%</strong>
               </div>
             </div>
           )}

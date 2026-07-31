@@ -1,5 +1,6 @@
 import React from 'react';
 import { TimePeriod } from '../../../shared/types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface PeriodSelectorProps {
   selectedPeriod: TimePeriod;
@@ -7,11 +8,13 @@ interface PeriodSelectorProps {
 }
 
 export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ selectedPeriod, onSelectPeriod }) => {
+  const { t } = useLanguage();
+
   const periods: { key: TimePeriod; label: string }[] = [
-    { key: 'week', label: 'Weekly' },
-    { key: 'month', label: 'Monthly' },
-    { key: 'six_months', label: '6 Months' },
-    { key: 'year', label: 'Yearly' }
+    { key: 'week', label: t('period.week') },
+    { key: 'month', label: t('period.month') },
+    { key: 'six_months', label: t('period.six_months') },
+    { key: 'year', label: t('period.year') }
   ];
 
   return (

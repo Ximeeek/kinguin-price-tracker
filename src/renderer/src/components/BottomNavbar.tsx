@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, LineChart, Settings } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export type NavTab = 'tracker' | 'analytics' | 'settings';
 
@@ -9,12 +10,14 @@ interface BottomNavbarProps {
 }
 
 export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab, onSelectTab }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="floating-bottom-nav">
       <button
         className={`nav-item-btn ${activeTab === 'tracker' ? 'active' : ''}`}
         onClick={() => onSelectTab('tracker')}
-        title="Śledzenie produktów"
+        title={t('nav.tracker')}
       >
         <Home size={20} />
       </button>
@@ -22,7 +25,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab, onSelectT
       <button
         className={`nav-item-btn ${activeTab === 'analytics' ? 'active' : ''}`}
         onClick={() => onSelectTab('analytics')}
-        title="Statystyki i analizy"
+        title={t('nav.analytics')}
       >
         <LineChart size={20} />
       </button>
@@ -30,7 +33,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab, onSelectT
       <button
         className={`nav-item-btn ${activeTab === 'settings' ? 'active' : ''}`}
         onClick={() => onSelectTab('settings')}
-        title="Ustawienia aplikacji"
+        title={t('nav.settings')}
       >
         <Settings size={20} />
       </button>

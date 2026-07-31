@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Plus, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface AddProductBarProps {
   onAddProduct: (url: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) => {
+  const { t } = useLanguage();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,10 +24,10 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
       if (result.success) {
         setUrl('');
       } else {
-        setError(result.error || 'Nie udało się dodać produktu.');
+        setError(result.error || t('addProduct.defaultError'));
       }
     } catch (err: any) {
-      setError(err.message || 'Wystąpił błąd podczas dodawania.');
+      setError(err.message || t('addProduct.genericError'));
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,7 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
         <input
           type="text"
           className="track-input"
-          placeholder="Wklej link do produktu Kinguin (np. https://www.kinguin.net/category/123456/...)"
+          placeholder={t('addProduct.placeholder')}
           value={url}
           onChange={(e) => {
             setUrl(e.target.value);
@@ -71,19 +73,19 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
               paddingRight: 8
             }}
           >
-            Wklej
+            {t('addProduct.pasteBtn')}
           </button>
         )}
         <button type="submit" className="track-btn" disabled={loading || !url.trim()}>
           {loading ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              Pobieranie...
+              {t('addProduct.fetchingBtn')}
             </>
           ) : (
             <>
               <Plus size={16} />
-              Śledź produkt
+              {t('addProduct.trackBtn')}
             </>
           )}
         </button>
