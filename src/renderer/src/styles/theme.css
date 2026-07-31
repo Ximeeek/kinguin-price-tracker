@@ -138,6 +138,7 @@ body::after {
 
 .track-input-container {
   display: flex;
+  align-items: center;
   gap: 12px;
   background: var(--bg-input);
   border: 1px solid var(--border-card);

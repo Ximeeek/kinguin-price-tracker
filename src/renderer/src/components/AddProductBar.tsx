@@ -47,7 +47,7 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
   return (
     <div style={{ width: '100%' }}>
       <form onSubmit={handleSubmit} className="track-input-container">
-        <LinkIcon size={18} color="var(--text-muted)" style={{ marginLeft: 4 }} />
+        <LinkIcon size={18} color="var(--text-muted)" style={{ marginLeft: 4, flexShrink: 0, display: 'block' }} />
         <input
           type="text"
           className="track-input"
