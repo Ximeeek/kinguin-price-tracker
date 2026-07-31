@@ -7,6 +7,7 @@ export interface Product {
   firstTrackedAt: string; // ISO date string
   lastCheckedAt: string | null; // ISO date string
   currentPrice?: number;
+  previousPrice?: number;
   status?: 'active' | 'unavailable';
 }
 

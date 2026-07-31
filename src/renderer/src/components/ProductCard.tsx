@@ -4,6 +4,7 @@ import { RefreshCw, Trash2, Star } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
 import { ConfirmModal } from './ConfirmModal';
+import { PriceChangeIndicator } from './PriceChangeIndicator';
 
 interface ProductCardProps {
   product: Product;
@@ -82,8 +83,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="product-price-section">
-          <div className="product-current-price">
-            {formatPrice(product.currentPrice || 0, product.currency)}
+          <div className="product-current-price" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+            <span>{formatPrice(product.currentPrice || 0, product.currency)}</span>
+            <PriceChangeIndicator
+              currentPrice={product.currentPrice}
+              previousPrice={product.previousPrice}
+              currency={product.currency}
+              showDiff={false}
+            />
           </div>
 
           <div style={{ marginTop: 6, display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>

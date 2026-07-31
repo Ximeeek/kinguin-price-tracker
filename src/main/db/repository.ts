@@ -225,15 +225,23 @@ export class LocalSqliteRepository implements PriceRepository {
       const row = stmt.getAsObject();
       const product = this.mapProductRow(row);
 
-      // Get latest price
+      // Get latest prices
       const priceStmt = this.db.prepare(
-        'SELECT price FROM price_history WHERE product_id = :product_id ORDER BY checked_at DESC LIMIT 1'
+        'SELECT price FROM price_history WHERE product_id = :product_id ORDER BY checked_at DESC LIMIT 2'
       );
       priceStmt.bind({ ':product_id': product.id });
-      if (priceStmt.step()) {
-        product.currentPrice = Number(priceStmt.getAsObject().price);
+      const prices: number[] = [];
+      while (priceStmt.step()) {
+        prices.push(Number(priceStmt.getAsObject().price));
       }
       priceStmt.free();
+
+      if (prices.length > 0) {
+        product.currentPrice = prices[0];
+      }
+      if (prices.length > 1) {
+        product.previousPrice = prices[1];
+      }
 
       products.push(product);
     }

@@ -120,6 +120,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
     const history = await repository.getHistory(productId);
     const currentPrice = history.length > 0 ? history[history.length - 1].price : (product.currentPrice || 0);
+    const previousPrice = history.length > 1 ? history[history.length - 2].price : undefined;
 
     const trend = TrendEngine.analyze(history, product.firstTrackedAt);
     const average = AverageEngine.analyze(history, currentPrice, period);
@@ -127,7 +128,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
     Logger.info('IPC', `[get-product-detail] Analysis complete. Trend: ${trend.label}, Average delta: ${average.label}`);
 
     return {
-      product: { ...product, currentPrice },
+      product: { ...product, currentPrice, previousPrice },
       history,
       trend,
       average
@@ -167,11 +168,12 @@ export function setupIpcHandlers(repository: PriceRepository) {
     if (!updatedProduct) return null;
 
     const currentPrice = history.length > 0 ? history[history.length - 1].price : 0;
+    const previousPrice = history.length > 1 ? history[history.length - 2].price : undefined;
     const trend = TrendEngine.analyze(history, updatedProduct.firstTrackedAt);
     const average = AverageEngine.analyze(history, currentPrice, 'month');
 
     return {
-      product: { ...updatedProduct, currentPrice },
+      product: { ...updatedProduct, currentPrice, previousPrice },
       history,
       trend,
       average

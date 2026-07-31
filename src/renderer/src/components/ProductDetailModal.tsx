@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ProductDetailResponse, TimePeriod } from '../../../shared/types';
 import { PeriodSelector } from './PeriodSelector';
 import { PriceChart } from './PriceChart';
+import { PriceChangeIndicator } from './PriceChangeIndicator';
 import { X, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
@@ -146,8 +147,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
             }}
           >
             <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>{t('modal.currentPrice')}</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
-              {formatPrice(product.currentPrice || 0, product.currency)}
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>{formatPrice(product.currentPrice || 0, product.currency)}</span>
+              <PriceChangeIndicator
+                currentPrice={product.currentPrice}
+                previousPrice={product.previousPrice}
+                currency={product.currency}
+              />
             </div>
           </div>
 
