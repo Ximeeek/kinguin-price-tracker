@@ -17,6 +17,24 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
   const [detail, setDetail] = useState<ProductDetailResponse | null>(null);
   const [period, setPeriod] = useState<TimePeriod>('month');
   const [loading, setLoading] = useState(true);
+  const [animClass, setAnimClass] = useState('');
+  const [animKey, setAnimKey] = useState(0);
+
+  const handlePeriodChange = (newPeriod: TimePeriod) => {
+    if (newPeriod === period) return;
+    const periodOrder: TimePeriod[] = ['week', 'month', 'six_months', 'year'];
+    const oldIdx = periodOrder.indexOf(period);
+    const newIdx = periodOrder.indexOf(newPeriod);
+
+    if (newIdx < oldIdx) {
+      setAnimClass('anim-scale-down');
+    } else {
+      setAnimClass('anim-scale-up');
+    }
+    setAnimKey((prev) => prev + 1);
+    setPeriod(newPeriod);
+    loadData(newPeriod);
+  };
 
   const loadData = async (selectedPeriod: TimePeriod) => {
     setLoading(true);
@@ -186,14 +204,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
           <h3 style={{ fontSize: 16, fontWeight: 700 }}>{t('modal.chartTitle')}</h3>
           <PeriodSelector
             selectedPeriod={period}
-            onSelectPeriod={(p) => {
-              setPeriod(p);
-              loadData(p);
-            }}
+            onSelectPeriod={handlePeriodChange}
           />
         </div>
 
-        <PriceChart history={history} currency={product.currency} averagePrice={average.averagePrice} />
+        <PriceChart
+          key={`${period}-${animKey}`}
+          history={history}
+          currency={product.currency}
+          averagePrice={average.averagePrice}
+          animClass={animClass}
+        />
 
         {/* Trend Analysis Section */}
         <div
