@@ -15,7 +15,7 @@ export class AverageEngine {
         label: 'About average',
         dataPointCount: 1,
         dataAgeDays: 0,
-        note: 'Brak wcześniejszych danych.'
+        note: 'No prior historical data.'
       };
     }
 
@@ -51,7 +51,7 @@ export class AverageEngine {
 
     let note: string | undefined = undefined;
     if (actualDaysCount < periodDays) {
-      note = `Na podstawie ${actualDaysCount} dni zgromadzonych danych`;
+      note = `Based on ${actualDaysCount} days of collected data`;
     }
 
     return {

@@ -9,7 +9,7 @@ export const TREND_CONFIG = {
 export class TrendEngine {
   static analyze(snapshots: PriceSnapshot[], firstTrackedAtStr: string): TrendAnalysis {
     if (!snapshots || snapshots.length === 0) {
-      return this.insufficientData('Brak historii cen dla tego produktu.');
+      return this.insufficientData('No price history available for this product.');
     }
 
     const firstTrackedAt = new Date(firstTrackedAtStr);
@@ -20,7 +20,7 @@ export class TrendEngine {
     if (totalHistoryDays < TREND_CONFIG.TREND_WINDOW_DAYS) {
       const remainingDays = Math.ceil(TREND_CONFIG.TREND_WINDOW_DAYS - totalHistoryDays);
       return this.insufficientData(
-        `Wymagane minimum 14 dni historii cen (obecnie: ${Math.max(1, Math.floor(totalHistoryDays))} dni). Brakuje jeszcze ${remainingDays} dni.`
+        `Minimum of 14 days of price history required (currently: ${Math.max(1, Math.floor(totalHistoryDays))} days). Missing ${remainingDays} more days.`
       );
     }
 
@@ -29,7 +29,7 @@ export class TrendEngine {
     const windowSnapshots = snapshots.filter(s => new Date(s.checkedAt) >= cutoffDate);
 
     if (windowSnapshots.length < 2) {
-      return this.insufficientData('Za mało punktów pomiarowych w ostatnich 14 dniach.');
+      return this.insufficientData('Not enough data points in the last 14 days.');
     }
 
     // Calculate mean price & min/max
@@ -39,7 +39,7 @@ export class TrendEngine {
     const maxPrice = Math.max(...prices);
 
     if (meanPrice <= 0) {
-      return this.insufficientData('Nieprawidłowe dane cenowe.');
+      return this.insufficientData('Invalid price data.');
     }
 
     // Fit linear regression: price vs days_elapsed (from start of window)
@@ -98,37 +98,37 @@ export class TrendEngine {
     if (direction === 'flat' && volatility === 'low') {
       return {
         label: 'Stable',
-        explanation: 'Cena utrzymuje się w bardzo stabilnym przedziale w ciągu ostatnich 14 dni.'
+        explanation: 'Price has remained within a very stable range over the last 14 days.'
       };
     }
     if (direction === 'flat' && volatility === 'high') {
       return {
         label: 'Fluctuating',
-        explanation: `Cena waha się w przedziale ${Math.round(rangePct)}% bez wyraźnego stałego trendu.`
+        explanation: `Price fluctuates within a ${Math.round(rangePct)}% range without a clear overall trend.`
       };
     }
     if (direction === 'up' && volatility === 'low') {
       return {
         label: 'Steady increase',
-        explanation: `Cena wykazuje stabilny wzrost o ok. ${Math.round(driftPct)}% w ciągu ostatnich 2 tygodni.`
+        explanation: `Price shows a steady increase of approx. ${Math.round(driftPct)}% over the last 2 weeks.`
       };
     }
     if (direction === 'up' && volatility === 'high') {
       return {
         label: 'Increasing (volatile)',
-        explanation: `Cena rośnie, ale z wyrazistymi skokami (zmienność ok. ${Math.round(rangePct)}%).`
+        explanation: `Price is rising, but with sharp fluctuations (volatility approx. ${Math.round(rangePct)}%).`
       };
     }
     if (direction === 'down' && volatility === 'low') {
       return {
         label: 'Steady decrease',
-        explanation: `Cena konsekwentnie spada (spadek o ok. ${Math.abs(Math.round(driftPct))}%). Okazja do zakupu!`
+        explanation: `Price is consistently dropping (approx. ${Math.abs(Math.round(driftPct))}% decrease). Good buying opportunity!`
       };
     }
     // down + high
     return {
       label: 'Decreasing (volatile)',
-      explanation: `Cena wykazuje ogólny spadek z towarzyszącymi wahań cenowych.`
+      explanation: `Price shows an overall decline accompanied by price fluctuations.`
     };
   }
 

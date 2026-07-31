@@ -43,15 +43,15 @@ export class KinguinProductFetcher {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
   async fetchProduct(inputUrl: string): Promise<FetchedKinguinProduct> {
-    Logger.info('FETCHER', `Rozpoczynanie pobierania produktu dla URL: ${inputUrl}`);
+    Logger.info('FETCHER', `Starting product fetch for URL: ${inputUrl}`);
 
     const parsed = parseKinguinUrl(inputUrl);
     if (!parsed) {
-      Logger.error('FETCHER', `Nieprawidłowy adres URL Kinguin: ${inputUrl}`);
-      throw new Error('Adres URL nie wygląda na prawidłowy link do produktu Kinguin.');
+      Logger.error('FETCHER', `Invalid Kinguin URL: ${inputUrl}`);
+      throw new Error('URL does not appear to be a valid Kinguin product link.');
     }
 
-    Logger.info('FETCHER', `Sparsowano URL -> ID: ${parsed.id}, Canonical: ${parsed.canonicalUrl}`);
+    Logger.info('FETCHER', `Parsed URL -> ID: ${parsed.id}, Canonical: ${parsed.canonicalUrl}`);
 
     // Append currency query param to pin request to EUR for historical consistency
     const targetUrl = new URL(parsed.canonicalUrl);
@@ -74,7 +74,7 @@ export class KinguinProductFetcher {
       'Cookie': 'kinguin_currency=EUR'
     };
 
-    Logger.info('FETCHER', `Wysyłanie HTTP GET do ${targetUrl.toString()}...`);
+    Logger.info('FETCHER', `Sending HTTP GET to ${targetUrl.toString()}...`);
 
     let responseHtml = '';
     let responseStatus = 0;
@@ -85,10 +85,10 @@ export class KinguinProductFetcher {
       const electron = require('electron');
       if (electron && electron.net && typeof electron.net.fetch === 'function') {
         fetchFn = electron.net.fetch;
-        Logger.info('FETCHER', 'Używanie natywnego stosu sieciowego Electron (Chromium net.fetch)');
+        Logger.info('FETCHER', 'Using native Electron network stack (Chromium net.fetch)');
       }
     } catch {
-      Logger.info('FETCHER', 'Używanie standardowego globalnego fetch');
+      Logger.info('FETCHER', 'Using standard global fetch');
     }
 
     try {
@@ -97,27 +97,27 @@ export class KinguinProductFetcher {
         signal: AbortSignal.timeout(15000)
       });
       responseStatus = res.status;
-      Logger.info('FETCHER', `Odpowiedź HTTP Status: ${res.status} ${res.statusText}`);
+      Logger.info('FETCHER', `HTTP Response Status: ${res.status} ${res.statusText}`);
 
       if (!res.ok) {
         if (res.status === 403) {
-          Logger.warn('FETCHER', `Otrzymano HTTP 403 Forbidden z Kinguin. Strona zablokowała zapytanie.`);
-          throw new Error(`Serwer Kinguin zwrócił błąd HTTP 403 (Dostęp zabroniony / Ochrona WAF).`);
+          Logger.warn('FETCHER', `Received HTTP 403 Forbidden from Kinguin. Page blocked request.`);
+          throw new Error(`Kinguin server returned HTTP 403 error (Access Denied / WAF Protection).`);
         }
         if (res.status === 404) {
-          Logger.warn('FETCHER', `Otrzymano HTTP 404 Not Found.`);
-          throw new Error('Produkt nie został znaleziony na stronie Kinguin (Błąd 404).');
+          Logger.warn('FETCHER', `Received HTTP 404 Not Found.`);
+          throw new Error('Product not found on Kinguin (Error 404).');
         }
-        throw new Error(`Serwer Kinguin zwrócił błąd HTTP ${res.status}.`);
+        throw new Error(`Kinguin server returned HTTP ${res.status} error.`);
       }
 
       responseHtml = await res.text();
     } catch (err: any) {
-      Logger.error('FETCHER', `Błąd podczas zapytania HTTP: ${err.message}`);
+      Logger.error('FETCHER', `Error during HTTP request: ${err.message}`);
       throw err;
     }
 
-    Logger.info('FETCHER', `Pobrano HTML (${responseHtml.length} bajtów). Analizowanie tagów meta cheerio...`);
+    Logger.info('FETCHER', `Fetched HTML (${responseHtml.length} bytes). Parsing meta tags with Cheerio...`);
     const $ = cheerio.load(responseHtml);
 
     // Extract price from meta tag or JSON-LD script
@@ -143,7 +143,7 @@ export class KinguinProductFetcher {
 
     // Fallback: Check JSON-LD embedded data if meta tags are missing
     if (!priceAmountStr || !title) {
-      Logger.info('FETCHER', 'Brak ceny w standardowych meta tagach, szukanie w skryptach JSON-LD...');
+      Logger.info('FETCHER', 'Price missing in meta tags, scanning JSON-LD scripts...');
       $('script[type="application/ld+json"]').each((_, el) => {
         try {
           const jsonText = $(el).html();
@@ -174,17 +174,17 @@ export class KinguinProductFetcher {
     title = title.replace(/\s*\|\s*Kinguin\.net.*$/i, '').trim();
 
     if (!priceAmountStr) {
-      Logger.error('FETCHER', 'Nie znaleziono ceny w meta tagach ani w JSON-LD!');
-      throw new Error('Nie udało się odczytać ceny produktu ze strony Kinguin.');
+      Logger.error('FETCHER', 'Price not found in meta tags or JSON-LD!');
+      throw new Error('Could not parse product price from Kinguin page.');
     }
 
     const price = parseFloat(priceAmountStr.replace(',', '.'));
     if (isNaN(price) || price <= 0) {
-      Logger.error('FETCHER', `Parsowanie ceny nie powiodło się: ${priceAmountStr}`);
-      throw new Error(`Nieprawidłowy format ceny: ${priceAmountStr}`);
+      Logger.error('FETCHER', `Price parsing failed: ${priceAmountStr}`);
+      throw new Error(`Invalid price format: ${priceAmountStr}`);
     }
 
-    Logger.info('FETCHER', `Sukces! Produkt: "${title}", Cena: ${price} ${currency.toUpperCase()}`);
+    Logger.info('FETCHER', `Success! Product: "${title}", Price: ${price} ${currency.toUpperCase()}`);
 
     return {
       id: parsed.id,

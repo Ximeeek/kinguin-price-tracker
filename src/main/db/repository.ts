@@ -28,16 +28,16 @@ export class LocalSqliteRepository implements PriceRepository {
   }
 
   async init(): Promise<void> {
-    Logger.info('DB', `Inicjalizacja bazy danych SQLite pod adresem: ${this.dbPath}`);
+    Logger.info('DB', `Initializing SQLite database at: ${this.dbPath}`);
     const SQL = await initSqlJs();
     if (fs.existsSync(this.dbPath)) {
       const fileBuffer = fs.readFileSync(this.dbPath);
       this.db = new SQL.Database(fileBuffer);
-      Logger.info('DB', 'Wczytano istniejący plik bazy danych SQLite.');
+      Logger.info('DB', 'Loaded existing SQLite database file.');
     } else {
       this.db = new SQL.Database();
       this.saveToDisk();
-      Logger.info('DB', 'Utworzono nową plikową bazę danych SQLite.');
+      Logger.info('DB', 'Created new SQLite database file.');
     }
 
     this.runSchema();

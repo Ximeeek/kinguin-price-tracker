@@ -13,15 +13,15 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
   // Track / Add product by Kinguin URL
   ipcMain.handle('track-product', async (_, urlInput: string): Promise<AddProductResult> => {
-    Logger.info('IPC', `[track-product] Wywołanie metody dla URL: "${urlInput}"`);
+    Logger.info('IPC', `[track-product] Method invoked for URL: "${urlInput}"`);
 
     try {
       const parsed = parseKinguinUrl(urlInput);
       if (!parsed) {
-        Logger.warn('IPC', `[track-product] Nieprawidłowy format URL: "${urlInput}"`);
+        Logger.warn('IPC', `[track-product] Invalid URL format: "${urlInput}"`);
         return {
           success: false,
-          error: 'Wprowadzony link nie jest prawidłowym linkiem do produktu Kinguin.'
+          error: 'Provided link is not a valid Kinguin product URL.'
         };
       }
 
@@ -30,7 +30,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
       const nowIso = new Date().toISOString();
 
       if (!product) {
-        Logger.info('IPC', `[track-product] Nowy produkt (ID: ${parsed.id}). Pobieranie szczegółów z Kinguin...`);
+        Logger.info('IPC', `[track-product] New product (ID: ${parsed.id}). Fetching details from Kinguin...`);
         const fetched = await fetcher.fetchProduct(parsed.canonicalUrl);
 
         // Save new product record
@@ -47,14 +47,14 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
         // Add initial price snapshot
         await repository.addPriceSnapshot(fetched.id, fetched.price, nowIso);
-        Logger.info('IPC', `[track-product] Dodano nowy produkt do bazy danych! Title: "${fetched.title}"`);
+        Logger.info('IPC', `[track-product] Added new product to database! Title: "${fetched.title}"`);
       } else {
-        Logger.info('IPC', `[track-product] Produkt istnieje już w bazie (ID: ${parsed.id}). Sprawdzanie cache TTL...`);
+        Logger.info('IPC', `[track-product] Product already exists in database (ID: ${parsed.id}). Checking cache TTL...`);
         const lastChecked = product.lastCheckedAt ? new Date(product.lastCheckedAt).getTime() : 0;
         const now = Date.now();
 
         if (now - lastChecked > LOCAL_REFRESH_TTL_MS) {
-          Logger.info('IPC', `[track-product] Cache wygasł (> 6h). Odświeżanie ceny dla ID: ${parsed.id}...`);
+          Logger.info('IPC', `[track-product] Cache expired (> 6h). Refreshing price for ID: ${parsed.id}...`);
           try {
             const fetched = await fetcher.fetchProduct(product.url);
             await repository.updateProduct({
@@ -66,10 +66,10 @@ export function setupIpcHandlers(repository: PriceRepository) {
             });
             await repository.addPriceSnapshot(product.id, fetched.price, nowIso);
           } catch (err: any) {
-            Logger.warn('IPC', `[track-product] Odświeżenie w tle nie powiodło się: ${err.message}`);
+            Logger.warn('IPC', `[track-product] Background refresh failed: ${err.message}`);
           }
         } else {
-          Logger.info('IPC', `[track-product] Dane w bazie są aktualne (odświeżono mniej niż 6h temu).`);
+          Logger.info('IPC', `[track-product] Database data is up-to-date (refreshed less than 6h ago).`);
         }
       }
 
@@ -79,28 +79,28 @@ export function setupIpcHandlers(repository: PriceRepository) {
         product: updatedProduct || undefined
       };
     } catch (err: any) {
-      Logger.error('IPC', `[track-product] Błąd operacji: ${err.message}`, err);
+      Logger.error('IPC', `[track-product] Operation error: ${err.message}`, err);
       return {
         success: false,
-        error: err.message || 'Wystąpił nieoczekiwany błąd podczas dodawania produktu.'
+        error: err.message || 'An unexpected error occurred while adding the product.'
       };
     }
   });
 
   // Get list of all tracked products
   ipcMain.handle('get-products', async () => {
-    Logger.info('IPC', '[get-products] Pobieranie listy śledzonych produktów z bazy danych');
+    Logger.info('IPC', '[get-products] Fetching tracked product list from database');
     const products = await repository.listTrackedProducts();
-    Logger.info('IPC', `[get-products] Znaleziono ${products.length} produktów w bazie`);
+    Logger.info('IPC', `[get-products] Found ${products.length} products in database`);
     return products;
   });
 
   // Get detail analysis for a single product
   ipcMain.handle('get-product-detail', async (_, productId: string, period: TimePeriod = 'month'): Promise<ProductDetailResponse | null> => {
-    Logger.info('IPC', `[get-product-detail] Pobieranie analizy dla produktu ID: ${productId}, Okres: ${period}`);
+    Logger.info('IPC', `[get-product-detail] Fetching analysis for product ID: ${productId}, Period: ${period}`);
     const product = await repository.findProductById(productId);
     if (!product) {
-      Logger.warn('IPC', `[get-product-detail] Produkt ID: ${productId} nie istnieje`);
+      Logger.warn('IPC', `[get-product-detail] Product ID: ${productId} does not exist`);
       return null;
     }
 
@@ -110,7 +110,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
     const trend = TrendEngine.analyze(history, product.firstTrackedAt);
     const average = AverageEngine.analyze(history, currentPrice, period);
 
-    Logger.info('IPC', `[get-product-detail] Analiza gotowa. Trend: ${trend.label}, Średnia delta: ${average.label}`);
+    Logger.info('IPC', `[get-product-detail] Analysis complete. Trend: ${trend.label}, Average delta: ${average.label}`);
 
     return {
       product: { ...product, currentPrice },
@@ -122,7 +122,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
   // Manual refresh of product price
   ipcMain.handle('refresh-product', async (_, productId: string): Promise<ProductDetailResponse | null> => {
-    Logger.info('IPC', `[refresh-product] Ręczne odświeżenie ceny dla ID: ${productId}`);
+    Logger.info('IPC', `[refresh-product] Manual price refresh for ID: ${productId}`);
     const product = await repository.findProductById(productId);
     if (!product) return null;
 
@@ -139,9 +139,9 @@ export function setupIpcHandlers(repository: PriceRepository) {
       });
 
       await repository.addPriceSnapshot(product.id, fetched.price, nowIso);
-      Logger.info('IPC', `[refresh-product] Zaktualizowano cenę w bazie: ${fetched.price} ${fetched.currency}`);
+      Logger.info('IPC', `[refresh-product] Price updated in database: ${fetched.price} ${fetched.currency}`);
     } catch (err: any) {
-      Logger.error('IPC', `[refresh-product] Błąd odświeżania: ${err.message}`);
+      Logger.error('IPC', `[refresh-product] Refresh error: ${err.message}`);
       await repository.updateProduct({
         id: product.id,
         status: 'unavailable'
@@ -166,15 +166,15 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
   // Delete tracked product
   ipcMain.handle('delete-product', async (_, productId: string) => {
-    Logger.info('IPC', `[delete-product] Usuwanie produktu ID: ${productId}`);
+    Logger.info('IPC', `[delete-product] Deleting product ID: ${productId}`);
     await repository.deleteProduct(productId);
-    Logger.info('IPC', `[delete-product] Usunięto produkt ID: ${productId}`);
+    Logger.info('IPC', `[delete-product] Deleted product ID: ${productId}`);
     return true;
   });
 
   // Safe external URL opening
   ipcMain.handle('open-external', async (_, url: string) => {
-    Logger.info('IPC', `[open-external] Otwieranie linku w zewnętrznej przeglądarce: ${url}`);
+    Logger.info('IPC', `[open-external] Opening link in external browser: ${url}`);
     if (url.startsWith('https://') || url.startsWith('http://')) {
       await shell.openExternal(url);
     }
