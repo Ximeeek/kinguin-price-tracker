@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.exe
+
+# Local data & caches
+*.sqlite
+.vite/
+.tmp/
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
