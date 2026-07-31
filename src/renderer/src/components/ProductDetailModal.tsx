@@ -4,6 +4,7 @@ import { PeriodSelector } from './PeriodSelector';
 import { PriceChart } from './PriceChart';
 import { X, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useCurrency } from '../currency/CurrencyContext';
 
 interface ProductDetailModalProps {
   productId: string;
@@ -12,6 +13,7 @@ interface ProductDetailModalProps {
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productId, onClose }) => {
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const [detail, setDetail] = useState<ProductDetailResponse | null>(null);
   const [period, setPeriod] = useState<TimePeriod>('month');
   const [loading, setLoading] = useState(true);
@@ -69,7 +71,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
   if (!detail) return null;
 
   const { product, history, trend, average } = detail;
-  const symbol = product.currency === 'EUR' ? '€' : product.currency === 'USD' ? '$' : `${product.currency} `;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -128,8 +129,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
           >
             <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>{t('modal.currentPrice')}</div>
             <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
-              {symbol}
-              {(product.currentPrice || 0).toFixed(2)}
+              {formatPrice(product.currentPrice || 0, product.currency)}
             </div>
           </div>
 
@@ -145,8 +145,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
               {t('modal.averagePrice')}
             </div>
             <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
-              {symbol}
-              {average.averagePrice.toFixed(2)}
+              {formatPrice(average.averagePrice, product.currency)}
             </div>
             {average.note && (
               <div style={{ fontSize: 11, color: 'var(--accent-gold)', marginTop: 4 }}>

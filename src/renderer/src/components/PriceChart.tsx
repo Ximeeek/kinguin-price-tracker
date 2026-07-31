@@ -10,6 +10,8 @@ import {
   ReferenceLine
 } from 'recharts';
 import { PriceSnapshot } from '../../../shared/types';
+import { useCurrency, SUPPORTED_CURRENCIES } from '../currency/CurrencyContext';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface PriceChartProps {
   history: PriceSnapshot[];
@@ -22,6 +24,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({
   currency = 'EUR',
   averagePrice
 }) => {
+  const { currency: activeCurrency, convertPrice, formatPrice } = useCurrency();
+  const { t } = useLanguage();
+
   if (!history || history.length === 0) {
     return (
       <div
@@ -33,21 +38,25 @@ export const PriceChart: React.FC<PriceChartProps> = ({
           color: 'var(--text-muted)'
         }}
       >
-        Brak historii cen do wyświetlenia
+        {t('modal.noChartData')}
       </div>
     );
   }
 
-  const symbol = currency === 'EUR' ? '€' : currency === 'USD' ? '$' : `${currency} `;
+  const details = SUPPORTED_CURRENCIES[activeCurrency] || SUPPORTED_CURRENCIES.EUR;
+  const symbol = details.symbol;
 
   const data = history.map((item) => {
     const d = new Date(item.checkedAt);
+    const converted = convertPrice(item.price, currency);
     return {
       date: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
       fullDate: d.toLocaleString(),
-      price: item.price
+      price: Math.round(converted * 100) / 100
     };
   });
+
+  const convertedAverage = averagePrice !== undefined ? convertPrice(averagePrice, currency) : undefined;
 
   const prices = data.map((d) => d.price);
   const minPrice = Math.floor(Math.min(...prices) * 0.9);
@@ -77,7 +86,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(val) => `${symbol}${val}`}
+            tickFormatter={(val) => details.symbolPosition === 'after' ? `${val} ${symbol}` : `${symbol}${val}`}
           />
           <Tooltip
             content={({ active, payload }) => {
@@ -95,7 +104,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({
                   >
                     <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>{item.fullDate}</div>
                     <div style={{ color: 'var(--accent-green)', fontWeight: 800, fontSize: '16px', marginTop: 2 }}>
-                      {symbol}{item.price.toFixed(2)}
+                      {details.symbolPosition === 'after' ? `${item.price.toFixed(2)} ${symbol}` : `${symbol}${item.price.toFixed(2)}`}
                     </div>
                   </div>
                 );
@@ -103,13 +112,13 @@ export const PriceChart: React.FC<PriceChartProps> = ({
               return null;
             }}
           />
-          {averagePrice && (
+          {convertedAverage !== undefined && (
             <ReferenceLine
-              y={averagePrice}
+              y={convertedAverage}
               stroke="var(--accent-gold)"
               strokeDasharray="4 4"
               label={{
-                value: `Średnia: ${symbol}${averagePrice.toFixed(2)}`,
+                value: t('modal.averageLineLabel', { amount: details.symbolPosition === 'after' ? `${convertedAverage.toFixed(2)} ${symbol}` : `${symbol}${convertedAverage.toFixed(2)}` }),
                 fill: 'var(--accent-gold)',
                 fontSize: 11,
                 position: 'top'

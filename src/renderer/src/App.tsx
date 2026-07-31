@@ -6,7 +6,9 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { BottomNavbar, NavTab } from './components/BottomNavbar';
 import { SettingsView } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
+import { CurrencySelector } from './components/CurrencySelector';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
+import { CurrencyProvider } from './currency/CurrencyContext';
 import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles } from 'lucide-react';
 import './styles/theme.css';
 
@@ -105,6 +107,7 @@ const AppContent: React.FC = () => {
               <RefreshCw size={16} />
             </button>
 
+            <CurrencySelector />
             <LanguageSelector />
           </div>
         </div>
@@ -195,7 +198,9 @@ const AppContent: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <LanguageProvider>
-      <AppContent />
+      <CurrencyProvider>
+        <AppContent />
+      </CurrencyProvider>
     </LanguageProvider>
   );
 };

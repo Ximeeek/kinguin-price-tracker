@@ -2,6 +2,7 @@ import React from 'react';
 import { Product } from '../../../shared/types';
 import { RefreshCw, Trash2 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useCurrency } from '../currency/CurrencyContext';
 
 interface ProductCardProps {
   product: Product;
@@ -17,12 +18,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onDelete
 }) => {
   const { t } = useLanguage();
-
-  const formatCurrency = (amount?: number, currencyCode = 'EUR') => {
-    if (amount === undefined || amount === null) return '—';
-    const symbol = currencyCode === 'EUR' ? '€' : currencyCode === 'USD' ? '$' : `${currencyCode} `;
-    return `${symbol}${amount.toFixed(2)}`;
-  };
+  const { formatPrice } = useCurrency();
 
   return (
     <div className="glass-card product-item-card" onClick={() => onSelect(product)}>
@@ -63,7 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
       <div className="product-price-section">
         <div className="product-current-price">
-          {formatCurrency(product.currentPrice, product.currency)}
+          {formatPrice(product.currentPrice || 0, product.currency)}
         </div>
 
         <div style={{ marginTop: 6, display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
