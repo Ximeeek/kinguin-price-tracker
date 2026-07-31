@@ -3,6 +3,7 @@ import { Product } from '../../shared/types';
 import { AddProductBar } from './components/AddProductBar';
 import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
+import { HeroProductDetail } from './components/HeroProductDetail';
 import { BottomNavbar, NavTab } from './components/BottomNavbar';
 import { SettingsView } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
@@ -17,6 +18,9 @@ const AppContent: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<NavTab>('tracker');
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [defaultProductId, setDefaultProductId] = useState<string | null>(() => {
+    return localStorage.getItem('kinguin_default_product_id');
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -35,11 +39,18 @@ const AppContent: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleAddProduct = async (url: string) => {
+  const handleSetDefaultProduct = (id: string) => {
+    setDefaultProductId(id);
+    localStorage.setItem('kinguin_default_product_id', id);
+  };
+
+  const handleAddProduct = async (url: string, setAsDefault: boolean) => {
     const res = await window.api.trackProduct(url);
     if (res.success && res.product) {
       await fetchProducts();
-      setSelectedProductId(res.product.id);
+      if (setAsDefault) {
+        handleSetDefaultProduct(res.product.id);
+      }
     }
     return res;
   };
@@ -54,6 +65,9 @@ const AppContent: React.FC = () => {
     if (selectedProductId === id) setSelectedProductId(null);
     await fetchProducts();
   };
+
+  const activeDefaultProduct =
+    products.find((p) => p.id === defaultProductId) || (products.length > 0 ? products[0] : null);
 
   const filteredProducts = products.filter((p) =>
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.includes(searchQuery)
@@ -115,23 +129,15 @@ const AppContent: React.FC = () => {
         {activeTab === 'tracker' && (
           <>
             {/* Prominent Track Product Input Bar */}
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 24 }}>
               <AddProductBar onAddProduct={handleAddProduct} />
             </div>
 
-            {/* List Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
-                {t('productList.trackedCount', { count: filteredProducts.length })}
-              </h3>
-            </div>
-
-            {/* Product Grid */}
             {loading ? (
               <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
                 {t('productList.loading')}
               </div>
-            ) : filteredProducts.length === 0 ? (
+            ) : products.length === 0 ? (
               <div className="empty-state">
                 <ShoppingBag className="empty-state-icon" />
                 <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
@@ -142,17 +148,37 @@ const AppContent: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="product-grid">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onSelect={(p) => setSelectedProductId(p.id)}
+              <>
+                {/* Single Default Product Stats View */}
+                {activeDefaultProduct && (
+                  <HeroProductDetail
+                    productId={activeDefaultProduct.id}
                     onRefresh={handleRefreshProduct}
-                    onDelete={handleDeleteProduct}
                   />
-                ))}
-              </div>
+                )}
+
+                {/* All Tracked Products List Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {t('productList.trackedCount', { count: filteredProducts.length })}
+                  </h3>
+                </div>
+
+                {/* Product Grid */}
+                <div className="product-grid">
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      isDefault={activeDefaultProduct?.id === product.id}
+                      onSelect={(p) => setSelectedProductId(p.id)}
+                      onRefresh={handleRefreshProduct}
+                      onDelete={handleDeleteProduct}
+                      onSetDefault={handleSetDefaultProduct}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </>
         )}
@@ -171,9 +197,11 @@ const AppContent: React.FC = () => {
                   <ProductCard
                     key={product.id}
                     product={product}
+                    isDefault={activeDefaultProduct?.id === product.id}
                     onSelect={(p) => setSelectedProductId(p.id)}
                     onRefresh={handleRefreshProduct}
                     onDelete={handleDeleteProduct}
+                    onSetDefault={handleSetDefaultProduct}
                   />
                 ))}
               </div>

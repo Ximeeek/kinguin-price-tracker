@@ -10,6 +10,7 @@ export const translations = {
     'addProduct.pasteBtn': 'Paste',
     'addProduct.fetchingBtn': 'Fetching...',
     'addProduct.trackBtn': 'Track product',
+    'addProduct.setAsDefault': 'Set as default product',
     'addProduct.defaultError': 'Failed to add product.',
     'addProduct.genericError': 'An error occurred while adding the product.',
 
@@ -21,6 +22,8 @@ export const translations = {
     'productList.neverChecked': 'Never checked',
     'productList.refreshTooltip': 'Refresh price',
     'productList.deleteTooltip': 'Delete tracking',
+    'productList.setDefaultTooltip': 'Set as default product',
+    'productList.isDefaultBadge': 'Default',
     'productList.deleteConfirm': 'Are you sure you want to delete "{title}"?',
 
     // Navigation Tabs
@@ -28,7 +31,7 @@ export const translations = {
     'nav.analytics': 'Analytics & Statistics',
     'nav.settings': 'App Settings',
 
-    // Modal Details
+    // Modal Details & Delete Modal
     'modal.loading': 'Loading price analysis...',
     'modal.firstTracked': 'First tracked: {date}',
     'modal.visitStore': 'Kinguin.net',
@@ -41,6 +44,14 @@ export const translations = {
     'modal.volatilityRange': 'Volatility range',
     'modal.noChartData': 'No price history to display',
     'modal.averageLineLabel': 'Average: {amount}',
+    'deleteModal.title': 'Delete Tracking?',
+    'deleteModal.confirmText': 'Are you sure you want to stop tracking "{title}"? Historical price data will be removed.',
+    'deleteModal.cancel': 'Cancel',
+    'deleteModal.delete': 'Delete',
+
+    // Toast Notifications
+    'toast.refreshSuccess': 'Price updated successfully',
+    'toast.refreshError': 'Failed to update price',
 
     // Analytics View
     'analytics.title': 'Statistical Overview',
@@ -85,6 +96,7 @@ export const translations = {
     'addProduct.pasteBtn': 'Wklej',
     'addProduct.fetchingBtn': 'Pobieranie...',
     'addProduct.trackBtn': 'Śledź produkt',
+    'addProduct.setAsDefault': 'Ustaw jako domyślny produkt',
     'addProduct.defaultError': 'Nie udało się dodać produktu.',
     'addProduct.genericError': 'Wystąpił błąd podczas dodawania.',
 
@@ -96,6 +108,8 @@ export const translations = {
     'productList.neverChecked': 'Nie sprawdzano',
     'productList.refreshTooltip': 'Odśwież cenę',
     'productList.deleteTooltip': 'Usuń śledzenie',
+    'productList.setDefaultTooltip': 'Ustaw jako domyślny produkt',
+    'productList.isDefaultBadge': 'Domyślny',
     'productList.deleteConfirm': 'Czy na pewno chcesz usunąć "{title}"?',
 
     // Navigation Tabs
@@ -103,7 +117,7 @@ export const translations = {
     'nav.analytics': 'Statystyki i analizy',
     'nav.settings': 'Ustawienia aplikacji',
 
-    // Modal Details
+    // Modal Details & Delete Modal
     'modal.loading': 'Ładowanie analizy cenowej...',
     'modal.firstTracked': 'Pierwsza rejestracja: {date}',
     'modal.visitStore': 'Kinguin.net',
@@ -116,6 +130,14 @@ export const translations = {
     'modal.volatilityRange': 'Zmienność (zakres)',
     'modal.noChartData': 'Brak historii cen do wyświetlenia',
     'modal.averageLineLabel': 'Średnia: {amount}',
+    'deleteModal.title': 'Usunąć śledzenie?',
+    'deleteModal.confirmText': 'Czy na pewno chcesz przestać śledzić "{title}"? Historia cen tego produktu zostanie usunięta.',
+    'deleteModal.cancel': 'Anuluj',
+    'deleteModal.delete': 'Usuń',
+
+    // Toast Notifications
+    'toast.refreshSuccess': 'Cena została pomyślnie zaktualizowana',
+    'toast.refreshError': 'Nie udało się zaktualizować ceny',
 
     // Analytics View
     'analytics.title': 'Przegląd statystyczny',
@@ -128,7 +150,7 @@ export const translations = {
     'settings.ttlTitle': 'Częstotliwość sprawdzania cen (TTL)',
     'settings.ttlDesc': 'Domyślny interwał odświeżania cen wynosi 6 godzin (z ograniczeniem minimalnego odstępu do 30 minut per produkt).',
     'settings.repoTitle': 'Abstrakcja Repozytorium (PriceRepository)',
-    'settings.repoDesc': 'Zgodnie ze specyfikacją architektury, kod przygotowany jest pod bezproblemowe podłączenie zsynchronizowanego backendu Node.js + Postgres (Faza 2).',
+    'settings.repoDesc': 'Zgodnie ze specyfikacją architektura, kod przygotowany jest pod bezproblemowe podłączenie zsynchronizowanego backendu Node.js + Postgres (Faza 2).',
 
     // Period selector
     'period.week': 'Tygodniowy',
@@ -145,6 +167,7 @@ export const translations = {
     'trend.Decreasing (volatile)': 'Spadek (zmienna)',
     'trend.Not enough data yet': 'Za mało danych',
 
+    // Languages
     // Languages
     'lang.en': 'EN',
     'lang.pl': 'PL'

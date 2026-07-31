@@ -3,12 +3,13 @@ import { Plus, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface AddProductBarProps {
-  onAddProduct: (url: string) => Promise<{ success: boolean; error?: string }>;
+  onAddProduct: (url: string, setAsDefault: boolean) => Promise<{ success: boolean; error?: string }>;
 }
 
 export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) => {
   const { t } = useLanguage();
   const [url, setUrl] = useState('');
+  const [setAsDefault, setSetAsDefault] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +21,7 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
     setLoading(true);
 
     try {
-      const result = await onAddProduct(url);
+      const result = await onAddProduct(url, setAsDefault);
       if (result.success) {
         setUrl('');
       } else {
@@ -90,6 +91,34 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
           )}
         </button>
       </form>
+
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 6 }}>
+        <input
+          type="checkbox"
+          id="setAsDefaultCheckbox"
+          checked={setAsDefault}
+          onChange={(e) => setSetAsDefault(e.target.checked)}
+          style={{
+            accentColor: 'var(--accent-green)',
+            width: 16,
+            height: 16,
+            cursor: 'pointer'
+          }}
+        />
+        <label
+          htmlFor="setAsDefaultCheckbox"
+          style={{
+            fontSize: 13,
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            userSelect: 'none',
+            fontWeight: 500
+          }}
+        >
+          {t('addProduct.setAsDefault')}
+        </label>
+      </div>
+
       {error && (
         <div style={{ color: 'var(--accent-red)', fontSize: '13px', marginTop: 8, marginLeft: 16, fontWeight: 500 }}>
           ⚠️ {error}

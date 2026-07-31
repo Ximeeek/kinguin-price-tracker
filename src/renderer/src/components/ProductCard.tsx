@@ -1,27 +1,31 @@
 import React from 'react';
 import { Product } from '../../../shared/types';
-import { RefreshCw, Trash2 } from 'lucide-react';
+import { RefreshCw, Trash2, Star } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
 
 interface ProductCardProps {
   product: Product;
+  isDefault?: boolean;
   onSelect: (product: Product) => void;
   onRefresh: (id: string) => void;
   onDelete: (id: string) => void;
+  onSetDefault?: (id: string) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
+  isDefault = false,
   onSelect,
   onRefresh,
-  onDelete
+  onDelete,
+  onSetDefault
 }) => {
   const { t } = useLanguage();
   const { formatPrice } = useCurrency();
 
   return (
-    <div className="glass-card product-item-card" onClick={() => onSelect(product)}>
+    <div className={`glass-card product-item-card ${isDefault ? 'is-default-card' : ''}`} onClick={() => onSelect(product)}>
       {product.imageUrl ? (
         <img
           src={product.imageUrl}
@@ -38,8 +42,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       )}
 
       <div className="product-info">
-        <div className="product-name" title={product.title}>
-          {product.title}
+        <div className="product-name" title={product.title} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span>{product.title}</span>
+          {isDefault && (
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                padding: '2px 6px',
+                borderRadius: 4,
+                background: 'rgba(245, 158, 11, 0.15)',
+                color: 'var(--accent-gold)',
+                border: '1px solid rgba(245, 158, 11, 0.3)'
+              }}
+            >
+              {t('productList.isDefaultBadge')}
+            </span>
+          )}
         </div>
         <div className="product-meta">
           <span>ID: {product.id}</span>
@@ -62,7 +81,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {formatPrice(product.currentPrice || 0, product.currency)}
         </div>
 
-        <div style={{ marginTop: 6, display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+        <div style={{ marginTop: 6, display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -79,6 +98,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             <RefreshCw size={14} />
           </button>
+
+          {onSetDefault && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSetDefault(product.id);
+              }}
+              title={t('productList.setDefaultTooltip')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: isDefault ? 'var(--accent-gold)' : 'var(--text-muted)',
+                cursor: 'pointer',
+                padding: 2,
+                transition: 'color 0.2s, transform 0.2s'
+              }}
+            >
+              <Star size={14} fill={isDefault ? 'var(--accent-gold)' : 'none'} />
+            </button>
+          )}
+
           <button
             onClick={(e) => {
               e.stopPropagation();
