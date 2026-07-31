@@ -3,10 +3,12 @@ import { PriceRepository } from './db/repository';
 import { KinguinProductFetcher, parseKinguinUrl } from './services/kinguinFetcher';
 import { TrendEngine } from './services/trendEngine';
 import { AverageEngine } from './services/averageEngine';
+import { generateDevMockProduct } from './services/mockDataGenerator';
 import { AddProductResult, ProductDetailResponse, TimePeriod } from '../shared/types';
 import { Logger } from './logger';
 
 const LOCAL_REFRESH_TTL_MS = 6 * 3600 * 1000; // 6 hours cache TTL for Phase 1 MVP
+const IS_DEV = Boolean(process.env.VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'development');
 
 export function setupIpcHandlers(repository: PriceRepository) {
   const fetcher = new KinguinProductFetcher();
@@ -14,6 +16,18 @@ export function setupIpcHandlers(repository: PriceRepository) {
   // Track / Add product by Kinguin URL
   ipcMain.handle('track-product', async (_, urlInput: string): Promise<AddProductResult> => {
     Logger.info('IPC', `[track-product] Method invoked for URL: "${urlInput}"`);
+
+    // DEV ONLY: Support test commands (test1, test2, test3, test4, test5, test-all)
+    if (IS_DEV && urlInput.trim().toLowerCase().startsWith('test')) {
+      Logger.info('IPC', `[track-product] DEV MODE: Triggering test command "${urlInput}"`);
+      const mockProduct = await generateDevMockProduct(urlInput, repository);
+      if (mockProduct) {
+        return {
+          success: true,
+          product: mockProduct
+        };
+      }
+    }
 
     try {
       const parsed = parseKinguinUrl(urlInput);

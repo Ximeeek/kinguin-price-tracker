@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
+    "noEmit": true,
     "paths": {
       "@shared/*": ["src/shared/*"],
       "@renderer/*": ["src/renderer/src/*"]
