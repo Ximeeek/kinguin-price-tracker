@@ -33,9 +33,9 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
     const newIdx = periodOrder.indexOf(newPeriod);
 
     if (newIdx < oldIdx) {
-      setAnimClass('anim-scale-down');
+      setAnimClass('anim-chart-contract');
     } else {
-      setAnimClass('anim-scale-up');
+      setAnimClass('anim-chart-expand');
     }
     setAnimKey((prev) => prev + 1);
     setPeriod(newPeriod);
@@ -172,10 +172,9 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
               onClick={() => onRefresh(product.id)}
               disabled={isRefreshing}
               title={t('productList.refreshTooltip')}
-              style={{ height: 38, padding: '0 12px', display: 'flex', gap: 6, alignItems: 'center', fontSize: 13 }}
+              style={{ width: 38, height: 38, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              <RefreshCw size={15} className={isRefreshing ? 'spinning' : ''} />
-              <span>{t('productList.refreshTooltip')}</span>
+              <RefreshCw size={16} className={isRefreshing ? 'spinning' : ''} />
             </button>
           )}
           <button

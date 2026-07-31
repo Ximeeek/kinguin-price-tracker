@@ -4,11 +4,24 @@ import { KinguinProductFetcher, parseKinguinUrl } from './services/kinguinFetche
 import { TrendEngine } from './services/trendEngine';
 import { AverageEngine } from './services/averageEngine';
 import { generateDevMockProduct } from './services/mockDataGenerator';
-import { AddProductResult, ProductDetailResponse, TimePeriod } from '../shared/types';
+import { AddProductResult, ProductDetailResponse, TimePeriod, PriceSnapshot } from '../shared/types';
 import { Logger } from './logger';
 
 const LOCAL_REFRESH_TTL_MS = 6 * 3600 * 1000; // 6 hours cache TTL for Phase 1 MVP
 const IS_DEV = Boolean(process.env.VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'development');
+
+function filterHistoryByPeriod(fullHistory: PriceSnapshot[], period: TimePeriod): PriceSnapshot[] {
+  if (!fullHistory || fullHistory.length === 0) return [];
+  const now = Date.now();
+  const periodDays = period === 'week' ? 7 : period === 'month' ? 30 : period === 'six_months' ? 180 : 365;
+  const cutoffTime = now - periodDays * 24 * 3600 * 1000;
+
+  const filtered = fullHistory.filter((item) => new Date(item.checkedAt).getTime() >= cutoffTime);
+  if (filtered.length === 0 && fullHistory.length > 0) {
+    return [fullHistory[fullHistory.length - 1]];
+  }
+  return filtered;
+}
 
 export function setupIpcHandlers(repository: PriceRepository) {
   const fetcher = new KinguinProductFetcher();
@@ -118,12 +131,13 @@ export function setupIpcHandlers(repository: PriceRepository) {
       return null;
     }
 
-    const history = await repository.getHistory(productId);
-    const currentPrice = history.length > 0 ? history[history.length - 1].price : (product.currentPrice || 0);
-    const previousPrice = history.length > 1 ? history[history.length - 2].price : undefined;
+    const fullHistory = await repository.getHistory(productId);
+    const history = filterHistoryByPeriod(fullHistory, period);
+    const currentPrice = fullHistory.length > 0 ? fullHistory[fullHistory.length - 1].price : (product.currentPrice || 0);
+    const previousPrice = fullHistory.length > 1 ? fullHistory[fullHistory.length - 2].price : undefined;
 
-    const trend = TrendEngine.analyze(history, product.firstTrackedAt);
-    const average = AverageEngine.analyze(history, currentPrice, period);
+    const trend = TrendEngine.analyze(fullHistory, product.firstTrackedAt);
+    const average = AverageEngine.analyze(fullHistory, currentPrice, period);
 
     Logger.info('IPC', `[get-product-detail] Analysis complete. Trend: ${trend.label}, Average delta: ${average.label}`);
 

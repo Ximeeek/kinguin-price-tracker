@@ -486,20 +486,36 @@ body::after {
   to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes chartScaleDown {
-  0% { transform: scale(1.05); opacity: 0.6; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes chartExpand {
+  0% {
+    transform: scaleX(0.3);
+    transform-origin: left center;
+    opacity: 0.4;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left center;
+    opacity: 1;
+  }
 }
 
-@keyframes chartScaleUp {
-  0% { transform: scale(0.94); opacity: 0.6; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes chartContract {
+  0% {
+    transform: scaleX(1.5);
+    transform-origin: left center;
+    opacity: 0.4;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left center;
+    opacity: 1;
+  }
 }
 
-.anim-scale-down {
-  animation: chartScaleDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.anim-chart-expand {
+  animation: chartExpand 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.anim-scale-up {
-  animation: chartScaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.anim-chart-contract {
+  animation: chartContract 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

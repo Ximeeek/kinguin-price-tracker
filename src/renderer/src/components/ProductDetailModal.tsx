@@ -28,9 +28,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
     const newIdx = periodOrder.indexOf(newPeriod);
 
     if (newIdx < oldIdx) {
-      setAnimClass('anim-scale-down');
+      setAnimClass('anim-chart-contract');
     } else {
-      setAnimClass('anim-scale-up');
+      setAnimClass('anim-chart-expand');
     }
     setAnimKey((prev) => prev + 1);
     setPeriod(newPeriod);
