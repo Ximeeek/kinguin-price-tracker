@@ -8,6 +8,7 @@ import { BottomNavbar, NavTab } from './components/BottomNavbar';
 import { SettingsView } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
 import { CurrencySelector } from './components/CurrencySelector';
+import { ToastNotification, ToastMessage } from './components/ToastNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CurrencyProvider } from './currency/CurrencyContext';
 import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles } from 'lucide-react';
@@ -23,6 +24,9 @@ const AppContent: React.FC = () => {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [refreshingProductIds, setRefreshingProductIds] = useState<Set<string>>(new Set());
+  const [refreshingAll, setRefreshingAll] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -38,6 +42,26 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleRefreshAll = async () => {
+    setRefreshingAll(true);
+    try {
+      await fetchProducts();
+      setToast({
+        id: Date.now().toString(),
+        type: 'success',
+        text: t('toast.refreshSuccess')
+      });
+    } catch {
+      setToast({
+        id: Date.now().toString(),
+        type: 'error',
+        text: t('toast.refreshError')
+      });
+    } finally {
+      setRefreshingAll(false);
+    }
+  };
 
   const handleSetDefaultProduct = (id: string) => {
     setDefaultProductId(id);
@@ -56,8 +80,28 @@ const AppContent: React.FC = () => {
   };
 
   const handleRefreshProduct = async (id: string) => {
-    await window.api.refreshProduct(id);
-    await fetchProducts();
+    setRefreshingProductIds((prev) => new Set(prev).add(id));
+    try {
+      await window.api.refreshProduct(id);
+      await fetchProducts();
+      setToast({
+        id: Date.now().toString(),
+        type: 'success',
+        text: t('toast.refreshSuccess')
+      });
+    } catch {
+      setToast({
+        id: Date.now().toString(),
+        type: 'error',
+        text: t('toast.refreshError')
+      });
+    } finally {
+      setRefreshingProductIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -113,12 +157,13 @@ const AppContent: React.FC = () => {
             </div>
 
             <button
-              onClick={fetchProducts}
+              onClick={handleRefreshAll}
+              disabled={refreshingAll}
               className="nav-item-btn"
               style={{ width: 36, height: 36 }}
               title={t('header.refreshListTooltip')}
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={16} className={refreshingAll ? 'spinning' : ''} />
             </button>
 
             <CurrencySelector />
@@ -154,6 +199,7 @@ const AppContent: React.FC = () => {
                   <HeroProductDetail
                     productId={activeDefaultProduct.id}
                     onRefresh={handleRefreshProduct}
+                    isRefreshing={refreshingProductIds.has(activeDefaultProduct.id)}
                   />
                 )}
 
@@ -171,6 +217,7 @@ const AppContent: React.FC = () => {
                       key={product.id}
                       product={product}
                       isDefault={activeDefaultProduct?.id === product.id}
+                      isRefreshing={refreshingProductIds.has(product.id)}
                       onSelect={(p) => setSelectedProductId(p.id)}
                       onRefresh={handleRefreshProduct}
                       onDelete={handleDeleteProduct}
@@ -198,6 +245,7 @@ const AppContent: React.FC = () => {
                     key={product.id}
                     product={product}
                     isDefault={activeDefaultProduct?.id === product.id}
+                    isRefreshing={refreshingProductIds.has(product.id)}
                     onSelect={(p) => setSelectedProductId(p.id)}
                     onRefresh={handleRefreshProduct}
                     onDelete={handleDeleteProduct}
@@ -216,6 +264,9 @@ const AppContent: React.FC = () => {
       {selectedProductId && (
         <ProductDetailModal productId={selectedProductId} onClose={() => setSelectedProductId(null)} />
       )}
+
+      {/* Toast Notification Alert */}
+      <ToastNotification toast={toast} onDismiss={() => setToast(null)} />
 
       {/* Floating Bottom Glass Navigation Bar */}
       <BottomNavbar activeTab={activeTab} onSelectTab={setActiveTab} />

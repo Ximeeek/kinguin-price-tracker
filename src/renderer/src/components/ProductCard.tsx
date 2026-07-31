@@ -8,6 +8,7 @@ import { ConfirmModal } from './ConfirmModal';
 interface ProductCardProps {
   product: Product;
   isDefault?: boolean;
+  isRefreshing?: boolean;
   onSelect: (product: Product) => void;
   onRefresh: (id: string) => void;
   onDelete: (id: string) => void;
@@ -17,6 +18,7 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   isDefault = false,
+  isRefreshing = false,
   onSelect,
   onRefresh,
   onDelete,
@@ -88,18 +90,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onRefresh(product.id);
+                if (!isRefreshing) onRefresh(product.id);
               }}
+              disabled={isRefreshing}
               title={t('productList.refreshTooltip')}
               style={{
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--text-muted)',
-                cursor: 'pointer',
+                cursor: isRefreshing ? 'default' : 'pointer',
                 padding: 2
               }}
             >
-              <RefreshCw size={14} />
+              <RefreshCw size={14} className={isRefreshing ? 'spinning' : ''} />
             </button>
 
             {onSetDefault && (
