@@ -150,6 +150,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
     return {
       product: { ...product, currentPrice, previousPrice },
       history,
+      fullHistory,
       trend,
       average
     };

@@ -35,7 +35,9 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
   };
 
   const loadData = async (selectedPeriod: TimePeriod) => {
-    setLoading(true);
+    if (!detail) {
+      setLoading(true);
+    }
     try {
       const res = await window.api.getProductDetail(productId, selectedPeriod);
       setDetail(res);
@@ -292,10 +294,11 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
       </div>
 
       <PriceChart
-        key={`${productId}_${period}`}
-        history={history}
+        key={productId}
+        history={detail.fullHistory || history}
         currency={product.currency}
         averagePrice={average.averagePrice}
+        selectedPeriod={period}
       />
 
       {/* Trend Analysis & Prediction Section */}

@@ -120,6 +120,11 @@ export const translations = {
     'period.example': 'e.g.',
     'period.infoNote': 'Duration must be greater than 1 day (e.g. min 2d).',
 
+    // Chart Zoom & Drag Selection
+    'chart.customRangeActive': 'Custom Range',
+    'chart.clickToReset': 'Click anywhere outside to reset view',
+    'chart.resetBtn': 'Reset',
+
     // Trend badges & descriptions
     'trend.Stable': 'Stable',
     'trend.Fluctuating': 'Fluctuating',
@@ -277,6 +282,11 @@ export const translations = {
     'period.unitYears': 'Lata',
     'period.example': 'np.',
     'period.infoNote': 'Zakres czasu musi być większy niż 1 dzień (np. min 2d).',
+
+    // Chart Zoom & Drag Selection
+    'chart.customRangeActive': 'Wybrany zakres',
+    'chart.clickToReset': 'Kliknij poza wykres, aby powrócić',
+    'chart.resetBtn': 'Przywróć',
 
     // Trend badges & descriptions
     'trend.Stable': 'Stabilna',

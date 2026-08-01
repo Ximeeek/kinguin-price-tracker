@@ -31,7 +31,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
   };
 
   const loadData = async (selectedPeriod: TimePeriod) => {
-    setLoading(true);
+    if (!detail) {
+      setLoading(true);
+    }
     try {
       const res = await window.api.getProductDetail(productId, selectedPeriod);
       setDetail(res);
@@ -226,10 +228,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
         </div>
 
         <PriceChart
-          key={`${productId}_${period}`}
-          history={history}
+          key={productId}
+          history={detail.fullHistory || history}
           currency={product.currency}
           averagePrice={average.averagePrice}
+          selectedPeriod={period}
         />
 
         {/* Trend Analysis & Prediction Section */}

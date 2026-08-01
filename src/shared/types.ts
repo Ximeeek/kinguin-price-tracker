@@ -56,6 +56,7 @@ export interface AverageAnalysis {
 export interface ProductDetailResponse {
   product: Product;
   history: PriceSnapshot[];
+  fullHistory?: PriceSnapshot[];
   trend: TrendAnalysis;
   average: AverageAnalysis;
 }

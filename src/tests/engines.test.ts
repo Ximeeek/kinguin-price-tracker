@@ -1,6 +1,7 @@
 import { parseKinguinUrl } from '../main/services/kinguinFetcher';
 import { TrendEngine } from '../main/services/trendEngine';
 import { AverageEngine } from '../main/services/averageEngine';
+import { parseCustomDays } from '../shared/timeUtils';
 import { PriceSnapshot } from '../shared/types';
 
 function runTests() {
@@ -61,6 +62,17 @@ function runTests() {
   console.assert(avgAnalysis.deltaPct === -20.0, `Delta Pct should be -20, got ${avgAnalysis.deltaPct}`);
   console.assert(avgAnalysis.label === '20% below average', `Label mismatch: ${avgAnalysis.label}`);
   console.log('✅ Average Engine check passed.\n');
+
+  // Test 5: parseCustomDays parsing
+  console.log('Test 5: parseCustomDays Period Parsing');
+  console.assert(parseCustomDays('custom_14').days === 14, `custom_14 should parse to 14 days, got ${parseCustomDays('custom_14').days}`);
+  console.assert(parseCustomDays('custom_14').isValid === true, 'custom_14 should be valid');
+  console.assert(parseCustomDays('14d').days === 14, '14d should parse to 14 days');
+  console.assert(parseCustomDays('2w').days === 14, '2w should parse to 14 days');
+  console.assert(parseCustomDays('14').days === 14, '14 should parse to 14 days');
+  console.assert(parseCustomDays('custom_7').days === 7, 'custom_7 should parse to 7 days');
+  console.assert(parseCustomDays('invalid').isValid === false, 'invalid string should be invalid');
+  console.log('✅ parseCustomDays check passed.\n');
 
   console.log('🎉 ALL VERIFICATION TESTS PASSED!');
 }

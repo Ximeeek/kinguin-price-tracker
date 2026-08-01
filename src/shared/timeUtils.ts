@@ -20,14 +20,14 @@ export function parseCustomDays(period: string): ParsedPeriod {
 
   const raw = period.replace(/^custom_/, '').trim().toLowerCase();
 
-  // Require number + explicit unit suffix (d, w, m, y)
-  const match = raw.match(/^(\d+(?:\.\d+)?)\s*([dwmy])$/);
+  // Support number with optional unit suffix (d, w, m, y). Default unit is 'd' if omitted.
+  const match = raw.match(/^(\d+(?:\.\d+)?)\s*([dwmy])?$/);
   if (!match) {
     return { days: 0, isValid: false };
   }
 
   const val = parseFloat(match[1]);
-  const unit = match[2];
+  const unit = match[2] || 'd';
 
   let days = val;
   if (unit === 'd') days = val;
@@ -36,7 +36,7 @@ export function parseCustomDays(period: string): ParsedPeriod {
   else if (unit === 'y') days = val * 365;
 
   const finalDays = Math.round(days);
-  const isValid = finalDays > 1;
+  const isValid = finalDays >= 1;
 
   return { days: isValid ? finalDays : 0, isValid };
 }

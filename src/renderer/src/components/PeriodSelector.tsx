@@ -95,11 +95,6 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                   setCustomText(e.target.value);
                   if (errorMsg) setErrorMsg(null);
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleCustomSubmit(e);
-                  }
-                }}
                 style={{
                   padding: '4px 10px',
                   fontSize: '12px',
