@@ -165,6 +165,19 @@ export function setupIpcHandlers(repository: PriceRepository) {
     const product = await repository.findProductById(productId);
     if (!product) return { success: false, error: 'Product not found' };
 
+    const ONE_HOUR_MS = 60 * 60 * 1000;
+    const lastCheckedMs = product.lastCheckedAt ? new Date(product.lastCheckedAt).getTime() : 0;
+    const elapsedMs = Date.now() - lastCheckedMs;
+
+    if (lastCheckedMs > 0 && elapsedMs < ONE_HOUR_MS) {
+      const minutesLeft = Math.ceil((ONE_HOUR_MS - elapsedMs) / (60 * 1000));
+      Logger.warn('IPC', `[refresh-product] Cooldown active for ID ${productId}. ${minutesLeft} min remaining.`);
+      return {
+        success: false,
+        error: `Ta gra była już odświeżana. Następne odświeżenie będzie możliwe za ${minutesLeft} min.`
+      };
+    }
+
     let fetchError: string | null = null;
 
     try {
