@@ -41,6 +41,8 @@ const AppContent: React.FC = () => {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashFading, setSplashFading] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [refreshingProductIds, setRefreshingProductIds] = useState<Set<string>>(new Set());
   const [refreshingAll, setRefreshingAll] = useState(false);
@@ -60,6 +62,16 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      setSplashFading(true);
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 450);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   useEffect(() => {
     const mainEl = mainContentRef.current;
@@ -211,6 +223,25 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="app-container">
+      {showSplash && (
+        <div className={`app-loading-screen ${splashFading ? 'fade-out' : ''}`}>
+          <div className="app-loading-content">
+            <div className="app-loading-logo-wrapper">
+              <img src="/icon-48x48.png" alt="App Logo" className="app-loading-logo" />
+              <div className="app-loading-glow" />
+            </div>
+            <div className="app-loading-title">Kinguin Price Tracker</div>
+            <div className="app-loading-dots-container">
+              <span className="app-loading-text">Loading</span>
+              <span className="app-loading-dots">
+                <span className="dot dot-1">.</span>
+                <span className="dot dot-2">.</span>
+                <span className="dot dot-3">.</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
       <TitleBar />
       <div className="main-content" ref={mainContentRef}>
         {/* Header Bar */}
