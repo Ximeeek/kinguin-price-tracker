@@ -61,6 +61,7 @@ export const translations = {
     'toast.refreshError': 'Failed to update price',
     'toast.refreshAllSuccess': 'All product prices updated successfully',
     'toast.refreshSomeFailed': 'Failed to refresh some products ({count})',
+    'toast.autoPasted': 'Automatically pasted Kinguin link from clipboard',
 
     // Indicator Tooltips
     'indicator.noChange': 'Price unchanged since last check',
@@ -85,6 +86,10 @@ export const translations = {
     'settings.defaultProductDesc': 'Manage or remove the featured default game pinned to your top dashboard.',
     'settings.clearDefaultBtn': 'Unpin Default Game',
     'settings.noDefaultSet': 'No game currently pinned as default.',
+    'settings.autoPasteTitle': 'Auto-Paste Clipboard Links',
+    'settings.autoPasteDesc': 'Automatically paste Kinguin product URLs from clipboard when focusing the app window.',
+    'settings.autoPasteEnabled': 'Enabled (Default)',
+    'settings.autoPasteDisabled': 'Disabled',
 
     // Info Modal
     'infoModal.button': 'I',
@@ -101,6 +106,8 @@ export const translations = {
     'period.month': 'Monthly',
     'period.six_months': '6 Months',
     'period.year': 'Yearly',
+    'period.all': 'All-Time',
+    'period.disabledTooltip': 'Insufficient tracking history for this range',
 
     // Trend badges & descriptions
     'trend.Stable': 'Stable',
@@ -201,6 +208,7 @@ export const translations = {
     'toast.refreshError': 'Nie udało się zaktualizować ceny',
     'toast.refreshAllSuccess': 'Wszystkie ceny zostały pomyślnie zaktualizowane',
     'toast.refreshSomeFailed': 'Nie udało się odświeżyć niektórych produktów ({count})',
+    'toast.autoPasted': 'Automatycznie wklejono link ze schowka',
 
     // Indicator Tooltips
     'indicator.noChange': 'Cena bez zmian od ostatniego sprawdzenia',
@@ -225,6 +233,10 @@ export const translations = {
     'settings.defaultProductDesc': 'Zarządzaj lub usuń przypięty domyślny produkt z górnej karty pulpitu.',
     'settings.clearDefaultBtn': 'Odepnij domyślny produkt',
     'settings.noDefaultSet': 'Brak obecnie przypiętego domyślnego produktu.',
+    'settings.autoPasteTitle': 'Automatyczne Wklejanie ze Schowka',
+    'settings.autoPasteDesc': 'Automatycznie wklejaj linki do produktów Kinguin ze schowka po przejściu do okna aplikacji.',
+    'settings.autoPasteEnabled': 'Włączone (Domyślne)',
+    'settings.autoPasteDisabled': 'Wyłączone',
 
     // Info Modal
     'infoModal.button': 'I',
@@ -241,6 +253,8 @@ export const translations = {
     'period.month': 'Miesięczny',
     'period.six_months': '6 miesięcy',
     'period.year': 'Roczny',
+    'period.all': 'Od początku',
+    'period.disabledTooltip': 'Za krótki okres śledzenia dla tego zakresu',
 
     // Trend badges & descriptions
     'trend.Stable': 'Stabilna',

@@ -201,6 +201,14 @@ const AppContent: React.FC = () => {
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.includes(searchQuery)
   );
 
+  const handleAutoPasted = () => {
+    setToast({
+      id: Date.now().toString(),
+      type: 'success',
+      text: t('toast.autoPasted')
+    });
+  };
+
   return (
     <div className="app-container">
       <TitleBar />
@@ -287,7 +295,7 @@ const AppContent: React.FC = () => {
             <>
               {/* Prominent Track Product Input Bar */}
               <div style={{ marginBottom: 24 }}>
-                <AddProductBar onAddProduct={handleAddProduct} />
+                <AddProductBar onAddProduct={handleAddProduct} onAutoPasted={handleAutoPasted} />
               </div>
 
               {loading ? (

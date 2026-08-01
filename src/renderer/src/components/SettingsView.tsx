@@ -1,5 +1,5 @@
-import React from 'react';
-import { Eye, Globe, DollarSign, Star, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Eye, Globe, DollarSign, Star, Trash2, Clipboard } from 'lucide-react';
 import { useLanguage, SupportedLanguage } from '../i18n/LanguageContext';
 import { useCurrency, SUPPORTED_CURRENCIES, CurrencyCode } from '../currency/CurrencyContext';
 
@@ -10,16 +10,33 @@ interface SettingsViewProps {
   onSearchScrollModeChange?: (mode: SearchScrollMode) => void;
   defaultProductId?: string | null;
   onUnsetDefaultProduct?: () => void;
+  autoPasteEnabled?: boolean;
+  onAutoPasteChange?: (enabled: boolean) => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   searchScrollMode = 'translucent',
   onSearchScrollModeChange,
   defaultProductId,
-  onUnsetDefaultProduct
+  onUnsetDefaultProduct,
+  autoPasteEnabled,
+  onAutoPasteChange
 }) => {
   const { t, language, setLanguage } = useLanguage();
   const { currency, setCurrency } = useCurrency();
+
+  const [autoPaste, setAutoPaste] = useState<boolean>(() => {
+    if (autoPasteEnabled !== undefined) return autoPasteEnabled;
+    return localStorage.getItem('kinguin_auto_paste_enabled') !== 'false';
+  });
+
+  const handleToggleAutoPaste = (enabled: boolean) => {
+    setAutoPaste(enabled);
+    localStorage.setItem('kinguin_auto_paste_enabled', enabled ? 'true' : 'false');
+    if (onAutoPasteChange) {
+      onAutoPasteChange(enabled);
+    }
+  };
 
   const handleSelectMode = (mode: SearchScrollMode) => {
     localStorage.setItem('kinguin_search_bar_scroll_mode', mode);
@@ -82,7 +99,55 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Language Setting */}
+      {/* 2. Clipboard Auto-Paste Setting */}
+      <div className="glass-card" style={{ padding: 24, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: '12px',
+                background: 'rgba(168, 85, 247, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--accent-cyan)',
+                flexShrink: 0
+              }}
+            >
+              <Clipboard size={24} />
+            </div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {t('settings.autoPasteTitle')}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
+                {t('settings.autoPasteDesc')}
+              </div>
+            </div>
+          </div>
+
+          <div className="pill-switcher" style={{ marginTop: 4 }}>
+            <button
+              type="button"
+              className={`pill-button ${autoPaste ? 'active' : ''}`}
+              onClick={() => handleToggleAutoPaste(true)}
+            >
+              {t('settings.autoPasteEnabled')}
+            </button>
+            <button
+              type="button"
+              className={`pill-button ${!autoPaste ? 'active' : ''}`}
+              onClick={() => handleToggleAutoPaste(false)}
+            >
+              {t('settings.autoPasteDisabled')}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Language Setting */}
       <div className="glass-card" style={{ padding: 24, marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>
@@ -130,7 +195,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       </div>
 
-      {/* 3. Display Currency Setting */}
+      {/* 4. Display Currency Setting */}
       <div className="glass-card" style={{ padding: 24, marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>
@@ -174,7 +239,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       </div>
 
-      {/* 4. Pinned Default Game Preference */}
+      {/* 5. Pinned Default Game Preference */}
       <div className="glass-card" style={{ padding: 24 }}>
         <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>

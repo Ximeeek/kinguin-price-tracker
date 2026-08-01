@@ -81,6 +81,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
 
   const { product, history, trend, average } = detail;
 
+  const totalDays = product.firstTrackedAt
+    ? Math.max(1, Math.ceil((Date.now() - new Date(product.firstTrackedAt).getTime()) / (1000 * 3600 * 24)))
+    : undefined;
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="glass-card modal-card" onClick={(e) => e.stopPropagation()}>
@@ -150,8 +154,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
 
           <div
             style={{
+              position: 'relative',
               background: 'rgba(14, 18, 26, 0.6)',
-              padding: 16,
+              padding: '16px 16px 20px 16px',
               borderRadius: 14,
               border: '1px solid rgba(255,255,255,0.06)'
             }}
@@ -163,7 +168,18 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
               {formatPrice(average.averagePrice, product.currency)}
             </div>
             {average.note && (
-              <div style={{ fontSize: 11, color: 'var(--accent-gold)', marginTop: 4 }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 16,
+                  bottom: 3,
+                  fontSize: 10,
+                  fontWeight: 500,
+                  color: 'var(--accent-gold)',
+                  whiteSpace: 'nowrap',
+                  pointerEvents: 'none'
+                }}
+              >
                 ℹ️ {average.note}
               </div>
             )}
@@ -202,6 +218,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
           <PeriodSelector
             selectedPeriod={period}
             onSelectPeriod={handlePeriodChange}
+            totalDays={totalDays}
           />
         </div>
 

@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface AddProductBarProps {
   onAddProduct: (url: string, setAsDefault: boolean) => Promise<{ success: boolean; error?: string }>;
+  onAutoPasted?: () => void;
 }
 
-export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) => {
+export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct, onAutoPasted }) => {
   const { t } = useLanguage();
   const [url, setUrl] = useState('');
   const [setAsDefault, setSetAsDefault] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const lastAutoPastedRef = useRef<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,16 +36,37 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
     }
   };
 
-  const handlePaste = async () => {
+  const checkAutoPaste = async () => {
+    const isEnabled = localStorage.getItem('kinguin_auto_paste_enabled') !== 'false';
+    if (!isEnabled) return;
+
     try {
       const text = await navigator.clipboard.readText();
-      if (text && text.includes('kinguin.net')) {
-        setUrl(text);
+      const trimmed = text ? text.trim() : '';
+
+      if (trimmed && trimmed.includes('kinguin.net') && trimmed !== lastAutoPastedRef.current) {
+        lastAutoPastedRef.current = trimmed;
+        setUrl(trimmed);
+        if (error) setError(null);
+        if (onAutoPasted) {
+          onAutoPasted();
+        }
       }
     } catch {
-      // Clipboard access might be disabled or empty
+      // Clipboard access might be disabled or denied
     }
   };
+
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      checkAutoPaste();
+    };
+    // Check initial window focus
+    window.addEventListener('focus', handleWindowFocus);
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus);
+    };
+  }, []);
 
   return (
     <div style={{ width: '100%' }}>
@@ -60,23 +83,6 @@ export const AddProductBar: React.FC<AddProductBarProps> = ({ onAddProduct }) =>
           }}
           disabled={loading}
         />
-        {!url && (
-          <button
-            type="button"
-            onClick={handlePaste}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--accent-cyan)',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              paddingRight: 8
-            }}
-          >
-            {t('addProduct.pasteBtn')}
-          </button>
-        )}
         <button type="submit" className="track-btn" disabled={loading || !url.trim()}>
           {loading ? (
             <>

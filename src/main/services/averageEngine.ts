@@ -50,7 +50,9 @@ export class AverageEngine {
     }
 
     let note: string | undefined = undefined;
-    if (actualDaysCount < periodDays) {
+    if (period === 'all') {
+      note = `Based on ${actualDaysCount} days of total tracking data`;
+    } else if (actualDaysCount < periodDays) {
       note = `Based on ${actualDaysCount} days of collected data`;
     }
 
@@ -76,6 +78,8 @@ export class AverageEngine {
         return 180;
       case 'year':
         return 365;
+      case 'all':
+        return Infinity;
       default:
         return 30;
     }
