@@ -89,15 +89,12 @@ export const TrendBanner: React.FC<TrendBannerProps> = ({
     >
       {/* Prominent Direction Banner Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {theme.icon}
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: theme.titleColor, letterSpacing: '-0.2px' }}>
-              {theme.headerText}
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-              {t('modal.trendTitle')}
-            </div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: theme.titleColor, letterSpacing: '-0.2px' }}>
+            {theme.headerText}
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+            {t('modal.trendTitle')}
           </div>
         </div>
 

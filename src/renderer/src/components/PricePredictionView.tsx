@@ -35,28 +35,28 @@ export const PricePredictionView: React.FC<PricePredictionViewProps> = ({
 
   // Mathematical Dampened Mean-Reverting Prediction Engine
   const calculatePrediction = () => {
-    const convertedCurrent = convertPrice(currentPrice, currency);
+    const baseCurrent = currentPrice || 0;
 
-    if (!history || history.length === 0) {
+    if (!history || history.length === 0 || baseCurrent === 0) {
       return {
-        projectedPrice: convertedCurrent,
-        diffVal: 0,
+        projectedPriceBase: baseCurrent,
+        diffValBase: 0,
         diffPct: 0,
-        lowBound: convertedCurrent * 0.95,
-        highBound: convertedCurrent * 1.05,
+        lowBoundBase: baseCurrent * 0.95,
+        highBoundBase: baseCurrent * 1.05,
         confidence: 'low'
       };
     }
 
-    // Convert full history prices to active currency
-    const convertedPrices = history.map((h) => convertPrice(h.price, currency));
-    const maxPrice = Math.max(...convertedPrices, convertedCurrent);
-    const minPrice = Math.min(...convertedPrices, convertedCurrent);
-    const avgPrice = convertedPrices.reduce((a, b) => a + b, 0) / convertedPrices.length;
+    // Process all history in raw base currency
+    const basePrices = history.map((h) => h.price);
+    const maxPriceBase = Math.max(...basePrices, baseCurrent);
+    const minPriceBase = Math.min(...basePrices, baseCurrent);
+    const avgPriceBase = basePrices.reduce((a, b) => a + b, 0) / basePrices.length;
 
-    // Strict MSRP Ceiling & Floor bounds to prevent absurd linear inflation (e.g., 100 zł -> 1900 zł)
-    const priceCeiling = Math.max(maxPrice * 1.08, convertedCurrent * 1.15);
-    const priceFloor = Math.max(0.5, Math.min(minPrice, convertedCurrent * 0.35));
+    // Strict MSRP Ceiling & Floor bounds in base currency
+    const priceCeilingBase = Math.max(maxPriceBase * 1.08, baseCurrent * 1.15);
+    const priceFloorBase = Math.max(0.1, Math.min(minPriceBase, baseCurrent * 0.35));
 
     // Calculate short-term raw daily drift slope m (bounded to max 2% per day)
     let rawDailyDrift = 0;
@@ -65,12 +65,11 @@ export const PricePredictionView: React.FC<PricePredictionViewProps> = ({
       const lastTime = new Date(history[history.length - 1].checkedAt).getTime();
       const daysDiff = Math.max(0.5, (lastTime - firstTime) / (1000 * 3600 * 24));
 
-      const startPrice = convertPrice(history[0].price, currency);
-      const endPrice = convertPrice(history[history.length - 1].price, currency);
+      const startPrice = history[0].price;
+      const endPrice = history[history.length - 1].price;
       const unclampedDrift = (endPrice - startPrice) / daysDiff;
 
-      // Bound daily drift rate
-      const maxDailyDrift = convertedCurrent * 0.02;
+      const maxDailyDrift = baseCurrent * 0.02;
       rawDailyDrift = Math.max(-maxDailyDrift, Math.min(maxDailyDrift, unclampedDrift));
     }
 
@@ -82,24 +81,24 @@ export const PricePredictionView: React.FC<PricePredictionViewProps> = ({
     const gamma = 0.015;
     const meanReversionWeight = 1 - Math.exp(-gamma * targetDays);
     const annualDecayRate = 0.08;
-    const keyDepreciation = convertedCurrent * (annualDecayRate * (targetDays / 365));
-    const longTermEquilibrium = 0.55 * avgPrice + 0.45 * (convertedCurrent - keyDepreciation);
+    const keyDepreciation = baseCurrent * (annualDecayRate * (targetDays / 365));
+    const longTermEquilibrium = 0.55 * avgPriceBase + 0.45 * (baseCurrent - keyDepreciation);
 
     // 3. Combined Projection Formula
-    const shortTermComponent = (1 - meanReversionWeight) * (convertedCurrent + dampenedDrift);
+    const shortTermComponent = (1 - meanReversionWeight) * (baseCurrent + dampenedDrift);
     const longTermComponent = meanReversionWeight * longTermEquilibrium;
     const rawProjected = shortTermComponent + longTermComponent;
 
     // 4. Clamp strictly within MSRP Ceiling & Floor
-    const projectedPrice = Math.max(priceFloor, Math.min(priceCeiling, rawProjected));
+    const projectedPriceBase = Math.max(priceFloorBase, Math.min(priceCeilingBase, rawProjected));
 
-    const diffVal = projectedPrice - convertedCurrent;
-    const diffPct = (diffVal / convertedCurrent) * 100;
+    const diffValBase = projectedPriceBase - baseCurrent;
+    const diffPct = (diffValBase / baseCurrent) * 100;
 
     // Volatility Range Corridor
     const volatilityFactor = Math.min(0.2, (trend.rangePct || 5) / 100);
-    const lowBound = Math.max(priceFloor, projectedPrice * (1 - volatilityFactor * 0.5));
-    const highBound = Math.min(priceCeiling, projectedPrice * (1 + volatilityFactor * 0.5));
+    const lowBoundBase = Math.max(priceFloorBase, projectedPriceBase * (1 - volatilityFactor * 0.5));
+    const highBoundBase = Math.min(priceCeilingBase, projectedPriceBase * (1 + volatilityFactor * 0.5));
 
     let confidence: 'high' | 'med' | 'low' = 'low';
     if (history.length >= 6 && trend.volatility === 'low') {
@@ -109,18 +108,18 @@ export const PricePredictionView: React.FC<PricePredictionViewProps> = ({
     }
 
     return {
-      projectedPrice,
-      diffVal,
+      projectedPriceBase,
+      diffValBase,
       diffPct,
-      lowBound,
-      highBound,
+      lowBoundBase,
+      highBoundBase,
       confidence
     };
   };
 
   const pred = calculatePrediction();
-  const isUp = pred.diffVal > 0.05;
-  const isDown = pred.diffVal < -0.05;
+  const isUp = pred.diffValBase > 0.001;
+  const isDown = pred.diffValBase < -0.001;
 
   const getConfidenceBadge = () => {
     if (pred.confidence === 'high') {
@@ -205,7 +204,7 @@ export const PricePredictionView: React.FC<PricePredictionViewProps> = ({
             {t('prediction.projectedPrice')} ({horizon})
           </div>
           <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
-            {formatPrice(pred.projectedPrice, currency)}
+            {formatPrice(pred.projectedPriceBase, currency)}
           </div>
         </div>
 
@@ -255,7 +254,7 @@ export const PricePredictionView: React.FC<PricePredictionViewProps> = ({
             {t('prediction.corridor')}
           </div>
           <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', marginTop: 6 }}>
-            {formatPrice(pred.lowBound, currency)} - {formatPrice(pred.highBound, currency)}
+            {formatPrice(pred.lowBoundBase, currency)} - {formatPrice(pred.highBoundBase, currency)}
           </div>
         </div>
 
