@@ -72,17 +72,29 @@ export const translations = {
     'analytics.emptyText': 'Add products to your tracking list first to see statistical summaries.',
 
     // Settings View
-    'settings.title': 'Settings & System Status',
+    'settings.title': 'App Preferences & Customization',
     'settings.searchModeTitle': 'Search Bar Scroll Behavior',
     'settings.searchModeDesc': 'Configure how the sticky search bar behaves when scrolling down the page.',
     'settings.searchModeTranslucent': 'Semi-transparent (Default)',
     'settings.searchModeHidden': 'Completely hidden (Visible on hover & focus)',
-    'settings.sqliteTitle': 'Phase 1 Mode — Local Database (SQLite)',
-    'settings.sqliteDesc': 'Application runs natively without external backend. All data is stored locally on device.',
-    'settings.ttlTitle': 'Price Refresh Interval (TTL)',
-    'settings.ttlDesc': 'Default price refresh interval is 6 hours (with a 30-minute minimum throttle per product).',
-    'settings.repoTitle': 'Repository Abstraction (PriceRepository)',
-    'settings.repoDesc': 'Architecturally prepared for seamless integration with a synchronized Node.js + Postgres backend (Phase 2).',
+    'settings.languageTitle': 'Interface Language',
+    'settings.languageDesc': 'Select your preferred display language for the user interface.',
+    'settings.currencyTitle': 'Display Currency',
+    'settings.currencyDesc': 'Set your primary display currency for product prices and exchange rate calculations.',
+    'settings.defaultProductTitle': 'Pinned Default Game',
+    'settings.defaultProductDesc': 'Manage or remove the featured default game pinned to your top dashboard.',
+    'settings.clearDefaultBtn': 'Unpin Default Game',
+    'settings.noDefaultSet': 'No game currently pinned as default.',
+
+    // Info Modal
+    'infoModal.button': 'I',
+    'infoModal.title': 'Technical Architecture & System Specs',
+    'infoModal.subtitle': 'Deep dive technical breakdown for users and developers.',
+    'infoModal.tabStack': 'Tech Stack',
+    'infoModal.tabDatabase': 'Storage Engine',
+    'infoModal.tabScraper': 'Scraper Pipeline',
+    'infoModal.tabAlgorithm': 'Algorithms',
+    'infoModal.tabSecurity': 'Security & IPC',
 
     // Period selector
     'period.week': 'Weekly',
@@ -200,17 +212,29 @@ export const translations = {
     'analytics.emptyText': 'Dodaj najpierw produkty do listy śledzenia, aby zobaczyć podsumowanie statystyczne.',
 
     // Settings View
-    'settings.title': 'Ustawienia i stan systemu',
+    'settings.title': 'Ustawienia i Personalizacja',
     'settings.searchModeTitle': 'Zachowanie paska wyszukiwania przy skrolowaniu',
     'settings.searchModeDesc': 'Wybierz zachowanie przyklejonego paska wyszukiwania podczas przewijania strony w dół.',
     'settings.searchModeTranslucent': 'Półprzezroczysty (Domyślny)',
     'settings.searchModeHidden': 'Całkowicie ukryty (Widoczny po najechaniu i przy pisaniu)',
-    'settings.sqliteTitle': 'Tryb Fazy 1 — Lokalna baza danych (SQLite)',
-    'settings.sqliteDesc': 'Aplikacja działa w trybie rodzimym bez zewnętrznego backendu. Wszystkie dane są przechowywane lokalnie na urządzeniu.',
-    'settings.ttlTitle': 'Częstotliwość sprawdzania cen (TTL)',
-    'settings.ttlDesc': 'Domyślny interwał odświeżania cen wynosi 6 godzin (z ograniczeniem minimalnego odstępu do 30 minut per produkt).',
-    'settings.repoTitle': 'Abstrakcja Repozytorium (PriceRepository)',
-    'settings.repoDesc': 'Zgodnie ze specyfikacją architektura, kod przygotowany jest pod bezproblemowe podłączenie zsynchronizowanego backendu Node.js + Postgres (Faza 2).',
+    'settings.languageTitle': 'Język interfejsu',
+    'settings.languageDesc': 'Wybierz preferowany język wyświetlania całej aplikacji.',
+    'settings.currencyTitle': 'Główna waluta wyświetlania',
+    'settings.currencyDesc': 'Ustaw domyślną walutę przeliczania cen oraz format kwot na wykresach.',
+    'settings.defaultProductTitle': 'Wyróżniony domyślny produkt',
+    'settings.defaultProductDesc': 'Zarządzaj lub usuń przypięty domyślny produkt z górnej karty pulpitu.',
+    'settings.clearDefaultBtn': 'Odepnij domyślny produkt',
+    'settings.noDefaultSet': 'Brak obecnie przypiętego domyślnego produktu.',
+
+    // Info Modal
+    'infoModal.button': 'I',
+    'infoModal.title': 'Specyfikacja Techniczna i Architektura',
+    'infoModal.subtitle': 'Kompletny i dokładny opis działania aplikacji dla użytkowników i deweloperów.',
+    'infoModal.tabStack': 'Stos Technologiczny',
+    'infoModal.tabDatabase': 'Baza Danych',
+    'infoModal.tabScraper': 'Parser Cen',
+    'infoModal.tabAlgorithm': 'Algorytmy Predykcji',
+    'infoModal.tabSecurity': 'Bezpieczeństwo IPC',
 
     // Period selector
     'period.week': 'Tygodniowy',
@@ -231,7 +255,7 @@ export const translations = {
     'trendHeader.decreasing': 'Trend Spadkowy — Korzystny moment na zakup!',
     'trendHeader.increasing': 'Trend Wzrostowy — Cena idzie w górę',
     'trendHeader.stable': 'Trend Stabilny — Stały poziom cenowy',
-    'trendHeader.fluctuating': 'Trend Zmienny — Zauważalne wahania cen',
+    'trendHeader.fluctuating': 'Volatile Trend — Duże wahania cen',
     'trendHeader.insufficient': 'Za mało danych do wyznaczenia trendu',
 
     // Price Prediction Engine

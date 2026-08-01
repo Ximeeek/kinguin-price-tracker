@@ -881,7 +881,14 @@ body::after {
   opacity: 1;
   pointer-events: auto;
 }
+/* Nerd Info Badge Hover Glow */
+.nerd-info-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4) !important;
+  border-color: rgba(34, 197, 94, 0.6) !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(6, 182, 212, 0.25)) !important;
+}
 
-
-
-
+.nerd-info-btn:active {
+  transform: translateY(0);
+}

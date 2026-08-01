@@ -1,19 +1,25 @@
 import React from 'react';
-import { ShieldCheck, Clock, Database, Eye } from 'lucide-react';
-import { useLanguage } from '../i18n/LanguageContext';
+import { Eye, Globe, DollarSign, Star, Trash2 } from 'lucide-react';
+import { useLanguage, SupportedLanguage } from '../i18n/LanguageContext';
+import { useCurrency, SUPPORTED_CURRENCIES, CurrencyCode } from '../currency/CurrencyContext';
 
 export type SearchScrollMode = 'translucent' | 'hidden';
 
 interface SettingsViewProps {
   searchScrollMode?: SearchScrollMode;
   onSearchScrollModeChange?: (mode: SearchScrollMode) => void;
+  defaultProductId?: string | null;
+  onUnsetDefaultProduct?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   searchScrollMode = 'translucent',
-  onSearchScrollModeChange
+  onSearchScrollModeChange,
+  defaultProductId,
+  onUnsetDefaultProduct
 }) => {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
+  const { currency, setCurrency } = useCurrency();
 
   const handleSelectMode = (mode: SearchScrollMode) => {
     localStorage.setItem('kinguin_search_bar_scroll_mode', mode);
@@ -22,11 +28,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     }
   };
 
+  const hasDefaultProduct = defaultProductId && defaultProductId !== 'none';
+
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto' }}>
+    <div style={{ maxWidth: 720, margin: '0 auto' }}>
       <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 20 }}>{t('settings.title')}</h2>
 
-      {/* Search Bar Scroll Behavior Setting */}
+      {/* 1. Search Bar Scroll Behavior Setting */}
       <div className="glass-card" style={{ padding: 24, marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>
@@ -74,78 +82,148 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       </div>
 
+      {/* 2. Language Setting */}
       <div className="glass-card" style={{ padding: 24, marginBottom: 16 }}>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 16 }}>
-          <div
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: '12px',
-              background: 'var(--accent-green-bg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--accent-green)'
-            }}
-          >
-            <ShieldCheck size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>{t('settings.sqliteTitle')}</div>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              {t('settings.sqliteDesc')}
+        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: '12px',
+                background: 'rgba(6, 182, 212, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--accent-cyan)',
+                flexShrink: 0
+              }}
+            >
+              <Globe size={24} />
             </div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {t('settings.languageTitle')}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
+                {t('settings.languageDesc')}
+              </div>
+            </div>
+          </div>
+
+          <div className="pill-switcher" style={{ marginTop: 4 }}>
+            <button
+              type="button"
+              className={`pill-button ${language === 'en' ? 'active' : ''}`}
+              onClick={() => setLanguage('en')}
+            >
+              English (EN)
+            </button>
+            <button
+              type="button"
+              className={`pill-button ${language === 'pl' ? 'active' : ''}`}
+              onClick={() => setLanguage('pl')}
+            >
+              Polski (PL)
+            </button>
           </div>
         </div>
       </div>
 
+      {/* 3. Display Currency Setting */}
       <div className="glass-card" style={{ padding: 24, marginBottom: 16 }}>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 16 }}>
-          <div
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: '12px',
-              background: 'var(--accent-cyan-bg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--accent-cyan)'
-            }}
-          >
-            <Clock size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>{t('settings.ttlTitle')}</div>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              {t('settings.ttlDesc')}
+        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: '12px',
+                background: 'rgba(234, 179, 8, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--accent-gold)',
+                flexShrink: 0
+              }}
+            >
+              <DollarSign size={24} />
             </div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {t('settings.currencyTitle')}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
+                {t('settings.currencyDesc')}
+              </div>
+            </div>
+          </div>
+
+          <div className="pill-switcher" style={{ marginTop: 4, flexWrap: 'wrap' }}>
+            {Object.values(SUPPORTED_CURRENCIES).map((c) => (
+              <button
+                key={c.code}
+                type="button"
+                className={`pill-button ${currency === c.code ? 'active' : ''}`}
+                onClick={() => setCurrency(c.code as CurrencyCode)}
+              >
+                {c.code} ({c.symbol})
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
+      {/* 4. Pinned Default Game Preference */}
       <div className="glass-card" style={{ padding: 24 }}>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <div
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: '12px',
-              background: 'var(--accent-gold-bg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--accent-gold)'
-            }}
-          >
-            <Database size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>{t('settings.repoTitle')}</div>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              {t('settings.repoDesc')}
+        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', flex: 1, minWidth: 260 }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: '12px',
+                background: 'rgba(239, 68, 68, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--accent-red)',
+                flexShrink: 0
+              }}
+            >
+              <Star size={24} />
+            </div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {t('settings.defaultProductTitle')}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
+                {hasDefaultProduct
+                  ? `${t('settings.defaultProductDesc')} (ID: ${defaultProductId})`
+                  : t('settings.noDefaultSet')}
+              </div>
             </div>
           </div>
+
+          {hasDefaultProduct && onUnsetDefaultProduct && (
+            <button
+              type="button"
+              className="pill-button"
+              onClick={onUnsetDefaultProduct}
+              style={{
+                marginTop: 4,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(239, 68, 68, 0.15)',
+                color: 'var(--accent-red)',
+                border: '1px solid rgba(239, 68, 68, 0.3)'
+              }}
+            >
+              <Trash2 size={14} />
+              {t('settings.clearDefaultBtn')}
+            </button>
+          )}
         </div>
       </div>
     </div>

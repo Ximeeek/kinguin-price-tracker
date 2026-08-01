@@ -9,10 +9,11 @@ import { BottomNavbar, NavTab } from './components/BottomNavbar';
 import { SettingsView, SearchScrollMode } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
 import { CurrencySelector } from './components/CurrencySelector';
+import { NerdInfoModal } from './components/NerdInfoModal';
 import { ToastNotification, ToastMessage, FailedProductInfo } from './components/ToastNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CurrencyProvider } from './currency/CurrencyContext';
-import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles, Star, X } from 'lucide-react';
+import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles, Star, X, Info } from 'lucide-react';
 import './styles/theme.css';
 
 const AppContent: React.FC = () => {
@@ -33,6 +34,7 @@ const AppContent: React.FC = () => {
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [refreshingProductIds, setRefreshingProductIds] = useState<Set<string>>(new Set());
   const [refreshingAll, setRefreshingAll] = useState(false);
+  const [isNerdModalOpen, setIsNerdModalOpen] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -201,6 +203,33 @@ const AppContent: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {/* System Specs Info Button */}
+            <button
+              type="button"
+              onClick={() => setIsNerdModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(6, 182, 212, 0.15))',
+                border: '1px solid rgba(34, 197, 94, 0.35)',
+                color: 'var(--accent-green)',
+                fontWeight: 800,
+                fontSize: 14,
+                cursor: 'pointer',
+                boxShadow: '0 0 12px rgba(34, 197, 94, 0.15)',
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                outline: 'none'
+              }}
+              className="nerd-info-btn"
+              title="System Architecture & App Specs"
+            >
+              <Info size={18} />
+            </button>
+
             <button
               onClick={handleRefreshAll}
               disabled={refreshingAll}
@@ -384,6 +413,8 @@ const AppContent: React.FC = () => {
           <SettingsView
             searchScrollMode={searchScrollMode}
             onSearchScrollModeChange={setSearchScrollMode}
+            defaultProductId={defaultProductId}
+            onUnsetDefaultProduct={handleUnsetDefaultProduct}
           />
         )}
       </div>
@@ -391,6 +422,11 @@ const AppContent: React.FC = () => {
       {/* Product Detail Modal */}
       {selectedProductId && (
         <ProductDetailModal productId={selectedProductId} onClose={() => setSelectedProductId(null)} />
+      )}
+
+      {/* Nerd Technical Specs Info Modal */}
+      {isNerdModalOpen && (
+        <NerdInfoModal onClose={() => setIsNerdModalOpen(false)} />
       )}
 
       {/* Toast Notification Alert */}
