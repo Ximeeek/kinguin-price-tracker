@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TrendAnalysis, PriceSnapshot } from '../../../shared/types';
-import { TrendingDown, TrendingUp, Minus, Activity, Sparkles } from 'lucide-react';
+import { TrendingDown, TrendingUp, Minus, Activity, LineChart } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { PricePredictionView } from './PricePredictionView';
 
@@ -142,7 +142,7 @@ export const TrendBanner: React.FC<TrendBannerProps> = ({
             transition: 'all 0.2s ease'
           }}
         >
-          <Sparkles size={14} />
+          <LineChart size={14} />
           <span>{t('prediction.toggleBtn')}</span>
         </button>
       </div>

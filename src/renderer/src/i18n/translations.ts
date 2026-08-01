@@ -98,9 +98,9 @@ export const translations = {
     'trendHeader.insufficient': '⏳ Insufficient Data for Trend Analysis',
 
     // Price Prediction Engine
-    'prediction.toggleBtn': '🔮 Price Prediction (Forecast)',
+    'prediction.toggleBtn': 'Price Forecast',
     'prediction.title': 'Predictive Price Model',
-    'prediction.subtitle': 'Statistical forecast based on linear drift dynamics and historical price trends.',
+    'prediction.subtitle': 'Dampened mean-reverting regression model with MSRP ceiling constraints.',
     'prediction.2w': '2 Weeks',
     'prediction.1m': '1 Month',
     'prediction.6m': '6 Months',
@@ -217,9 +217,9 @@ export const translations = {
     'trendHeader.insufficient': '⏳ Za mało danych do wyznaczenia trendu',
 
     // Price Prediction Engine
-    'prediction.toggleBtn': '🔮 Prognoza cenowa (Predykcja)',
+    'prediction.toggleBtn': 'Prognoza cenowa',
     'prediction.title': 'Model Predykcji Ceny',
-    'prediction.subtitle': 'Statystyczna prognoza przyszłej ceny na podstawie analizy regresji i dotychczasowej dynamiki cen.',
+    'prediction.subtitle': 'Model regresji z wygładzaniem tłumionym, uwzględniający powrót do średniej rynkowej i limit cenowy MSRP.',
     'prediction.2w': '2 Tygodnie',
     'prediction.1m': '1 Miesiąc',
     'prediction.6m': '6 Miesięcy',
