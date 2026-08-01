@@ -11,7 +11,7 @@ import { CurrencySelector } from './components/CurrencySelector';
 import { ToastNotification, ToastMessage } from './components/ToastNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CurrencyProvider } from './currency/CurrencyContext';
-import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles } from 'lucide-react';
+import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles, Star } from 'lucide-react';
 import './styles/theme.css';
 
 const AppContent: React.FC = () => {
@@ -110,8 +110,15 @@ const AppContent: React.FC = () => {
     await fetchProducts();
   };
 
+  const handleUnsetDefaultProduct = () => {
+    setDefaultProductId('none');
+    localStorage.setItem('kinguin_default_product_id', 'none');
+  };
+
   const activeDefaultProduct =
-    products.find((p) => p.id === defaultProductId) || (products.length > 0 ? products[0] : null);
+    defaultProductId === 'none'
+      ? null
+      : products.find((p) => p.id === defaultProductId) || null;
 
   const filteredProducts = products.filter((p) =>
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.includes(searchQuery)
@@ -194,13 +201,49 @@ const AppContent: React.FC = () => {
               </div>
             ) : (
               <>
-                {/* Single Default Product Stats View */}
-                {activeDefaultProduct && (
+                {/* Single Default Product Stats View or Placeholder */}
+                {activeDefaultProduct ? (
                   <HeroProductDetail
                     productId={activeDefaultProduct.id}
                     onRefresh={handleRefreshProduct}
+                    onUnsetDefault={handleUnsetDefaultProduct}
                     isRefreshing={refreshingProductIds.has(activeDefaultProduct.id)}
                   />
+                ) : (
+                  <div
+                    className="glass-card"
+                    style={{
+                      padding: '32px 24px',
+                      marginBottom: 32,
+                      borderRadius: '20px',
+                      background: 'linear-gradient(135deg, rgba(18, 22, 32, 0.8), rgba(12, 15, 22, 0.9))',
+                      border: '1px dashed rgba(245, 158, 11, 0.35)',
+                      textAlign: 'center',
+                      boxShadow: '0 12px 30px rgba(0, 0, 0, 0.3)'
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 52,
+                        height: 52,
+                        borderRadius: '50%',
+                        background: 'rgba(245, 158, 11, 0.15)',
+                        color: 'var(--accent-gold)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: 12
+                      }}
+                    >
+                      <Star size={24} />
+                    </div>
+                    <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 6 }}>
+                      {t('heroPlaceholder.title')}
+                    </h3>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', maxWidth: 580, margin: '0 auto', lineHeight: 1.6 }}>
+                      {t('heroPlaceholder.subtitle')}
+                    </p>
+                  </div>
                 )}
 
                 {/* All Tracked Products List Header */}

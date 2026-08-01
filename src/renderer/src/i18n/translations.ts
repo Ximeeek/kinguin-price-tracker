@@ -23,8 +23,12 @@ export const translations = {
     'productList.refreshTooltip': 'Refresh price',
     'productList.deleteTooltip': 'Delete tracking',
     'productList.setDefaultTooltip': 'Set as default product',
+    'productList.unsetDefaultTooltip': 'Remove default product',
     'productList.isDefaultBadge': 'Default',
-    'productList.deleteConfirm': 'Are you sure you want to delete "{title}"?',
+    'productList.clearDefaultBtn': 'Remove from default',
+    'heroPlaceholder.title': 'No default game selected',
+    'heroPlaceholder.subtitle': 'Set your most tracked game as default to view its live statistics and price chart here automatically upon launch.',
+    'deleteModal.deleteConfirm': 'Are you sure you want to delete "{title}"?',
 
     // Navigation Tabs
     'nav.tracker': 'Tracked Products',
@@ -109,8 +113,12 @@ export const translations = {
     'productList.refreshTooltip': 'Odśwież cenę',
     'productList.deleteTooltip': 'Usuń śledzenie',
     'productList.setDefaultTooltip': 'Ustaw jako domyślny produkt',
+    'productList.unsetDefaultTooltip': 'Usuń z domyślnych',
     'productList.isDefaultBadge': 'Domyślny',
-    'productList.deleteConfirm': 'Czy na pewno chcesz usunąć "{title}"?',
+    'productList.clearDefaultBtn': 'Usuń z domyślnych',
+    'heroPlaceholder.title': 'Brak ustawionej domyślnej gry',
+    'heroPlaceholder.subtitle': 'Ustaw na domyślny najbardziej chętną grę do trackowania z listy poniżej (klikając ikonę gwiazdki), aby jej statystyki i wykres cenowy wyświetlały się tutaj automatycznie po uruchomieniu.',
+    'deleteModal.deleteConfirm': 'Czy na pewno chcesz usunąć "{title}"?',
 
     // Navigation Tabs
     'nav.tracker': 'Śledzenie produktów',

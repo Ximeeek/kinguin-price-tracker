@@ -116,9 +116,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSetDefault(product.id);
+                  if (isDefault) {
+                    onSetDefault('none');
+                  } else {
+                    onSetDefault(product.id);
+                  }
                 }}
-                title={t('productList.setDefaultTooltip')}
+                title={isDefault ? t('productList.unsetDefaultTooltip') : t('productList.setDefaultTooltip')}
                 style={{
                   background: 'transparent',
                   border: 'none',

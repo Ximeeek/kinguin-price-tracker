@@ -3,19 +3,21 @@ import { ProductDetailResponse, TimePeriod } from '../../../shared/types';
 import { PeriodSelector } from './PeriodSelector';
 import { PriceChart } from './PriceChart';
 import { PriceChangeIndicator } from './PriceChangeIndicator';
-import { ExternalLink, RefreshCw, Star } from 'lucide-react';
+import { ExternalLink, RefreshCw, Star, X } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
 
 interface HeroProductDetailProps {
   productId: string;
   onRefresh?: (id: string) => void;
+  onUnsetDefault?: () => void;
   isRefreshing?: boolean;
 }
 
 export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
   productId,
   onRefresh,
+  onUnsetDefault,
   isRefreshing = false
 }) => {
   const { t } = useLanguage();
@@ -166,6 +168,30 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
         </div>
 
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          {onUnsetDefault && (
+            <button
+              className="nav-item-btn"
+              onClick={onUnsetDefault}
+              title={t('productList.unsetDefaultTooltip')}
+              style={{
+                padding: '6px 12px',
+                width: 'auto',
+                height: 38,
+                borderRadius: '9999px',
+                fontSize: 12,
+                fontWeight: 600,
+                background: 'rgba(239, 68, 68, 0.12)',
+                color: 'var(--accent-red)',
+                border: '1px solid rgba(239, 68, 68, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              <X size={14} />
+              <span>{t('productList.clearDefaultBtn')}</span>
+            </button>
+          )}
           {onRefresh && (
             <button
               className="nav-item-btn"
