@@ -1,14 +1,24 @@
-import React from 'react';
-import { TrendAnalysis } from '../../../shared/types';
-import { TrendingDown, TrendingUp, Minus, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendAnalysis, PriceSnapshot } from '../../../shared/types';
+import { TrendingDown, TrendingUp, Minus, Activity, Sparkles } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { PricePredictionView } from './PricePredictionView';
 
 interface TrendBannerProps {
   trend: TrendAnalysis;
+  history?: PriceSnapshot[];
+  currentPrice?: number;
+  currency?: string;
 }
 
-export const TrendBanner: React.FC<TrendBannerProps> = ({ trend }) => {
+export const TrendBanner: React.FC<TrendBannerProps> = ({
+  trend,
+  history,
+  currentPrice,
+  currency = 'EUR'
+}) => {
   const { t } = useLanguage();
+  const [showPrediction, setShowPrediction] = useState(true);
 
   const getTheme = () => {
     if (trend.label === 'Steady decrease' || trend.label === 'Decreasing (volatile)') {
@@ -101,17 +111,49 @@ export const TrendBanner: React.FC<TrendBannerProps> = ({ trend }) => {
         {trend.explanation}
       </div>
 
-      {trend.hasSufficientData && (
-        <div style={{ display: 'flex', gap: 24, marginTop: 14, fontSize: 12, color: 'var(--text-secondary)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ color: 'var(--text-muted)' }}>{t('modal.linearDrift')}:</span>
-            <strong style={{ color: 'var(--text-primary)', fontSize: 13 }}>{trend.totalDriftPct}%</strong>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, flexWrap: 'wrap', gap: 10 }}>
+        {trend.hasSufficientData ? (
+          <div style={{ display: 'flex', gap: 24, fontSize: 12, color: 'var(--text-secondary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: 'var(--text-muted)' }}>{t('modal.linearDrift')}:</span>
+              <strong style={{ color: 'var(--text-primary)', fontSize: 13 }}>{trend.totalDriftPct}%</strong>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: 'var(--text-muted)' }}>{t('modal.volatilityRange')}:</span>
+              <strong style={{ color: 'var(--text-primary)', fontSize: 13 }}>{trend.rangePct}%</strong>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ color: 'var(--text-muted)' }}>{t('modal.volatilityRange')}:</span>
-            <strong style={{ color: 'var(--text-primary)', fontSize: 13 }}>{trend.rangePct}%</strong>
-          </div>
-        </div>
+        ) : <div />}
+
+        <button
+          onClick={() => setShowPrediction(!showPrediction)}
+          style={{
+            padding: '6px 14px',
+            borderRadius: '9999px',
+            border: '1px solid rgba(234, 179, 8, 0.4)',
+            background: showPrediction ? 'rgba(234, 179, 8, 0.22)' : 'rgba(234, 179, 8, 0.1)',
+            color: 'var(--accent-gold)',
+            fontWeight: 700,
+            fontSize: 12,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <Sparkles size={14} />
+          <span>{t('prediction.toggleBtn')}</span>
+        </button>
+      </div>
+
+      {showPrediction && history && currentPrice !== undefined && (
+        <PricePredictionView
+          history={history}
+          currentPrice={currentPrice}
+          currency={currency}
+          trend={trend}
+        />
       )}
     </div>
   );

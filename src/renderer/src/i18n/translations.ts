@@ -97,6 +97,23 @@ export const translations = {
     'trendHeader.fluctuating': '⚡ Volatile Trend — High Fluctuations',
     'trendHeader.insufficient': '⏳ Insufficient Data for Trend Analysis',
 
+    // Price Prediction Engine
+    'prediction.toggleBtn': '🔮 Price Prediction (Forecast)',
+    'prediction.title': 'Predictive Price Model',
+    'prediction.subtitle': 'Statistical forecast based on linear drift dynamics and historical price trends.',
+    'prediction.2w': '2 Weeks',
+    'prediction.1m': '1 Month',
+    'prediction.6m': '6 Months',
+    'prediction.1y': '1 Year',
+    'prediction.projectedPrice': 'Projected Price',
+    'prediction.expectedChange': 'Expected Change',
+    'prediction.corridor': 'Projected Range Corridor',
+    'prediction.confidence': 'Model Confidence',
+    'prediction.confidenceHigh': 'High',
+    'prediction.confidenceMed': 'Moderate',
+    'prediction.confidenceLow': 'Preliminary',
+    'prediction.disclaimer': 'Statistical forecast based on historical price dynamics. Real prices may vary due to publisher seasonal sales and promotions.',
+
     // Languages
     'lang.en': 'EN',
     'lang.pl': 'PL'
@@ -199,7 +216,23 @@ export const translations = {
     'trendHeader.fluctuating': '⚡ Trend Zmienny — Zauważalne wahania cen',
     'trendHeader.insufficient': '⏳ Za mało danych do wyznaczenia trendu',
 
-    // Languages
+    // Price Prediction Engine
+    'prediction.toggleBtn': '🔮 Prognoza cenowa (Predykcja)',
+    'prediction.title': 'Model Predykcji Ceny',
+    'prediction.subtitle': 'Statystyczna prognoza przyszłej ceny na podstawie analizy regresji i dotychczasowej dynamiki cen.',
+    'prediction.2w': '2 Tygodnie',
+    'prediction.1m': '1 Miesiąc',
+    'prediction.6m': '6 Miesięcy',
+    'prediction.1y': '1 Rok',
+    'prediction.projectedPrice': 'Prognozowana cena',
+    'prediction.expectedChange': 'Oczekiwana zmiana',
+    'prediction.corridor': 'Przewidywany przedział (Korytarz)',
+    'prediction.confidence': 'Pewność modelu',
+    'prediction.confidenceHigh': 'Wysoka',
+    'prediction.confidenceMed': 'Umiarkowana',
+    'prediction.confidenceLow': 'Wstępna',
+    'prediction.disclaimer': 'Estymacja matematyczna na podstawie dotychczasowej dynamiki i dryfu cenowego. Rzeczywista cena może ulec zmianie podczas sezonowych promocji.',
+
     // Languages
     'lang.en': 'EN',
     'lang.pl': 'PL'

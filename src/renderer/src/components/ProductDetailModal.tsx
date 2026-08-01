@@ -223,8 +223,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
           animClass={animClass}
         />
 
-        {/* Trend Analysis Section */}
-        <TrendBanner trend={trend} />
+        {/* Trend Analysis & Prediction Section */}
+        <TrendBanner
+          trend={trend}
+          history={history}
+          currentPrice={product.currentPrice}
+          currency={product.currency}
+        />
       </div>
     </div>
   );
