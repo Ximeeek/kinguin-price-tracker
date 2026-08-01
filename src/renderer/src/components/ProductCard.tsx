@@ -6,6 +6,8 @@ import { useCurrency } from '../currency/CurrencyContext';
 import { ConfirmModal } from './ConfirmModal';
 import { PriceChangeIndicator } from './PriceChangeIndicator';
 
+import { ProductImage } from './ProductImage';
+
 interface ProductCardProps {
   product: Product;
   isDefault?: boolean;
@@ -32,20 +34,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <>
       <div className={`glass-card product-item-card ${isDefault ? 'is-default-card' : ''}`} onClick={() => onSelect(product)}>
-        {product.imageUrl ? (
-          <img
-            src={product.imageUrl}
-            alt={product.title}
-            className="product-thumb"
-            onError={(e) => {
-              (e.target as HTMLElement).style.display = 'none';
-            }}
-          />
-        ) : (
-          <div className="product-thumb-placeholder">
-            {product.title.charAt(0).toUpperCase()}
-          </div>
-        )}
+        <ProductImage
+          src={product.imageUrl}
+          alt={product.title}
+          width={64}
+          height={64}
+          borderRadius="var(--radius-md)"
+        />
 
         <div className="product-info">
           <div className="product-name" title={product.title} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

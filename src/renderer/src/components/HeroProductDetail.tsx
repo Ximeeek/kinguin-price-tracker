@@ -8,6 +8,8 @@ import { ExternalLink, RefreshCw, Star, X } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
 
+import { ProductImage } from './ProductImage';
+
 interface HeroProductDetailProps {
   productId: string;
   onRefresh?: (id: string) => void;
@@ -111,30 +113,13 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
       {/* Featured Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          {product.imageUrl ? (
-            <img
-              src={product.imageUrl}
-              alt={product.title}
-              style={{ width: 64, height: 64, borderRadius: '14px', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
-            />
-          ) : (
-            <div
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: '14px',
-                background: 'var(--bg-input)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 24,
-                fontWeight: 800,
-                color: 'var(--accent-green)'
-              }}
-            >
-              {product.title.charAt(0).toUpperCase()}
-            </div>
-          )}
+          <ProductImage
+            src={product.imageUrl}
+            alt={product.title}
+            width={64}
+            height={64}
+            borderRadius="14px"
+          />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span

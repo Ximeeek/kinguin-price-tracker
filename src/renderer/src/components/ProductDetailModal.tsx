@@ -8,6 +8,8 @@ import { X, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
 
+import { ProductImage } from './ProductImage';
+
 interface ProductDetailModalProps {
   productId: string;
   onClose: () => void;
@@ -98,13 +100,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
         {/* Modal Header */}
         <div className="modal-header">
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            {product.imageUrl && (
-              <img
-                src={product.imageUrl}
-                alt={product.title}
-                style={{ width: 56, height: 56, borderRadius: '12px', objectFit: 'cover' }}
-              />
-            )}
+            <ProductImage
+              src={product.imageUrl}
+              alt={product.title}
+              width={56}
+              height={56}
+              borderRadius="12px"
+            />
             <div>
               <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>
                 {product.title}
