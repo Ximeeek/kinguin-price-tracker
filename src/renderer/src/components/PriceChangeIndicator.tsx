@@ -79,17 +79,17 @@ export const PriceChangeIndicator: React.FC<PriceChangeIndicatorProps> = ({
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 3,
-          padding: '2px 7px',
-          borderRadius: '6px',
+          gap: 2,
           fontSize: 12,
           fontWeight: 800,
-          background: isUp ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+          background: 'transparent',
           color: isUp ? 'var(--accent-red)' : 'var(--accent-green)',
-          border: isUp ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(34, 197, 94, 0.3)'
+          border: 'none',
+          padding: 0,
+          marginLeft: 2
         }}
       >
-        {isUp ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
+        {isUp ? <ArrowUp size={15} /> : <ArrowDown size={15} />}
         {showDiff && (
           <span>
             {isUp ? '+' : '-'}{formattedDiff}

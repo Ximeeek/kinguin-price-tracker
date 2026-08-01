@@ -78,7 +78,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="product-price-section">
-          <div className="product-current-price" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+          <div className="product-current-price" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 3 }}>
             <span>{formatPrice(product.currentPrice || 0, product.currency)}</span>
             <PriceChangeIndicator
               currentPrice={product.currentPrice}
