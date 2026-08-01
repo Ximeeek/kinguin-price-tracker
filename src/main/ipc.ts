@@ -75,8 +75,9 @@ export function setupIpcHandlers(repository: PriceRepository) {
           currency: fetched.currency,
           firstTrackedAt: nowIso,
           lastCheckedAt: nowIso,
-          status: 'active'
-        });
+          status: 'active',
+          currentPrice: fetched.price
+        } as any);
 
         // Add initial price snapshot
         await repository.addPriceSnapshot(fetched.id, fetched.price, nowIso);
@@ -92,11 +93,13 @@ export function setupIpcHandlers(repository: PriceRepository) {
             const fetched = await fetcher.fetchProduct(product.url);
             await repository.updateProduct({
               id: product.id,
+              url: product.url,
               title: fetched.title,
               imageUrl: fetched.imageUrl || product.imageUrl,
               lastCheckedAt: nowIso,
-              status: 'active'
-            });
+              status: 'active',
+              currentPrice: fetched.price
+            } as any);
             await repository.addPriceSnapshot(product.id, fetched.price, nowIso);
           } catch (err: any) {
             Logger.warn('IPC', `[track-product] Background refresh failed: ${err.message}`);
@@ -170,11 +173,13 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
       await repository.updateProduct({
         id: product.id,
+        url: product.url,
         title: fetched.title,
         imageUrl: fetched.imageUrl || product.imageUrl,
         lastCheckedAt: nowIso,
-        status: 'active'
-      });
+        status: 'active',
+        currentPrice: fetched.price
+      } as any);
 
       await repository.addPriceSnapshot(product.id, fetched.price, nowIso);
       Logger.info('IPC', `[refresh-product] Price updated in database: ${fetched.price} ${fetched.currency}`);

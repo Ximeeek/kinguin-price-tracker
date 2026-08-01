@@ -1,7 +1,12 @@
 import { app, BrowserWindow, session, dialog } from 'electron';
 import path from 'path';
-import { LocalSqliteRepository } from './db/repository';
+import dotenv from 'dotenv';
+import { PriceRepository, LocalSqliteRepository } from './db/repository';
+import { RemoteApiRepository } from './db/remoteRepository';
 import { setupIpcHandlers } from './ipc';
+import { Logger } from './logger';
+
+dotenv.config();
 
 app.setName('Kinguin Price Tracker');
 
@@ -20,7 +25,7 @@ if (!gotTheLock) {
   app.quit();
 } else {
   let mainWindow: BrowserWindow | null = null;
-  let repository: LocalSqliteRepository | null = null;
+  let repository: PriceRepository | null = null;
 
   app.on('second-instance', () => {
     if (mainWindow) {
@@ -31,9 +36,27 @@ if (!gotTheLock) {
   });
 
   async function createWindow() {
+    const backendUrl = process.env.BACKEND_API_URL;
     const userDataPath = app.getPath('userData');
-    repository = new LocalSqliteRepository(userDataPath);
-    await repository.init();
+
+    if (backendUrl) {
+      try {
+        Logger.info('App', `BACKEND_API_URL set. Connecting to Remote Backend API: ${backendUrl}...`);
+        const remoteRepo = new RemoteApiRepository(backendUrl);
+        await remoteRepo.init();
+        repository = remoteRepo;
+      } catch (err: any) {
+        Logger.error('App', `Failed to connect to Backend API (${err.message}). Falling back to Local SQLite.`);
+        const sqliteRepo = new LocalSqliteRepository(userDataPath);
+        await sqliteRepo.init();
+        repository = sqliteRepo;
+      }
+    } else {
+      Logger.info('App', 'No BACKEND_API_URL specified. Initializing Local SQLite Repository.');
+      const sqliteRepo = new LocalSqliteRepository(userDataPath);
+      await sqliteRepo.init();
+      repository = sqliteRepo;
+    }
 
     setupIpcHandlers(repository);
 
