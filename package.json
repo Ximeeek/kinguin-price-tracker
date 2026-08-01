@@ -9,6 +9,20 @@
     "compile": "tsc",
     "preview": "electron ."
   },
+  "build": {
+    "appId": "com.kinguin.pricetracker",
+    "productName": "Kinguin Price Tracker",
+    "directories": {
+      "output": "dist/installer"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -25,12 +25,19 @@ async function createWindow() {
     });
   });
 
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.kinguin.pricetracker');
+  }
+
+  const iconPath = path.join(__dirname, '../../build/icon.ico');
+
   mainWindow = new BrowserWindow({
     width: 1100,
     height: 780,
     minWidth: 800,
     minHeight: 600,
     title: 'Kinguin Price Tracker',
+    icon: iconPath,
     backgroundColor: '#0b0d10',
     show: false,
     frame: false,

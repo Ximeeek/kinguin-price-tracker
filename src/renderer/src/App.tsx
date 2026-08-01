@@ -216,7 +216,7 @@ const AppContent: React.FC = () => {
         {/* Header Bar */}
         <div className="header-bar">
           <div className="app-title">
-            <Sparkles color="var(--accent-green)" size={24} />
+            <img src="/icon-48x48.png" alt="App Icon" style={{ width: 26, height: 26, objectFit: 'contain' }} />
             <span>{t('header.title')}</span>
           </div>
 

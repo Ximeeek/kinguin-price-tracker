@@ -34,7 +34,7 @@ export const TitleBar: React.FC = () => {
     >
       {/* App Branding */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Sparkles size={16} color="var(--accent-green)" />
+        <img src="/icon-32x32.png" alt="App Icon" style={{ width: 18, height: 18, objectFit: 'contain' }} />
         <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.3px' }}>
           {t('header.title')}
         </span>
