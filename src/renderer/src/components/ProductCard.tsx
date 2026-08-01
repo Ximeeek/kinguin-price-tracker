@@ -19,6 +19,71 @@ interface ProductCardProps {
   onSetDefault?: (id: string) => void;
 }
 
+const ScrollableTitle: React.FC<{
+  title: string;
+  isDefault?: boolean;
+  defaultBadgeText?: string;
+}> = ({ title, isDefault, defaultBadgeText }) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const textRef = React.useRef<HTMLSpanElement>(null);
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [scrollOffset, setScrollOffset] = React.useState(0);
+  const [transitionDuration, setTransitionDuration] = React.useState(0);
+
+  const handleMouseEnter = () => {
+    if (containerRef.current && textRef.current) {
+      const containerWidth = containerRef.current.clientWidth;
+      const textWidth = textRef.current.scrollWidth;
+      const diff = textWidth - containerWidth;
+      if (diff > 3) {
+        setScrollOffset(diff);
+        const duration = Math.max(1.2, diff / 35);
+        setTransitionDuration(duration);
+        setIsHovered(true);
+        return;
+      }
+    }
+    setIsHovered(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setScrollOffset(0);
+    setTransitionDuration(0.35);
+  };
+
+  return (
+    <div className="product-title-row">
+      <div
+        ref={containerRef}
+        className="product-title-container"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <span
+          ref={textRef}
+          className={`product-title-text ${isHovered && scrollOffset > 0 ? 'is-scrolling' : ''}`}
+          style={{
+            transform: isHovered && scrollOffset > 0 ? `translateX(-${scrollOffset}px)` : 'translateX(0px)',
+            transition: isHovered && scrollOffset > 0
+              ? `transform ${transitionDuration}s linear`
+              : 'transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)'
+          }}
+          title={title}
+        >
+          {title}
+        </span>
+      </div>
+
+      {isDefault && (
+        <span className="product-default-badge">
+          {defaultBadgeText}
+        </span>
+      )}
+    </div>
+  );
+};
+
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   isDefault = false,
@@ -44,24 +109,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         <div className="product-info">
-          <div className="product-name" title={product.title} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>{product.title}</span>
-            {isDefault && (
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  padding: '2px 6px',
-                  borderRadius: 4,
-                  background: 'rgba(245, 158, 11, 0.15)',
-                  color: 'var(--accent-gold)',
-                  border: '1px solid rgba(245, 158, 11, 0.3)'
-                }}
-              >
-                {t('productList.isDefaultBadge')}
-              </span>
-            )}
-          </div>
+          <ScrollableTitle
+            title={product.title}
+            isDefault={isDefault}
+            defaultBadgeText={t('productList.isDefaultBadge')}
+          />
           <div className="product-meta">
             <CustomTooltip text={t('productList.idTooltip')} position="bottom">
               <span className="product-meta-item">ID: {product.id}</span>
