@@ -40,6 +40,8 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({
             zIndex: 9999,
             border: '1px solid rgba(255, 255, 255, 0.22)',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.85)',
+            WebkitBackfaceVisibility: 'hidden',
+            backfaceVisibility: 'hidden',
             animation: 'tooltipFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
           }}
         >

@@ -248,6 +248,7 @@ body::after {
 }
 
 .product-item-card:hover {
+  z-index: 20;
   transform: translate3d(0, -2px, 0);
   background: var(--bg-card-hover);
   border-color: rgba(255, 255, 255, 0.18);
@@ -506,8 +507,8 @@ body::after {
 }
 
 @keyframes tooltipFadeIn {
-  from { opacity: 0; transform: translateX(-50%) scale(0.92) translateY(3px); }
-  to { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+  from { opacity: 0; transform: translateX(-50%) translateY(3px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 @keyframes popIn {
