@@ -21,23 +21,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
   const [detail, setDetail] = useState<ProductDetailResponse | null>(null);
   const [period, setPeriod] = useState<TimePeriod>('month');
   const [loading, setLoading] = useState(true);
-  const [animClass, setAnimClass] = useState('');
-  const [animKey, setAnimKey] = useState(0);
 
   const handlePeriodChange = (newPeriod: TimePeriod) => {
     if (newPeriod === period) return;
-    const periodOrder: TimePeriod[] = ['week', 'month', 'six_months', 'year'];
-    const oldIdx = periodOrder.indexOf(period);
-    const newIdx = periodOrder.indexOf(newPeriod);
-
-    if (newIdx < oldIdx) {
-      setAnimClass('anim-chart-contract');
-    } else {
-      setAnimClass('anim-chart-expand');
-    }
-    setAnimKey((prev) => prev + 1);
     setPeriod(newPeriod);
-    loadData(newPeriod);
   };
 
   const loadData = async (selectedPeriod: TimePeriod) => {
@@ -219,11 +206,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
         </div>
 
         <PriceChart
-          key={`${period}-${animKey}`}
+          key={productId}
           history={history}
           currency={product.currency}
           averagePrice={average.averagePrice}
-          animClass={animClass}
         />
 
         {/* Trend Analysis & Prediction Section */}

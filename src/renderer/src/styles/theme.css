@@ -655,40 +655,30 @@ body::after {
 
 @keyframes chartExpand {
   0% {
-    opacity: 0.2;
-    transform: scale(0.985);
-    filter: blur(3px);
+    transform: scale(0.995);
   }
   100% {
-    opacity: 1;
     transform: scale(1);
-    filter: blur(0);
   }
 }
 
 @keyframes chartContract {
   0% {
-    opacity: 0.2;
-    transform: scale(1.015);
-    filter: blur(3px);
+    transform: scale(1.005);
   }
   100% {
-    opacity: 1;
     transform: scale(1);
-    filter: blur(0);
   }
 }
 
 .anim-chart-expand {
-  animation: chartExpand 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: chartExpand 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   overflow: hidden !important;
-  will-change: transform, opacity, filter;
 }
 
 .anim-chart-contract {
-  animation: chartContract 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: chartContract 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   overflow: hidden !important;
-  will-change: transform, opacity, filter;
 }
 
 /* Custom Dropdown Animations & Styles */

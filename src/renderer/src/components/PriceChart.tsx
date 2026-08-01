@@ -144,6 +144,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({
             strokeWidth={3}
             fillOpacity={1}
             fill="url(#priceGradient)"
+            isAnimationActive={true}
+            animationDuration={450}
+            animationEasing="ease-in-out"
           />
         </AreaChart>
       </ResponsiveContainer>
