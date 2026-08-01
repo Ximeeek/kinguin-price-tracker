@@ -65,7 +65,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({
   const maxPrice = Math.ceil(Math.max(...prices) * 1.1);
 
   return (
-    <div className={animClass} style={{ width: '100%', height: 280, position: 'relative', marginTop: 12 }}>
+    <div
+      className={animClass}
+      style={{
+        width: '100%',
+        height: 280,
+        position: 'relative',
+        marginTop: 12,
+        overflow: 'hidden',
+        borderRadius: '12px'
+      }}
+    >
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>

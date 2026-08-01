@@ -488,34 +488,38 @@ body::after {
 
 @keyframes chartExpand {
   0% {
-    transform: scaleX(0.3);
-    transform-origin: left center;
-    opacity: 0.4;
+    opacity: 0.2;
+    transform: scale(0.985);
+    filter: blur(3px);
   }
   100% {
-    transform: scaleX(1);
-    transform-origin: left center;
     opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
   }
 }
 
 @keyframes chartContract {
   0% {
-    transform: scaleX(1.5);
-    transform-origin: left center;
-    opacity: 0.4;
+    opacity: 0.2;
+    transform: scale(1.015);
+    filter: blur(3px);
   }
   100% {
-    transform: scaleX(1);
-    transform-origin: left center;
     opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
   }
 }
 
 .anim-chart-expand {
-  animation: chartExpand 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: chartExpand 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  overflow: hidden !important;
+  will-change: transform, opacity, filter;
 }
 
 .anim-chart-contract {
-  animation: chartContract 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: chartContract 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  overflow: hidden !important;
+  will-change: transform, opacity, filter;
 }
