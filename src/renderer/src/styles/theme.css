@@ -1073,3 +1073,40 @@ body::after {
   100% { opacity: 0.85; transform: scale(1.12); }
 }
 
+/* About Us / Nerd Info Modal Tab Transition Animations */
+.nerd-tab-view {
+  width: 100%;
+  will-change: transform, opacity;
+}
+
+.nerd-tab-view.slide-right {
+  animation: nerdTabSlideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.nerd-tab-view.slide-left {
+  animation: nerdTabSlideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes nerdTabSlideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(24px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes nerdTabSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-24px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+

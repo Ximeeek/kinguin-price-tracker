@@ -23,10 +23,27 @@ interface NerdInfoModalProps {
   onClose: () => void;
 }
 
+type NerdTab = 'stack' | 'database' | 'scraper' | 'algorithm' | 'security';
+
+const TAB_INDEXES: Record<NerdTab, number> = {
+  stack: 0,
+  database: 1,
+  scraper: 2,
+  algorithm: 3,
+  security: 4
+};
+
 export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'stack' | 'database' | 'scraper' | 'algorithm' | 'security'>('stack');
+  const [activeTab, setActiveTab] = useState<NerdTab>('stack');
+  const [slideDir, setSlideDir] = useState<'slide-right' | 'slide-left'>('slide-right');
   useLockBodyScroll(true);
+
+  const handleTabChange = (newTab: NerdTab) => {
+    if (newTab === activeTab) return;
+    setSlideDir(TAB_INDEXES[newTab] > TAB_INDEXES[activeTab] ? 'slide-right' : 'slide-left');
+    setActiveTab(newTab);
+  };
 
   return createPortal(
     <div className="modal-overlay" onClick={onClose} style={{ animation: 'modalOverlayFade 0.2s ease-out', zIndex: 999999 }}>
@@ -36,7 +53,8 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
         style={{
           maxWidth: 860,
           width: '95%',
-          maxHeight: '88vh',
+          height: 560,
+          maxHeight: '85vh',
           padding: 0,
           overflow: 'hidden',
           display: 'flex',
@@ -54,7 +72,8 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
             borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            flexShrink: 0
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -105,22 +124,27 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tab Navigation - Fixed Height and Horizontal Mouse Alignment */}
         <div
           style={{
             display: 'flex',
+            alignItems: 'center',
             gap: 6,
-            padding: '12px 24px',
+            padding: '10px 24px',
+            height: 56,
+            boxSizing: 'border-box',
             background: 'rgba(10, 14, 20, 0.8)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-            overflowX: 'auto'
+            overflowX: 'auto',
+            whiteSpace: 'nowrap',
+            flexShrink: 0
           }}
         >
           <button
             type="button"
             className={`pill-button ${activeTab === 'stack' ? 'active' : ''}`}
-            onClick={() => setActiveTab('stack')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px' }}
+            onClick={() => handleTabChange('stack')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px', height: 34 }}
           >
             <Cpu size={14} />
             {t('infoModal.tabStack')}
@@ -128,8 +152,8 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
           <button
             type="button"
             className={`pill-button ${activeTab === 'database' ? 'active' : ''}`}
-            onClick={() => setActiveTab('database')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px' }}
+            onClick={() => handleTabChange('database')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px', height: 34 }}
           >
             <Database size={14} />
             {t('infoModal.tabDatabase')}
@@ -137,8 +161,8 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
           <button
             type="button"
             className={`pill-button ${activeTab === 'scraper' ? 'active' : ''}`}
-            onClick={() => setActiveTab('scraper')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px' }}
+            onClick={() => handleTabChange('scraper')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px', height: 34 }}
           >
             <Zap size={14} />
             {t('infoModal.tabScraper')}
@@ -146,8 +170,8 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
           <button
             type="button"
             className={`pill-button ${activeTab === 'algorithm' ? 'active' : ''}`}
-            onClick={() => setActiveTab('algorithm')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px' }}
+            onClick={() => handleTabChange('algorithm')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px', height: 34 }}
           >
             <TrendingUp size={14} />
             {t('infoModal.tabAlgorithm')}
@@ -155,17 +179,18 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
           <button
             type="button"
             className={`pill-button ${activeTab === 'security' ? 'active' : ''}`}
-            onClick={() => setActiveTab('security')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px' }}
+            onClick={() => handleTabChange('security')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px', height: 34 }}
           >
             <ShieldCheck size={14} />
             {t('infoModal.tabSecurity')}
           </button>
         </div>
 
-        {/* Modal Body Content */}
-        <div style={{ padding: 24, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {activeTab === 'stack' && (
+        {/* Modal Body Content Container */}
+        <div style={{ padding: 24, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div key={activeTab} className={`nerd-tab-view ${slideDir}`}>
+            {activeTab === 'stack' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div
                 className="glass-card"
@@ -388,6 +413,7 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
               </div>
             </div>
           )}
+          </div>
         </div>
 
         {/* Modal Footer */}
