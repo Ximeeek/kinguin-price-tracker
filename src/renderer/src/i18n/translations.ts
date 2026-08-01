@@ -19,6 +19,7 @@ export const translations = {
     'productList.loading': 'Loading tracked products...',
     'productList.emptyTitle': 'No tracked games',
     'productList.emptySubtitle': 'Paste a Kinguin deal URL in the field above to start tracking its price history.',
+    'productList.noSearchResults': 'No matching products found.',
     'productList.neverChecked': 'Never checked',
     'productList.refreshTooltip': 'Refresh price',
     'productList.deleteTooltip': 'Delete tracking',
@@ -70,6 +71,10 @@ export const translations = {
 
     // Settings View
     'settings.title': 'Settings & System Status',
+    'settings.searchModeTitle': 'Search Bar Scroll Behavior',
+    'settings.searchModeDesc': 'Configure how the sticky search bar behaves when scrolling down the page.',
+    'settings.searchModeTranslucent': 'Semi-transparent (Default)',
+    'settings.searchModeHidden': 'Completely hidden (Visible on hover & focus)',
     'settings.sqliteTitle': 'Phase 1 Mode — Local Database (SQLite)',
     'settings.sqliteDesc': 'Application runs natively without external backend. All data is stored locally on device.',
     'settings.ttlTitle': 'Price Refresh Interval (TTL)',
@@ -140,6 +145,7 @@ export const translations = {
     'productList.loading': 'Wczytywanie śledzonych produktów...',
     'productList.emptyTitle': 'Brak śledzonych gier',
     'productList.emptySubtitle': 'Wklej link do oferty z Kinguin w polu powyżej, aby zacząć śledzić jej historię cen.',
+    'productList.noSearchResults': 'Brak produktów spełniających kryteria wyszukiwania.',
     'productList.neverChecked': 'Nie sprawdzano',
     'productList.refreshTooltip': 'Odśwież cenę',
     'productList.deleteTooltip': 'Usuń śledzenie',
@@ -191,6 +197,10 @@ export const translations = {
 
     // Settings View
     'settings.title': 'Ustawienia i stan systemu',
+    'settings.searchModeTitle': 'Zachowanie paska wyszukiwania przy skrolowaniu',
+    'settings.searchModeDesc': 'Wybierz zachowanie przyklejonego paska wyszukiwania podczas przewijania strony w dół.',
+    'settings.searchModeTranslucent': 'Półprzezroczysty (Domyślny)',
+    'settings.searchModeHidden': 'Całkowicie ukryty (Widoczny po najechaniu i przy pisaniu)',
     'settings.sqliteTitle': 'Tryb Fazy 1 — Lokalna baza danych (SQLite)',
     'settings.sqliteDesc': 'Aplikacja działa w trybie rodzimym bez zewnętrznego backendu. Wszystkie dane są przechowywane lokalnie na urządzeniu.',
     'settings.ttlTitle': 'Częstotliwość sprawdzania cen (TTL)',

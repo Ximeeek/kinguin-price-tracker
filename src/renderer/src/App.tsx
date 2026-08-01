@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Product } from '../../shared/types';
 import { AddProductBar } from './components/AddProductBar';
 import { ProductCard } from './components/ProductCard';
@@ -6,17 +6,22 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { HeroProductDetail } from './components/HeroProductDetail';
 import { TitleBar } from './components/TitleBar';
 import { BottomNavbar, NavTab } from './components/BottomNavbar';
-import { SettingsView } from './components/SettingsView';
+import { SettingsView, SearchScrollMode } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
 import { CurrencySelector } from './components/CurrencySelector';
 import { ToastNotification, ToastMessage } from './components/ToastNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CurrencyProvider } from './currency/CurrencyContext';
-import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles, Star } from 'lucide-react';
+import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles, Star, X } from 'lucide-react';
 import './styles/theme.css';
 
 const AppContent: React.FC = () => {
   const { t } = useLanguage();
+  const mainContentRef = useRef<HTMLDivElement>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [searchScrollMode, setSearchScrollMode] = useState<SearchScrollMode>(() => {
+    return (localStorage.getItem('kinguin_search_bar_scroll_mode') as SearchScrollMode) || 'translucent';
+  });
   const [products, setProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<NavTab>('tracker');
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
@@ -42,6 +47,20 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const mainEl = mainContentRef.current;
+    if (!mainEl) return;
+
+    const handleScroll = () => {
+      setIsScrolled(mainEl.scrollTop > 15);
+    };
+
+    mainEl.addEventListener('scroll', handleScroll);
+    return () => {
+      mainEl.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const handleRefreshAll = async () => {
@@ -128,7 +147,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="app-container">
       <TitleBar />
-      <div className="main-content">
+      <div className="main-content" ref={mainContentRef}>
         {/* Header Bar */}
         <div className="header-bar">
           <div className="app-title">
@@ -137,34 +156,6 @@ const AppContent: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'var(--bg-input)',
-                border: '1px solid var(--border-card)',
-                borderRadius: '9999px',
-                padding: '6px 14px'
-              }}
-            >
-              <Search size={16} color="var(--text-muted)" />
-              <input
-                type="text"
-                placeholder={t('header.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-primary)',
-                  fontSize: 13,
-                  outline: 'none',
-                  width: 140
-                }}
-              />
-            </div>
-
             <button
               onClick={handleRefreshAll}
               disabled={refreshingAll}
@@ -179,6 +170,32 @@ const AppContent: React.FC = () => {
             <LanguageSelector />
           </div>
         </div>
+
+        {/* Sticky Search Bar (follows scroll down, opacity/visibility based on searchScrollMode setting) */}
+        {(activeTab === 'tracker' || activeTab === 'analytics') && (
+          <div className={`sticky-search-container ${isScrolled ? 'is-scrolled' : ''} mode-${searchScrollMode}`}>
+            <div className="sticky-search-inner">
+              <Search size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+              <input
+                type="text"
+                placeholder={t('header.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="sticky-search-input"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="sticky-search-clear"
+                  title="Clear search"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {activeTab === 'tracker' && (
           <>
@@ -256,20 +273,29 @@ const AppContent: React.FC = () => {
                 </div>
 
                 {/* Product Grid */}
-                <div className="product-grid">
-                  {filteredProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      isDefault={activeDefaultProduct?.id === product.id}
-                      isRefreshing={refreshingProductIds.has(product.id)}
-                      onSelect={(p) => setSelectedProductId(p.id)}
-                      onRefresh={handleRefreshProduct}
-                      onDelete={handleDeleteProduct}
-                      onSetDefault={handleSetDefaultProduct}
-                    />
-                  ))}
-                </div>
+                {filteredProducts.length === 0 ? (
+                  <div className="empty-state">
+                    <Search className="empty-state-icon" />
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      {t('productList.noSearchResults')}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="product-grid">
+                    {filteredProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        isDefault={activeDefaultProduct?.id === product.id}
+                        isRefreshing={refreshingProductIds.has(product.id)}
+                        onSelect={(p) => setSelectedProductId(p.id)}
+                        onRefresh={handleRefreshProduct}
+                        onDelete={handleDeleteProduct}
+                        onSetDefault={handleSetDefaultProduct}
+                      />
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </>
@@ -283,9 +309,16 @@ const AppContent: React.FC = () => {
                 <TrendingUp className="empty-state-icon" />
                 <div>{t('analytics.emptyText')}</div>
               </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="empty-state">
+                <Search className="empty-state-icon" />
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  {t('productList.noSearchResults')}
+                </div>
+              </div>
             ) : (
               <div className="product-grid">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -302,7 +335,12 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'settings' && <SettingsView />}
+        {activeTab === 'settings' && (
+          <SettingsView
+            searchScrollMode={searchScrollMode}
+            onSearchScrollModeChange={setSearchScrollMode}
+          />
+        )}
       </div>
 
       {/* Product Detail Modal */}
