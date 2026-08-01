@@ -115,9 +115,28 @@ export class RemoteApiRepository implements PriceRepository {
     return snapshot;
   }
 
+  private lastHistorySyncMap = new Map<string, number>();
+
   async getHistory(productId: string, since?: Date): Promise<PriceSnapshot[]> {
     const localHistory = await this.localRepo.getHistory(productId, since);
 
+    const lastSync = this.lastHistorySyncMap.get(productId) || 0;
+    const SIX_HOURS_MS = 6 * 3600 * 1000;
+    const now = Date.now();
+
+    // Trigger non-blocking background sync if cache is older than 6 hours or local history is empty
+    if (now - lastSync > SIX_HOURS_MS || localHistory.length === 0) {
+      this.lastHistorySyncMap.set(productId, now);
+      this.syncRemoteHistory(productId, since).catch(err => {
+        Logger.warn('RemoteRepo', `Background getHistory sync for ${productId} warning: ${err.message}`);
+      });
+    }
+
+    // Return local history INSTANTLY (< 1ms)
+    return localHistory;
+  }
+
+  private async syncRemoteHistory(productId: string, since?: Date): Promise<void> {
     try {
       let url = `${this.baseUrl}/products/${encodeURIComponent(productId)}/history`;
       if (since) {
@@ -130,12 +149,13 @@ export class RemoteApiRepository implements PriceRepository {
         const data = await res.json();
         const remoteHistoryRows = data.history || [];
         if (Array.isArray(remoteHistoryRows) && remoteHistoryRows.length > 0) {
+          const currentLocal = await this.localRepo.getHistory(productId);
           for (const row of remoteHistoryRows) {
             const price = Number(row.avgPrice);
             const checkedAt = row.lastCheckedAt || row.day;
             if (price > 0 && checkedAt) {
               const dateKey = checkedAt.substring(0, 10);
-              const exists = localHistory.some(
+              const exists = currentLocal.some(
                 s => s.checkedAt.startsWith(dateKey) && Math.abs(s.price - price) < 0.01
               );
               if (!exists) {
@@ -143,14 +163,11 @@ export class RemoteApiRepository implements PriceRepository {
               }
             }
           }
-          return await this.localRepo.getHistory(productId, since);
         }
       }
     } catch (err: any) {
-      Logger.warn('RemoteRepo', `Remote getHistory fallback for ${productId}: ${err.message}`);
+      Logger.warn('RemoteRepo', `Remote syncRemoteHistory fallback for ${productId}: ${err.message}`);
     }
-
-    return localHistory;
   }
 
   async getLastCheckedAt(productId: string): Promise<Date | null> {
