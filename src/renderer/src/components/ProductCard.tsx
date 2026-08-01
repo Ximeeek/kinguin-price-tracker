@@ -89,7 +89,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             />
           </div>
 
-          <div style={{ marginTop: 6, display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+          <div style={{ marginTop: 6, display: 'flex', gap: 4, justifyContent: 'flex-end', alignItems: 'center' }}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -97,13 +97,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               }}
               disabled={isRefreshing}
               title={t('productList.refreshTooltip')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--text-muted)',
-                cursor: isRefreshing ? 'default' : 'pointer',
-                padding: 2
-              }}
+              className="card-action-btn card-action-refresh"
             >
               <RefreshCw size={14} className={isRefreshing ? 'spinning' : ''} />
             </button>
@@ -119,16 +113,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   }
                 }}
                 title={isDefault ? t('productList.unsetDefaultTooltip') : t('productList.setDefaultTooltip')}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: isDefault ? 'var(--accent-gold)' : 'var(--text-muted)',
-                  cursor: 'pointer',
-                  padding: 2,
-                  transition: 'color 0.2s, transform 0.2s'
-                }}
+                className={`card-action-btn card-action-star ${isDefault ? 'is-starred' : ''}`}
               >
-                <Star size={14} fill={isDefault ? 'var(--accent-gold)' : 'none'} />
+                <Star size={14} className="star-icon" fill={isDefault ? 'var(--accent-gold)' : 'none'} />
               </button>
             )}
 
@@ -138,13 +125,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 setShowDeleteConfirm(true);
               }}
               title={t('productList.deleteTooltip')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--text-muted)',
-                cursor: 'pointer',
-                padding: 2
-              }}
+              className="card-action-btn card-action-trash"
             >
               <Trash2 size={14} />
             </button>

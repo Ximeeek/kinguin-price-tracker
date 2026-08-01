@@ -180,11 +180,11 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
           )}
           {onRefresh && (
             <button
-              className="nav-item-btn"
+              className="card-action-btn card-action-refresh"
               onClick={() => onRefresh(product.id)}
               disabled={isRefreshing}
               title={t('productList.refreshTooltip')}
-              style={{ width: 38, height: 38, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: 38, height: 38, borderRadius: '50%' }}
             >
               <RefreshCw size={16} className={isRefreshing ? 'spinning' : ''} />
             </button>

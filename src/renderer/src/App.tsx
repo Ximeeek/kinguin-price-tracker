@@ -168,8 +168,8 @@ const AppContent: React.FC = () => {
             <button
               onClick={handleRefreshAll}
               disabled={refreshingAll}
-              className="nav-item-btn"
-              style={{ width: 36, height: 36 }}
+              className="card-action-btn card-action-refresh"
+              style={{ width: 36, height: 36, borderRadius: '50%' }}
               title={t('header.refreshListTooltip')}
             >
               <RefreshCw size={16} className={refreshingAll ? 'spinning' : ''} />
