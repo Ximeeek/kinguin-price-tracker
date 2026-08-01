@@ -3,6 +3,7 @@ import { ProductDetailResponse, TimePeriod } from '../../../shared/types';
 import { PeriodSelector } from './PeriodSelector';
 import { PriceChart } from './PriceChart';
 import { PriceChangeIndicator } from './PriceChangeIndicator';
+import { TrendBanner } from './TrendBanner';
 import { ExternalLink, RefreshCw, Star, X } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
@@ -308,40 +309,7 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
       />
 
       {/* Trend Analysis Section */}
-      <div
-        style={{
-          marginTop: 24,
-          padding: 18,
-          borderRadius: 16,
-          background: 'linear-gradient(135deg, rgba(22, 26, 36, 0.9), rgba(14, 18, 26, 0.9))',
-          border: '1px solid rgba(255,255,255,0.08)'
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
-            {t('modal.trendTitle')}
-          </div>
-          <span className={`badge ${getTrendBadgeStyle(trend.label)}`}>
-            <span className="dot" />
-            {getTranslatedTrendLabel(trend.label)}
-          </span>
-        </div>
-
-        <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-          {trend.explanation}
-        </div>
-
-        {trend.hasSufficientData && (
-          <div style={{ display: 'flex', gap: 20, marginTop: 12, fontSize: 12, color: 'var(--text-muted)' }}>
-            <div>
-              {t('modal.linearDrift')}: <strong style={{ color: 'var(--text-primary)' }}>{trend.totalDriftPct}%</strong>
-            </div>
-            <div>
-              {t('modal.volatilityRange')}: <strong style={{ color: 'var(--text-primary)' }}>{trend.rangePct}%</strong>
-            </div>
-          </div>
-        )}
-      </div>
+      <TrendBanner trend={trend} />
     </div>
   );
 };

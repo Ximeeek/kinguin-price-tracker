@@ -90,6 +90,13 @@ export const translations = {
     'trend.Decreasing (volatile)': 'Decreasing (volatile)',
     'trend.Not enough data yet': 'Not enough data yet',
 
+    // High-visibility Trend Headers
+    'trendHeader.decreasing': '📉 Downward Trend — Great Time to Buy!',
+    'trendHeader.increasing': '📈 Upward Trend — Price is Rising',
+    'trendHeader.stable': '➡️ Stable Trend — Consistent Pricing',
+    'trendHeader.fluctuating': '⚡ Volatile Trend — High Fluctuations',
+    'trendHeader.insufficient': '⏳ Insufficient Data for Trend Analysis',
+
     // Languages
     'lang.en': 'EN',
     'lang.pl': 'PL'
@@ -184,6 +191,13 @@ export const translations = {
     'trend.Steady decrease': 'Stabilny spadek',
     'trend.Decreasing (volatile)': 'Spadek (zmienna)',
     'trend.Not enough data yet': 'Za mało danych',
+
+    // High-visibility Trend Headers
+    'trendHeader.decreasing': '📉 Trend Spadkowy — Korzystny moment na zakup!',
+    'trendHeader.increasing': '📈 Trend Wzrostowy — Cena idzie w górę',
+    'trendHeader.stable': '➡️ Trend Stabilny — Stały poziom cenowy',
+    'trendHeader.fluctuating': '⚡ Trend Zmienny — Zauważalne wahania cen',
+    'trendHeader.insufficient': '⏳ Za mało danych do wyznaczenia trendu',
 
     // Languages
     // Languages
