@@ -38,6 +38,15 @@ export function parseKinguinUrl(input: string): { id: string; canonicalUrl: stri
   }
 }
 
+export function cleanProductTitle(rawTitle: string): string {
+  if (!rawTitle) return '';
+  return rawTitle
+    .replace(/\s*(\||-)\s*(buy\s+cheap\s*(on\s*)?)?kinguin(\.net)?.*$/i, '')
+    .replace(/\s*buy\s+cheap\s+on\s+kinguin(\.net)?.*$/i, '')
+    .replace(/\s*(\||-)\s*buy\s+cheap.*$/i, '')
+    .trim();
+}
+
 export class KinguinProductFetcher {
   private static DEFAULT_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
@@ -170,8 +179,8 @@ export class KinguinProductFetcher {
       });
     }
 
-    // Clean title (remove Kinguin suffix if present)
-    title = title.replace(/\s*\|\s*Kinguin\.net.*$/i, '').trim();
+    // Clean title (remove Kinguin suffix / marketing text if present)
+    title = cleanProductTitle(title);
 
     if (!priceAmountStr) {
       Logger.error('FETCHER', 'Price not found in meta tags or JSON-LD!');

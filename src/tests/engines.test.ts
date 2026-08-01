@@ -1,4 +1,4 @@
-import { parseKinguinUrl } from '../main/services/kinguinFetcher';
+import { parseKinguinUrl, cleanProductTitle } from '../main/services/kinguinFetcher';
 import { TrendEngine } from '../main/services/trendEngine';
 import { AverageEngine } from '../main/services/averageEngine';
 import { parseCustomDays } from '../shared/timeUtils';
@@ -72,7 +72,15 @@ function runTests() {
   console.assert(parseCustomDays('14').days === 14, '14 should parse to 14 days');
   console.assert(parseCustomDays('custom_7').days === 7, 'custom_7 should parse to 7 days');
   console.assert(parseCustomDays('invalid').isValid === false, 'invalid string should be invalid');
-  console.log('✅ parseCustomDays check passed.\n');
+  // Test 6: Title cleaning
+  console.log('Test 6: Title Cleaning (cleanProductTitle)');
+  console.assert(cleanProductTitle('Cyberpunk 2077 | Buy cheap on Kinguin.net') === 'Cyberpunk 2077', 'Suffix 1 failed');
+  console.assert(cleanProductTitle('The Witcher 3 | Buy cheap Kinguin.net') === 'The Witcher 3', 'Suffix 2 failed');
+  console.assert(cleanProductTitle('GTA VI - Kinguin.net') === 'GTA VI', 'Suffix 3 failed');
+  console.assert(cleanProductTitle('Elden Ring | Kinguin') === 'Elden Ring', 'Suffix 4 failed');
+  console.assert(cleanProductTitle('Red Dead Redemption 2 - Buy cheap on Kinguin') === 'Red Dead Redemption 2', 'Suffix 5 failed');
+  console.assert(cleanProductTitle('Clean Product Name') === 'Clean Product Name', 'Clean title failed');
+  console.log('✅ Title Cleaning check passed.\n');
 
   console.log('🎉 ALL VERIFICATION TESTS PASSED!');
 }

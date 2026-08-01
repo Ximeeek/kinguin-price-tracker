@@ -52,7 +52,7 @@ export const translations = {
     'modal.noChartData': 'No price history to display',
     'modal.averageLineLabel': 'Average: {amount}',
     'deleteModal.title': 'Delete Tracking?',
-    'deleteModal.confirmText': 'Are you sure you want to stop tracking "{title}"? Historical price data will be removed.',
+    'deleteModal.confirmText': 'Are you sure you want to stop tracking "{title}"? Historical price data will be removed locally only.',
     'deleteModal.cancel': 'Cancel',
     'deleteModal.delete': 'Delete',
 
@@ -215,7 +215,7 @@ export const translations = {
     'modal.noChartData': 'Brak historii cen do wyświetlenia',
     'modal.averageLineLabel': 'Średnia: {amount}',
     'deleteModal.title': 'Usunąć śledzenie?',
-    'deleteModal.confirmText': 'Czy na pewno chcesz przestać śledzić "{title}"? Historia cen tego produktu zostanie usunięta.',
+    'deleteModal.confirmText': 'Czy na pewno chcesz przestać śledzić "{title}"? Historia cen tego produktu zostanie usunięta tylko lokalnie.',
     'deleteModal.cancel': 'Anuluj',
     'deleteModal.delete': 'Usuń',
 

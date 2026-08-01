@@ -3,6 +3,7 @@ import path from 'path';
 import initSqlJs, { Database } from 'sql.js';
 import { Product, PriceSnapshot } from '../../shared/types';
 import { Logger } from '../logger';
+import { cleanProductTitle } from '../services/kinguinFetcher';
 
 export interface PriceRepository {
   init(): Promise<void>;
@@ -262,7 +263,7 @@ export class LocalSqliteRepository implements PriceRepository {
     return {
       id: String(row.id),
       url: String(row.url),
-      title: String(row.title),
+      title: cleanProductTitle(String(row.title)),
       imageUrl: row.image_url ? String(row.image_url) : null,
       currency: String(row.currency || 'EUR'),
       firstTrackedAt: String(row.first_tracked_at),

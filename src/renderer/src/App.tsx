@@ -363,6 +363,11 @@ const AppContent: React.FC = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
                       {t('productList.trackedCount', { count: filteredProducts.length })}
+                      {searchQuery.trim() && (
+                        <span style={{ color: 'var(--accent-gold)', fontWeight: 600 }}>
+                          {` | ${searchQuery.trim()}`}
+                        </span>
+                      )}
                     </h3>
                   </div>
 
@@ -397,7 +402,14 @@ const AppContent: React.FC = () => {
 
           {activeTab === 'analytics' && (
             <div>
-              <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 16 }}>{t('analytics.title')}</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 16 }}>
+                {t('analytics.title')}
+                {searchQuery.trim() && (
+                  <span style={{ color: 'var(--accent-gold)', fontWeight: 600 }}>
+                    {` | ${searchQuery.trim()}`}
+                  </span>
+                )}
+              </h2>
               {products.length === 0 ? (
                 <div className="empty-state">
                   <TrendingUp className="empty-state-icon" />
