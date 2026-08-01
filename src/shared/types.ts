@@ -73,6 +73,9 @@ export interface ElectronAPI {
   refreshProduct: (id: string) => Promise<ProductDetailResponse | null>;
   deleteProduct: (id: string) => Promise<boolean>;
   openExternal: (url: string) => Promise<void>;
+  minimizeWindow: () => Promise<void>;
+  maximizeWindow: () => Promise<void>;
+  closeWindow: () => Promise<void>;
 }
 
 declare global {

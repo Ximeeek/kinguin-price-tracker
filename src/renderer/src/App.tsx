@@ -4,6 +4,7 @@ import { AddProductBar } from './components/AddProductBar';
 import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { HeroProductDetail } from './components/HeroProductDetail';
+import { TitleBar } from './components/TitleBar';
 import { BottomNavbar, NavTab } from './components/BottomNavbar';
 import { SettingsView } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
@@ -126,6 +127,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="app-container">
+      <TitleBar />
       <div className="main-content">
         {/* Header Bar */}
         <div className="header-bar">

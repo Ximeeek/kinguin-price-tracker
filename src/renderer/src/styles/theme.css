@@ -481,6 +481,16 @@ body::after {
   animation: spin 0.75s linear infinite;
 }
 
+/* Custom Titlebar */
+.titlebar-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-primary) !important;
+}
+.close-titlebar-btn:hover {
+  background: rgba(239, 68, 68, 0.85) !important;
+  color: #ffffff !important;
+}
+
 @keyframes slideInRight {
   from { opacity: 0; transform: translateX(40px); }
   to { opacity: 1; transform: translateX(0); }

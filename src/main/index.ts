@@ -33,6 +33,7 @@ async function createWindow() {
     title: 'Kinguin Price Tracker',
     backgroundColor: '#0b0d10',
     show: false,
+    frame: false,
     autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,

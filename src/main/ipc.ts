@@ -1,4 +1,4 @@
-import { ipcMain, shell } from 'electron';
+import { ipcMain, shell, BrowserWindow } from 'electron';
 import { PriceRepository } from './db/repository';
 import { KinguinProductFetcher, parseKinguinUrl } from './services/kinguinFetcher';
 import { TrendEngine } from './services/trendEngine';
@@ -208,5 +208,27 @@ export function setupIpcHandlers(repository: PriceRepository) {
     if (url.startsWith('https://') || url.startsWith('http://')) {
       await shell.openExternal(url);
     }
+  });
+
+  // Window Controls
+  ipcMain.handle('window-minimize', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.minimize();
+  });
+
+  ipcMain.handle('window-maximize', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) {
+      if (win.isMaximized()) {
+        win.unmaximize();
+      } else {
+        win.maximize();
+      }
+    }
+  });
+
+  ipcMain.handle('window-close', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.close();
   });
 }
