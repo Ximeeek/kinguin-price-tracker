@@ -189,7 +189,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
             <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {formatPrice(average.averagePrice, product.currency)}
             </div>
-            {average.note && (
+            {(average.noteKey || average.note) && (
               <div
                 style={{
                   position: 'absolute',
@@ -202,7 +202,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
                   pointerEvents: 'none'
                 }}
               >
-                ℹ️ {average.note}
+                ℹ️ {average.noteKey ? t(average.noteKey as any, average.noteParams) : average.note}
               </div>
             )}
           </div>
@@ -229,7 +229,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
                     : 'var(--accent-gold)'
               }}
             >
-              {average.label}
+              {average.labelKey ? t(average.labelKey as any, average.labelParams) : average.label}
             </div>
           </div>
         </div>

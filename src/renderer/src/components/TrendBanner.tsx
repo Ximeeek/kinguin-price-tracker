@@ -105,7 +105,7 @@ export const TrendBanner: React.FC<TrendBannerProps> = ({
       </div>
 
       <div style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.6, background: 'rgba(0,0,0,0.2)', padding: '10px 14px', borderRadius: 10 }}>
-        {trend.explanation}
+        {trend.explanationKey ? t(trend.explanationKey as any, trend.explanationParams) : trend.explanation}
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, flexWrap: 'wrap', gap: 10 }}>

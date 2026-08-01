@@ -52,7 +52,7 @@ export const TitleBar: React.FC = () => {
         <button
           onClick={handleMinimize}
           className="titlebar-btn"
-          title="Minimize"
+          title={t('titlebar.minimize')}
           style={btnStyle}
         >
           <Minus size={13} />
@@ -60,7 +60,7 @@ export const TitleBar: React.FC = () => {
         <button
           onClick={handleMaximize}
           className="titlebar-btn"
-          title="Maximize / Restore"
+          title={t('titlebar.maximize')}
           style={btnStyle}
         >
           <Square size={11} />
@@ -68,7 +68,7 @@ export const TitleBar: React.FC = () => {
         <button
           onClick={handleClose}
           className="titlebar-btn close-titlebar-btn"
-          title="Close"
+          title={t('titlebar.close')}
           style={btnStyle}
         >
           <X size={14} />

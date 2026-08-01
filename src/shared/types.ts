@@ -37,6 +37,8 @@ export interface TrendAnalysis {
   volatility: VolatilityLevel;
   label: TrendLabel;
   explanation: string;
+  explanationKey?: string;
+  explanationParams?: Record<string, string | number>;
   totalDriftPct: number;
   rangePct: number;
   hasSufficientData: boolean;
@@ -48,9 +50,13 @@ export interface AverageAnalysis {
   currentPrice: number;
   deltaPct: number;
   label: string;
+  labelKey?: string;
+  labelParams?: Record<string, string | number>;
   dataPointCount: number;
   dataAgeDays: number;
   note?: string;
+  noteKey?: string;
+  noteParams?: Record<string, string | number>;
 }
 
 export interface ProductDetailResponse {
@@ -64,6 +70,8 @@ export interface ProductDetailResponse {
 export interface RefreshResult {
   success: boolean;
   error?: string;
+  errorKey?: string;
+  errorParams?: Record<string, string | number>;
   detail?: ProductDetailResponse;
 }
 
@@ -71,6 +79,8 @@ export interface AddProductResult {
   success: boolean;
   product?: Product;
   error?: string;
+  errorKey?: string;
+  errorParams?: Record<string, string | number>;
 }
 
 export interface ElectronAPI {

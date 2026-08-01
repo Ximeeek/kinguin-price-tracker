@@ -56,12 +56,47 @@ export const translations = {
     'deleteModal.cancel': 'Cancel',
     'deleteModal.delete': 'Delete',
 
-    // Toast Notifications
+    // Toast Notifications & Error Handling
     'toast.refreshSuccess': 'Price updated successfully',
     'toast.refreshError': 'Failed to update price',
     'toast.refreshAllSuccess': 'All product prices updated successfully',
     'toast.refreshSomeFailed': 'Failed to refresh some products ({count})',
     'toast.autoPasted': 'Automatically pasted Kinguin link from clipboard',
+    'toast.cooldownActive': 'This game was recently refreshed. Next refresh will be available in {minutes} min.',
+    'error.invalidUrl': 'Provided link is not a valid Kinguin product URL.',
+    'error.productNotFound': 'Product not found.',
+    'error.fetchFailed': 'Could not fetch product details from Kinguin page.',
+    'error.genericAdd': 'An unexpected error occurred while adding the product.',
+
+    // Average Analysis Engine
+    'average.about': 'About average',
+    'average.below': '{pct}% below average',
+    'average.above': '{pct}% above average',
+    'average.noteNoData': 'No prior historical data.',
+    'average.noteAllDays': 'Based on {days} days of total tracking data',
+    'average.noteCollectedDays': 'Based on {days} days of collected data',
+
+    // Trend Explanation Engine
+    'trend.exp.stable': 'Price has remained within a very stable range over the last 14 days.',
+    'trend.exp.fluctuating': 'Price fluctuates within a {rangePct}% range without a clear overall trend.',
+    'trend.exp.steadyIncrease': 'Price shows a steady increase of approx. {driftPct}% over the last 2 weeks.',
+    'trend.exp.increasingVolatile': 'Price is rising, but with sharp fluctuations (volatility approx. {rangePct}%).',
+    'trend.exp.steadyDecrease': 'Price is consistently dropping (approx. {driftPct}% decrease). Good buying opportunity!',
+    'trend.exp.decreasingVolatile': 'Price shows an overall decline accompanied by price fluctuations.',
+    'trend.exp.insufficient14Days': 'Minimum of 14 days of price history required (currently: {currentDays} days). Missing {remainingDays} more days.',
+    'trend.exp.insufficientPoints': 'Not enough data points in the last 14 days.',
+    'trend.exp.noHistory': 'No price history available for this product.',
+    'trend.exp.invalidPrice': 'Invalid price data.',
+
+    // Tooltips & Controls
+    'titlebar.minimize': 'Minimize',
+    'titlebar.maximize': 'Maximize / Restore',
+    'titlebar.close': 'Close',
+    'tooltip.systemSpecs': 'System Architecture & App Specs',
+    'tooltip.clearSearch': 'Clear search',
+    'tooltip.closeModal': 'Close modal',
+    'tooltip.changeCurrency': 'Change Currency',
+    'tooltip.changeLanguage': 'Change Language',
 
     // Indicator Tooltips
     'indicator.noChange': 'Price unchanged since last check',
@@ -219,12 +254,47 @@ export const translations = {
     'deleteModal.cancel': 'Anuluj',
     'deleteModal.delete': 'Usuń',
 
-    // Toast Notifications
+    // Toast Notifications & Error Handling
     'toast.refreshSuccess': 'Cena została pomyślnie zaktualizowana',
     'toast.refreshError': 'Nie udało się zaktualizować ceny',
     'toast.refreshAllSuccess': 'Wszystkie ceny zostały pomyślnie zaktualizowane',
     'toast.refreshSomeFailed': 'Nie udało się odświeżyć niektórych produktów ({count})',
     'toast.autoPasted': 'Automatycznie wklejono link ze schowka',
+    'toast.cooldownActive': 'Ta gra była już odświeżana. Następne odświeżenie będzie możliwe za {minutes} min.',
+    'error.invalidUrl': 'Podany link nie jest prawidłowym adresem produktu Kinguin.',
+    'error.productNotFound': 'Nie znaleziono produktu.',
+    'error.fetchFailed': 'Nie udało się pobrać szczegółów produktu ze strony Kinguin.',
+    'error.genericAdd': 'Wystąpił nieoczekiwany błąd podczas dodawania produktu.',
+
+    // Average Analysis Engine
+    'average.about': 'W granicach średniej',
+    'average.below': '{pct}% poniżej średniej',
+    'average.above': '{pct}% powyżej średniej',
+    'average.noteNoData': 'Brak wcześniejszych danych historycznych.',
+    'average.noteAllDays': 'Na podstawie {days} dni śledzenia danych',
+    'average.noteCollectedDays': 'Na podstawie {days} dni zgromadzonych danych',
+
+    // Trend Explanation Engine
+    'trend.exp.stable': 'Cena utrzymuje się w bardzo stabilnym zakresie w ciągu ostatnich 14 dni.',
+    'trend.exp.fluctuating': 'Cena waha się w zakresie {rangePct}% bez wyraźnego ogólnego trendu.',
+    'trend.exp.steadyIncrease': 'Cena wykazuje stały wzrost o ok. {driftPct}% w ciągu ostatnich 2 tygodni.',
+    'trend.exp.increasingVolatile': 'Cena rośnie, ale przy gwałtownych wahaniach (zmienność ok. {rangePct}%).',
+    'trend.exp.steadyDecrease': 'Cena konsekwentnie spada (spadek o ok. {driftPct}%). Świetna okazja do zakupu!',
+    'trend.exp.decreasingVolatile': 'Cena wykazuje ogólny spadek połączony z wahaniami cenowymi.',
+    'trend.exp.insufficient14Days': 'Wymagane jest minimum 14 dni historii cen (obecnie: {currentDays} dni). Brakuje jeszcze {remainingDays} dni.',
+    'trend.exp.insufficientPoints': 'Niewystarczająca liczba punktów danych z ostatnich 14 dni.',
+    'trend.exp.noHistory': 'Brak historii cen dla tego produktu.',
+    'trend.exp.invalidPrice': 'Nieprawidłowe dane cenowe.',
+
+    // Tooltips & Controls
+    'titlebar.minimize': 'Minimalizuj',
+    'titlebar.maximize': 'Maksymalizuj / Przywróć',
+    'titlebar.close': 'Zamknij',
+    'tooltip.systemSpecs': 'Architektura systemu i specyfikacja',
+    'tooltip.clearSearch': 'Wyczyść wyszukiwanie',
+    'tooltip.closeModal': 'Zamknij okno',
+    'tooltip.changeCurrency': 'Zmień walutę',
+    'tooltip.changeLanguage': 'Zmień język',
 
     // Indicator Tooltips
     'indicator.noChange': 'Cena bez zmian od ostatniego sprawdzenia',

@@ -119,7 +119,7 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
             </div>
           </div>
 
-          <button onClick={onClose} className="close-btn" title="Close modal">
+          <button onClick={onClose} className="close-btn" title={t('tooltip.closeModal')}>
             <X size={18} />
           </button>
         </div>

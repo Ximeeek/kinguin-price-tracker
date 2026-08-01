@@ -238,7 +238,7 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
           <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
             {formatPrice(average.averagePrice, product.currency)}
           </div>
-          {average.note && (
+          {(average.noteKey || average.note) && (
             <div
               style={{
                 position: 'absolute',
@@ -251,7 +251,7 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
                 pointerEvents: 'none'
               }}
             >
-              ℹ️ {average.note}
+              ℹ️ {average.noteKey ? t(average.noteKey as any, average.noteParams) : average.note}
             </div>
           )}
         </div>
@@ -278,7 +278,7 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
                   : 'var(--accent-gold)'
             }}
           >
-            {average.label}
+            {average.labelKey ? t(average.labelKey as any, average.labelParams) : average.label}
           </div>
         </div>
       </div>

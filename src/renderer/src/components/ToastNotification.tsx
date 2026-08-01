@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, AlertCircle, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export interface FailedProductInfo {
   id: string;
   title: string;
   error?: string;
+  errorKey?: string;
+  errorParams?: Record<string, string | number>;
 }
 
 export interface ToastMessage {
@@ -20,6 +23,7 @@ interface ToastNotificationProps {
 }
 
 export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onDismiss }) => {
+  const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Reset expand state when toast changes
@@ -166,7 +170,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
               >
                 {item.title}
               </div>
-              {item.error && (
+              {(item.errorKey || item.error) && (
                 <div
                   style={{
                     fontSize: 11,
@@ -176,7 +180,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
                     lineHeight: 1.3
                   }}
                 >
-                  {item.error}
+                  {item.errorKey ? t(item.errorKey as any, item.errorParams) : item.error}
                 </div>
               )}
             </div>

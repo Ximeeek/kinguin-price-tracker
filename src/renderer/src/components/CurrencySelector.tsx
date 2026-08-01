@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useCurrency, SUPPORTED_CURRENCIES, CurrencyCode } from '../currency/CurrencyContext';
+import { useLanguage } from '../i18n/LanguageContext';
 import { DollarSign, ChevronDown, Check } from 'lucide-react';
 
 export const CurrencySelector: React.FC = () => {
+  const { t } = useLanguage();
   const { currency, setCurrency } = useCurrency();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -25,7 +27,7 @@ export const CurrencySelector: React.FC = () => {
         type="button"
         className={`custom-dropdown-trigger ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        title="Change Currency"
+        title={t('tooltip.changeCurrency')}
       >
         <DollarSign size={14} color="var(--accent-green)" />
         <span>{currentCurrencyInfo.code} ({currentCurrencyInfo.symbol})</span>

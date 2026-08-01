@@ -14,9 +14,11 @@ export class AverageEngine {
         currentPrice,
         deltaPct: 0,
         label: 'About average',
+        labelKey: 'average.about',
         dataPointCount: 1,
         dataAgeDays: 0,
-        note: 'No prior historical data.'
+        note: 'No prior historical data.',
+        noteKey: 'average.noteNoData'
       };
     }
 
@@ -42,21 +44,38 @@ export class AverageEngine {
     }
 
     const absDelta = Math.abs(deltaPct);
+    const roundedAbsDelta = Math.abs(Math.round(deltaPct * 10) / 10);
+    const roundedDelta = Math.round(deltaPct * 10) / 10;
+
     let label = 'About average';
+    let labelKey = 'average.about';
+    let labelParams: Record<string, string | number> | undefined = undefined;
 
     if (absDelta < 1.5) {
       label = 'About average';
+      labelKey = 'average.about';
     } else if (deltaPct <= -1.5) {
-      label = `${Math.abs(Math.round(deltaPct * 10) / 10)}% below average`;
+      label = `${roundedAbsDelta}% below average`;
+      labelKey = 'average.below';
+      labelParams = { pct: roundedAbsDelta };
     } else {
-      label = `${Math.round(deltaPct * 10) / 10}% above average`;
+      label = `${roundedDelta}% above average`;
+      labelKey = 'average.above';
+      labelParams = { pct: roundedDelta };
     }
 
     let note: string | undefined = undefined;
+    let noteKey: string | undefined = undefined;
+    let noteParams: Record<string, string | number> | undefined = undefined;
+
     if (period === 'all') {
       note = `Based on ${actualDaysCount} days of total tracking data`;
+      noteKey = 'average.noteAllDays';
+      noteParams = { days: actualDaysCount };
     } else if (actualDaysCount < periodDays && isFinite(periodDays)) {
       note = `Based on ${actualDaysCount} days of collected data`;
+      noteKey = 'average.noteCollectedDays';
+      noteParams = { days: actualDaysCount };
     }
 
     return {
@@ -65,9 +84,13 @@ export class AverageEngine {
       currentPrice: Math.round(currentPrice * 100) / 100,
       deltaPct: Math.round(deltaPct * 10) / 10,
       label,
+      labelKey,
+      labelParams,
       dataPointCount: targetSnapshots.length,
       dataAgeDays: actualDaysCount,
-      note
+      note,
+      noteKey,
+      noteParams
     };
   }
 

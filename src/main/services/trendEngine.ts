@@ -9,7 +9,10 @@ export const TREND_CONFIG = {
 export class TrendEngine {
   static analyze(snapshots: PriceSnapshot[], firstTrackedAtStr: string): TrendAnalysis {
     if (!snapshots || snapshots.length === 0) {
-      return this.insufficientData('No price history available for this product.');
+      return this.insufficientData(
+        'No price history available for this product.',
+        'trend.exp.noHistory'
+      );
     }
 
     const firstTrackedAt = new Date(firstTrackedAtStr);
@@ -18,9 +21,12 @@ export class TrendEngine {
 
     // Rule §8.1: Must have at least 14 days of tracked history since first_tracked_at
     if (totalHistoryDays < TREND_CONFIG.TREND_WINDOW_DAYS) {
+      const currentDays = Math.max(1, Math.floor(totalHistoryDays));
       const remainingDays = Math.ceil(TREND_CONFIG.TREND_WINDOW_DAYS - totalHistoryDays);
       return this.insufficientData(
-        `Minimum of 14 days of price history required (currently: ${Math.max(1, Math.floor(totalHistoryDays))} days). Missing ${remainingDays} more days.`
+        `Minimum of 14 days of price history required (currently: ${currentDays} days). Missing ${remainingDays} more days.`,
+        'trend.exp.insufficient14Days',
+        { currentDays, remainingDays }
       );
     }
 
@@ -29,7 +35,10 @@ export class TrendEngine {
     const windowSnapshots = snapshots.filter(s => new Date(s.checkedAt) >= cutoffDate);
 
     if (windowSnapshots.length < 2) {
-      return this.insufficientData('Not enough data points in the last 14 days.');
+      return this.insufficientData(
+        'Not enough data points in the last 14 days.',
+        'trend.exp.insufficientPoints'
+      );
     }
 
     // Calculate mean price & min/max
@@ -39,7 +48,10 @@ export class TrendEngine {
     const maxPrice = Math.max(...prices);
 
     if (meanPrice <= 0) {
-      return this.insufficientData('Invalid price data.');
+      return this.insufficientData(
+        'Invalid price data.',
+        'trend.exp.invalidPrice'
+      );
     }
 
     // Fit linear regression: price vs days_elapsed (from start of window)
@@ -76,13 +88,20 @@ export class TrendEngine {
     const volatility: VolatilityLevel = rangePct <= TREND_CONFIG.STABILITY_BAND_PCT ? 'low' : 'high';
 
     // Map to Combined Label & Explanation
-    const { label, explanation } = this.getLabelAndExplanation(direction, volatility, totalDriftPct, rangePct);
+    const { label, explanation, explanationKey, explanationParams } = this.getLabelAndExplanation(
+      direction,
+      volatility,
+      totalDriftPct,
+      rangePct
+    );
 
     return {
       direction,
       volatility,
       label,
       explanation,
+      explanationKey,
+      explanationParams,
       totalDriftPct: Math.round(totalDriftPct * 10) / 10,
       rangePct: Math.round(rangePct * 10) / 10,
       hasSufficientData: true
@@ -94,50 +113,75 @@ export class TrendEngine {
     volatility: VolatilityLevel,
     driftPct: number,
     rangePct: number
-  ): { label: TrendLabel; explanation: string } {
+  ): {
+    label: TrendLabel;
+    explanation: string;
+    explanationKey: string;
+    explanationParams?: Record<string, string | number>;
+  } {
+    const roundedRange = Math.round(rangePct);
+    const roundedDrift = Math.round(driftPct);
+    const absRoundedDrift = Math.abs(Math.round(driftPct));
+
     if (direction === 'flat' && volatility === 'low') {
       return {
         label: 'Stable',
-        explanation: 'Price has remained within a very stable range over the last 14 days.'
+        explanation: 'Price has remained within a very stable range over the last 14 days.',
+        explanationKey: 'trend.exp.stable'
       };
     }
     if (direction === 'flat' && volatility === 'high') {
       return {
         label: 'Fluctuating',
-        explanation: `Price fluctuates within a ${Math.round(rangePct)}% range without a clear overall trend.`
+        explanation: `Price fluctuates within a ${roundedRange}% range without a clear overall trend.`,
+        explanationKey: 'trend.exp.fluctuating',
+        explanationParams: { rangePct: roundedRange }
       };
     }
     if (direction === 'up' && volatility === 'low') {
       return {
         label: 'Steady increase',
-        explanation: `Price shows a steady increase of approx. ${Math.round(driftPct)}% over the last 2 weeks.`
+        explanation: `Price shows a steady increase of approx. ${roundedDrift}% over the last 2 weeks.`,
+        explanationKey: 'trend.exp.steadyIncrease',
+        explanationParams: { driftPct: roundedDrift }
       };
     }
     if (direction === 'up' && volatility === 'high') {
       return {
         label: 'Increasing (volatile)',
-        explanation: `Price is rising, but with sharp fluctuations (volatility approx. ${Math.round(rangePct)}%).`
+        explanation: `Price is rising, but with sharp fluctuations (volatility approx. ${roundedRange}%).`,
+        explanationKey: 'trend.exp.increasingVolatile',
+        explanationParams: { rangePct: roundedRange }
       };
     }
     if (direction === 'down' && volatility === 'low') {
       return {
         label: 'Steady decrease',
-        explanation: `Price is consistently dropping (approx. ${Math.abs(Math.round(driftPct))}% decrease). Good buying opportunity!`
+        explanation: `Price is consistently dropping (approx. ${absRoundedDrift}% decrease). Good buying opportunity!`,
+        explanationKey: 'trend.exp.steadyDecrease',
+        explanationParams: { driftPct: absRoundedDrift }
       };
     }
     // down + high
     return {
       label: 'Decreasing (volatile)',
-      explanation: `Price shows an overall decline accompanied by price fluctuations.`
+      explanation: `Price shows an overall decline accompanied by price fluctuations.`,
+      explanationKey: 'trend.exp.decreasingVolatile'
     };
   }
 
-  private static insufficientData(reason: string): TrendAnalysis {
+  private static insufficientData(
+    reason: string,
+    explanationKey?: string,
+    explanationParams?: Record<string, string | number>
+  ): TrendAnalysis {
     return {
       direction: 'flat',
       volatility: 'low',
       label: 'Not enough data yet',
       explanation: reason,
+      explanationKey,
+      explanationParams,
       totalDriftPct: 0,
       rangePct: 0,
       hasSufficientData: false

@@ -54,7 +54,8 @@ export function setupIpcHandlers(repository: PriceRepository) {
         Logger.warn('IPC', `[track-product] Invalid URL format: "${urlInput}"`);
         return {
           success: false,
-          error: 'Provided link is not a valid Kinguin product URL.'
+          error: 'Provided link is not a valid Kinguin product URL.',
+          errorKey: 'error.invalidUrl'
         };
       }
 
@@ -163,7 +164,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
   ipcMain.handle('refresh-product', async (_, productId: string): Promise<RefreshResult> => {
     Logger.info('IPC', `[refresh-product] Manual price refresh for ID: ${productId}`);
     const product = await repository.findProductById(productId);
-    if (!product) return { success: false, error: 'Product not found' };
+    if (!product) return { success: false, error: 'Product not found', errorKey: 'error.productNotFound' };
 
     const ONE_HOUR_MS = 60 * 60 * 1000;
     const lastCheckedMs = product.lastCheckedAt ? new Date(product.lastCheckedAt).getTime() : 0;
@@ -174,11 +175,14 @@ export function setupIpcHandlers(repository: PriceRepository) {
       Logger.warn('IPC', `[refresh-product] Cooldown active for ID ${productId}. ${minutesLeft} min remaining.`);
       return {
         success: false,
-        error: `Ta gra była już odświeżana. Następne odświeżenie będzie możliwe za ${minutesLeft} min.`
+        error: `Ta gra była już odświeżana. Następne odświeżenie będzie możliwe za ${minutesLeft} min.`,
+        errorKey: 'toast.cooldownActive',
+        errorParams: { minutes: minutesLeft }
       };
     }
 
     let fetchError: string | null = null;
+    let fetchErrorKey: string | undefined = undefined;
 
     try {
       const fetched = await fetcher.fetchProduct(product.url);
@@ -199,6 +203,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
     } catch (err: any) {
       Logger.error('IPC', `[refresh-product] Refresh error: ${err.message}`);
       fetchError = err.message || 'Could not fetch product details from Kinguin page.';
+      fetchErrorKey = 'error.fetchFailed';
       await repository.updateProduct({
         id: product.id,
         status: 'unavailable'
@@ -207,7 +212,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
     const history = await repository.getHistory(productId);
     const updatedProduct = await repository.findProductById(productId);
-    if (!updatedProduct) return { success: false, error: fetchError || 'Product not found' };
+    if (!updatedProduct) return { success: false, error: fetchError || 'Product not found', errorKey: fetchErrorKey || 'error.productNotFound' };
 
     const currentPrice = history.length > 0 ? history[history.length - 1].price : 0;
     const previousPrice = history.length > 1 ? history[history.length - 2].price : undefined;
@@ -222,7 +227,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
     };
 
     if (fetchError) {
-      return { success: false, error: fetchError, detail };
+      return { success: false, error: fetchError, errorKey: fetchErrorKey, detail };
     }
 
     return { success: true, detail };

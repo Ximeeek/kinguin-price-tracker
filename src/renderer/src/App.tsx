@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Product } from '../../shared/types';
+import { Product, RefreshResult } from '../../shared/types';
 import { AddProductBar } from './components/AddProductBar';
 import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
@@ -100,9 +100,14 @@ const AppContent: React.FC = () => {
             const res = await window.api.refreshProduct(product.id);
             return { product, res };
           } catch (err: any) {
+            const fallbackRes: RefreshResult = {
+              success: false,
+              error: err.message || t('toast.refreshError'),
+              errorKey: 'toast.refreshError'
+            };
             return {
               product,
-              res: { success: false, error: err.message || t('toast.refreshError') }
+              res: fallbackRes
             };
           }
         })
@@ -115,7 +120,9 @@ const AppContent: React.FC = () => {
         .map((r) => ({
           id: r.product.id,
           title: r.product.title,
-          error: r.res.error
+          error: r.res.error,
+          errorKey: r.res.errorKey,
+          errorParams: r.res.errorParams
         }));
 
       if (failedProducts.length === 0) {
@@ -166,10 +173,13 @@ const AppContent: React.FC = () => {
       const res = await window.api.refreshProduct(id);
       await fetchProducts();
       if (!res.success) {
+        const errorText = res.errorKey
+          ? t(res.errorKey as any, res.errorParams)
+          : res.error || t('toast.refreshError');
         setToast({
           id: Date.now().toString(),
           type: 'error',
-          text: res.error || t('toast.refreshError')
+          text: errorText
         });
       } else {
         setToast({
@@ -274,7 +284,7 @@ const AppContent: React.FC = () => {
                 outline: 'none'
               }}
               className="nerd-info-btn"
-              title="System Architecture & App Specs"
+              title={t('tooltip.systemSpecs')}
             >
               <Info size={18} />
             </button>
@@ -313,7 +323,7 @@ const AppContent: React.FC = () => {
                     type="button"
                     onClick={() => setSearchQuery('')}
                     className="sticky-search-clear"
-                    title="Clear search"
+                    title={t('tooltip.clearSearch')}
                   >
                     <X size={14} />
                   </button>

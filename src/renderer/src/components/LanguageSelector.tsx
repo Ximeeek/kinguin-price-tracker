@@ -3,7 +3,7 @@ import { useLanguage, SupportedLanguage } from '../i18n/LanguageContext';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 
 export const LanguageSelector: React.FC = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export const LanguageSelector: React.FC = () => {
         type="button"
         className={`custom-dropdown-trigger ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        title="Change Language"
+        title={t('tooltip.changeLanguage')}
       >
         <Globe size={14} color="var(--text-muted)" />
         <span>{language.toUpperCase()}</span>
