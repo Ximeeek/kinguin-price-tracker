@@ -11,6 +11,10 @@ build/
 .vite/
 .tmp/
 
+# Developer & agent rules
+.agents/
+.gemini/
+
 # OS metadata
 Thumbs.db
 Desktop.ini
