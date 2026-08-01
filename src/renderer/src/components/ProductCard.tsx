@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Product } from '../../../shared/types';
-import { RefreshCw, Trash2, Star } from 'lucide-react';
+import { RefreshCw, Trash2, Star, Clock } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
 import { ConfirmModal } from './ConfirmModal';
@@ -116,19 +116,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           />
           <div className="product-meta">
             <CustomTooltip text={t('productList.idTooltip')} position="bottom">
-              <span className="product-meta-item">ID: {product.id}</span>
+              <span className="product-meta-item product-meta-id">ID: {product.id}</span>
             </CustomTooltip>
-            <span className="product-meta-dot">•</span>
             <CustomTooltip text={t('productList.lastCheckedTooltip')} position="bottom">
-              <span className="product-meta-item">
-                {product.lastCheckedAt
-                  ? new Date(product.lastCheckedAt).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })
-                  : t('productList.neverChecked')}
+              <span className="product-meta-item product-meta-date">
+                <Clock size={11} className="product-meta-icon" />
+                <span>
+                  {product.lastCheckedAt
+                    ? new Date(product.lastCheckedAt).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })
+                    : t('productList.neverChecked')}
+                </span>
               </span>
             </CustomTooltip>
           </div>

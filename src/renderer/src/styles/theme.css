@@ -365,25 +365,32 @@ body::after {
 
 .product-meta {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  margin-top: 2px;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 3px;
 }
 
 .product-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 1.3;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
 }
 
-.product-meta-dot {
-  opacity: 0.5;
-  user-select: none;
+.product-meta-id {
+  font-weight: 600;
+  color: rgba(156, 163, 175, 0.85);
+}
+
+.product-meta-date {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.product-meta-icon {
+  opacity: 0.65;
   flex-shrink: 0;
 }
 
