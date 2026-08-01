@@ -241,18 +241,21 @@ body::after {
   cursor: pointer;
   position: relative;
   overflow: visible;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .product-item-card:hover {
-  transform: translateY(-3px) scale(1.01);
+  transform: translate3d(0, -2px, 0);
   background: var(--bg-card-hover);
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 .product-item-card:active {
-  transform: scale(0.97) translateY(0);
+  transform: translate3d(0, 0, 0);
   transition-duration: 0.08s;
 }
 
