@@ -91,11 +91,11 @@ export const translations = {
     'trend.Not enough data yet': 'Not enough data yet',
 
     // High-visibility Trend Headers
-    'trendHeader.decreasing': '📉 Downward Trend — Great Time to Buy!',
-    'trendHeader.increasing': '📈 Upward Trend — Price is Rising',
-    'trendHeader.stable': '➡️ Stable Trend — Consistent Pricing',
-    'trendHeader.fluctuating': '⚡ Volatile Trend — High Fluctuations',
-    'trendHeader.insufficient': '⏳ Insufficient Data for Trend Analysis',
+    'trendHeader.decreasing': 'Downward Trend — Great Time to Buy!',
+    'trendHeader.increasing': 'Upward Trend — Price is Rising',
+    'trendHeader.stable': 'Stable Trend — Consistent Pricing',
+    'trendHeader.fluctuating': 'Volatile Trend — High Fluctuations',
+    'trendHeader.insufficient': 'Insufficient Data for Trend Analysis',
 
     // Price Prediction Engine
     'prediction.toggleBtn': 'Price Forecast',
@@ -210,11 +210,11 @@ export const translations = {
     'trend.Not enough data yet': 'Za mało danych',
 
     // High-visibility Trend Headers
-    'trendHeader.decreasing': '📉 Trend Spadkowy — Korzystny moment na zakup!',
-    'trendHeader.increasing': '📈 Trend Wzrostowy — Cena idzie w górę',
-    'trendHeader.stable': '➡️ Trend Stabilny — Stały poziom cenowy',
-    'trendHeader.fluctuating': '⚡ Trend Zmienny — Zauważalne wahania cen',
-    'trendHeader.insufficient': '⏳ Za mało danych do wyznaczenia trendu',
+    'trendHeader.decreasing': 'Trend Spadkowy — Korzystny moment na zakup!',
+    'trendHeader.increasing': 'Trend Wzrostowy — Cena idzie w górę',
+    'trendHeader.stable': 'Trend Stabilny — Stały poziom cenowy',
+    'trendHeader.fluctuating': 'Trend Zmienny — Zauważalne wahania cen',
+    'trendHeader.insufficient': 'Za mało danych do wyznaczenia trendu',
 
     // Price Prediction Engine
     'prediction.toggleBtn': 'Prognoza cenowa',

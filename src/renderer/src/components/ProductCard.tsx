@@ -90,6 +90,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               previousPrice={product.previousPrice}
               currency={product.currency}
               showDiff={false}
+              tooltipPosition="bottom"
             />
           </div>
 

@@ -9,13 +9,15 @@ interface PriceChangeIndicatorProps {
   previousPrice?: number;
   currency?: string;
   showDiff?: boolean;
+  tooltipPosition?: 'top' | 'bottom';
 }
 
 export const PriceChangeIndicator: React.FC<PriceChangeIndicatorProps> = ({
   currentPrice,
   previousPrice,
   currency = 'EUR',
-  showDiff = true
+  showDiff = true,
+  tooltipPosition = 'top'
 }) => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
@@ -26,7 +28,7 @@ export const PriceChangeIndicator: React.FC<PriceChangeIndicatorProps> = ({
     previousPrice === null
   ) {
     return (
-      <CustomTooltip text={t('indicator.noChange')}>
+      <CustomTooltip text={t('indicator.noChange')} position={tooltipPosition}>
         <span
           style={{
             display: 'inline-flex',
@@ -47,7 +49,7 @@ export const PriceChangeIndicator: React.FC<PriceChangeIndicatorProps> = ({
 
   if (Math.abs(diff) < 0.001) {
     return (
-      <CustomTooltip text={t('indicator.noChange')}>
+      <CustomTooltip text={t('indicator.noChange')} position={tooltipPosition}>
         <span
           style={{
             display: 'inline-flex',
@@ -72,7 +74,7 @@ export const PriceChangeIndicator: React.FC<PriceChangeIndicatorProps> = ({
     : t('indicator.decreased', { amount: formattedDiff });
 
   return (
-    <CustomTooltip text={tooltipMsg}>
+    <CustomTooltip text={tooltipMsg} position={tooltipPosition}>
       <span
         style={{
           display: 'inline-flex',
