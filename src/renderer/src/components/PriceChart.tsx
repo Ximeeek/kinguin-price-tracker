@@ -84,7 +84,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({
         const converted = convertPrice(item.price, currency);
         return {
           timestamp,
-          fullDate: d.toLocaleString(),
+          fullDate: d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }),
           price: Math.round(converted * 100) / 100
         };
       })
@@ -255,11 +255,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({
   const convertedAverage = averagePrice !== undefined ? convertPrice(averagePrice, currency) : undefined;
 
   const formatXAxisTick = (val: number) => {
-    const span = activeDomain.maxX - activeDomain.minX;
     const d = new Date(val);
-    if (span <= 3 * 24 * 3600 * 1000) {
-      return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    }
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   };
 

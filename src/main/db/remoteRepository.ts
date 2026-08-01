@@ -156,7 +156,7 @@ export class RemoteApiRepository implements PriceRepository {
             if (price > 0 && checkedAt) {
               const dateKey = checkedAt.substring(0, 10);
               const exists = currentLocal.some(
-                s => s.checkedAt.startsWith(dateKey) && Math.abs(s.price - price) < 0.01
+                s => s.checkedAt.substring(0, 10) === dateKey
               );
               if (!exists) {
                 await this.localRepo.addPriceSnapshot(productId, price, checkedAt);

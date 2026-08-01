@@ -155,14 +155,36 @@ export class LocalSqliteRepository implements PriceRepository {
   async addPriceSnapshot(productId: string, price: number, checkedAt: string): Promise<PriceSnapshot> {
     if (!this.db) throw new Error('Database not initialized');
 
-    this.db.run(
-      `INSERT INTO price_history (product_id, price, checked_at) VALUES (:product_id, :price, :checked_at)`,
-      {
-        ':product_id': productId,
-        ':price': price,
-        ':checked_at': checkedAt
-      }
+    const dayKey = checkedAt.substring(0, 10);
+
+    // Check if snapshot exists for this day
+    const checkStmt = this.db.prepare(
+      `SELECT id FROM price_history WHERE product_id = :product_id AND SUBSTR(checked_at, 1, 10) = :day_key LIMIT 1`
     );
+    checkStmt.bind({ ':product_id': productId, ':day_key': dayKey });
+
+    let existingId: number | null = null;
+    if (checkStmt.step()) {
+      const row = checkStmt.getAsObject();
+      existingId = Number(row.id);
+    }
+    checkStmt.free();
+
+    if (existingId !== null) {
+      this.db.run(
+        `UPDATE price_history SET price = :price, checked_at = :checked_at WHERE id = :id`,
+        { ':price': price, ':checked_at': checkedAt, ':id': existingId }
+      );
+    } else {
+      this.db.run(
+        `INSERT INTO price_history (product_id, price, checked_at) VALUES (:product_id, :price, :checked_at)`,
+        {
+          ':product_id': productId,
+          ':price': price,
+          ':checked_at': checkedAt
+        }
+      );
+    }
 
     // Update product last_checked_at
     this.db.run(
@@ -182,7 +204,16 @@ export class LocalSqliteRepository implements PriceRepository {
   async getHistory(productId: string, since?: Date): Promise<PriceSnapshot[]> {
     if (!this.db) throw new Error('Database not initialized');
     
-    let query = 'SELECT * FROM price_history WHERE product_id = :product_id';
+    let query = `
+      SELECT 
+        MIN(id) as id,
+        product_id,
+        ROUND(AVG(price), 2) as price,
+        MAX(checked_at) as checked_at,
+        SUBSTR(checked_at, 1, 10) as day_key
+      FROM price_history 
+      WHERE product_id = :product_id
+    `;
     const params: Record<string, any> = { ':product_id': productId };
 
     if (since) {
@@ -190,7 +221,7 @@ export class LocalSqliteRepository implements PriceRepository {
       params[':since'] = since.toISOString();
     }
 
-    query += ' ORDER BY checked_at ASC';
+    query += ' GROUP BY day_key ORDER BY day_key ASC';
 
     const stmt = this.db.prepare(query);
     stmt.bind(params);
