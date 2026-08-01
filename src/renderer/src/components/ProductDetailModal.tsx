@@ -71,14 +71,30 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
   };
 
   if (loading && !detail) {
-    return (
-      <div className="modal-overlay" onClick={onClose}>
-        <div className="glass-card modal-card" onClick={(e) => e.stopPropagation()}>
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-            {t('modal.loading')}
+    return createPortal(
+      <div className="modal-overlay stats-modal-overlay" onClick={onClose} style={{ zIndex: 999999 }}>
+        <div className="glass-card modal-card stats-modal-card" onClick={(e) => e.stopPropagation()} style={{ minHeight: 480 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+              <div className="skeleton-pulse" style={{ width: 56, height: 56, borderRadius: 12 }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div className="skeleton-pulse" style={{ width: 220, height: 20 }} />
+                <div className="skeleton-pulse" style={{ width: 140, height: 14 }} />
+              </div>
+            </div>
+            <button className="close-btn" onClick={onClose}>
+              <X size={18} />
+            </button>
           </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
+            <div className="skeleton-pulse" style={{ height: 80, borderRadius: 14 }} />
+            <div className="skeleton-pulse" style={{ height: 80, borderRadius: 14 }} />
+            <div className="skeleton-pulse" style={{ height: 80, borderRadius: 14 }} />
+          </div>
+          <div className="skeleton-pulse" style={{ height: 260, borderRadius: 16 }} />
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
@@ -91,10 +107,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
     : undefined;
 
   return createPortal(
-    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 999999 }}>
-      <div className="glass-card modal-card" onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
-        <div className="modal-header">
+    <div className="modal-overlay stats-modal-overlay" onClick={onClose} style={{ zIndex: 999999 }}>
+      <div className="glass-card modal-card stats-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="stats-content-animated">
+          {/* Modal Header */}
+          <div className="modal-header">
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             <ProductImage
               src={product.imageUrl}
@@ -242,6 +259,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
           currentPrice={product.currentPrice}
           currency={product.currency}
         />
+        </div>
       </div>
     </div>,
     document.body
