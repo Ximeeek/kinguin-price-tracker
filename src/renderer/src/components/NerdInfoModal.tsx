@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   Terminal,
@@ -16,6 +17,7 @@ import {
   Activity
 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 
 interface NerdInfoModalProps {
   onClose: () => void;
@@ -24,9 +26,10 @@ interface NerdInfoModalProps {
 export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'stack' | 'database' | 'scraper' | 'algorithm' | 'security'>('stack');
+  useLockBodyScroll(true);
 
-  return (
-    <div className="modal-overlay" onClick={onClose} style={{ animation: 'modalOverlayFade 0.2s ease-out' }}>
+  return createPortal(
+    <div className="modal-overlay" onClick={onClose} style={{ animation: 'modalOverlayFade 0.2s ease-out', zIndex: 999999 }}>
       <div
         className="modal-card glass-card"
         onClick={(e) => e.stopPropagation()}
@@ -413,6 +416,7 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

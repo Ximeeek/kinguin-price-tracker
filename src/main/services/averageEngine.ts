@@ -1,4 +1,5 @@
 import { PriceSnapshot, AverageAnalysis, TimePeriod } from '../../shared/types';
+import { parseCustomDays } from '../../shared/timeUtils';
 
 export class AverageEngine {
   static analyze(
@@ -21,7 +22,9 @@ export class AverageEngine {
 
     const now = new Date();
     const periodDays = this.getPeriodDays(period);
-    const cutoffDate = new Date(now.getTime() - periodDays * 24 * 3600 * 1000);
+    const cutoffDate = isFinite(periodDays)
+      ? new Date(now.getTime() - periodDays * 24 * 3600 * 1000)
+      : new Date(0);
 
     const filteredSnapshots = snapshots.filter(s => new Date(s.checkedAt) >= cutoffDate);
     const targetSnapshots = filteredSnapshots.length > 0 ? filteredSnapshots : snapshots;
@@ -52,7 +55,7 @@ export class AverageEngine {
     let note: string | undefined = undefined;
     if (period === 'all') {
       note = `Based on ${actualDaysCount} days of total tracking data`;
-    } else if (actualDaysCount < periodDays) {
+    } else if (actualDaysCount < periodDays && isFinite(periodDays)) {
       note = `Based on ${actualDaysCount} days of collected data`;
     }
 
@@ -69,19 +72,6 @@ export class AverageEngine {
   }
 
   private static getPeriodDays(period: TimePeriod): number {
-    switch (period) {
-      case 'week':
-        return 7;
-      case 'month':
-        return 30;
-      case 'six_months':
-        return 180;
-      case 'year':
-        return 365;
-      case 'all':
-        return Infinity;
-      default:
-        return 30;
-    }
+    return parseCustomDays(period).days;
   }
 }

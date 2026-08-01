@@ -18,7 +18,7 @@ export interface PriceSnapshot {
   checkedAt: string; // ISO date string
 }
 
-export type TimePeriod = 'week' | 'month' | 'six_months' | 'year' | 'all';
+export type TimePeriod = 'week' | 'month' | 'six_months' | 'year' | 'all' | string;
 
 export type TrendDirection = 'up' | 'down' | 'flat';
 export type VolatilityLevel = 'low' | 'high';

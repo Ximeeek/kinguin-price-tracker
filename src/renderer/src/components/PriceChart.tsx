@@ -48,11 +48,18 @@ export const PriceChart: React.FC<PriceChartProps> = ({
   const details = SUPPORTED_CURRENCIES[activeCurrency] || SUPPORTED_CURRENCIES.EUR;
   const symbol = details.symbol;
 
+  const oldestTime = history.length > 0 ? new Date(history[0].checkedAt).getTime() : 0;
+  const newestTime = history.length > 0 ? new Date(history[history.length - 1].checkedAt).getTime() : 0;
+  const isShortSpan = (newestTime - oldestTime) <= 3 * 24 * 3600 * 1000;
+
   const data = history.map((item) => {
     const d = new Date(item.checkedAt);
     const converted = convertPrice(item.price, currency);
+    const dateLabel = isShortSpan
+      ? d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     return {
-      date: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      date: dateLabel,
       fullDate: d.toLocaleString(),
       price: Math.round(converted * 100) / 100
     };

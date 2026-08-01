@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ProductDetailResponse, TimePeriod } from '../../../shared/types';
 import { PeriodSelector } from './PeriodSelector';
 import { PriceChart } from './PriceChart';
@@ -7,8 +8,8 @@ import { TrendBanner } from './TrendBanner';
 import { X, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
-
 import { ProductImage } from './ProductImage';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 
 interface ProductDetailModalProps {
   productId: string;
@@ -21,6 +22,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
   const [detail, setDetail] = useState<ProductDetailResponse | null>(null);
   const [period, setPeriod] = useState<TimePeriod>('month');
   const [loading, setLoading] = useState(true);
+
+  useLockBodyScroll(!!productId);
 
   const handlePeriodChange = (newPeriod: TimePeriod) => {
     if (newPeriod === period) return;
@@ -85,8 +88,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
     ? Math.max(1, Math.ceil((Date.now() - new Date(product.firstTrackedAt).getTime()) / (1000 * 3600 * 24)))
     : undefined;
 
-  return (
-    <div className="modal-overlay" onClick={onClose}>
+  return createPortal(
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 999999 }}>
       <div className="glass-card modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="modal-header">
@@ -187,7 +190,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
 
           <div
             style={{
-              background: 'rgba(14, 18, 26, 0.6)',
+              background: 'rgba(255, 255, 255, 0.03)',
               padding: 16,
               borderRadius: 14,
               border: '1px solid rgba(255,255,255,0.06)'
@@ -223,7 +226,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
         </div>
 
         <PriceChart
-          key={productId}
+          key={`${productId}_${period}`}
           history={history}
           currency={product.currency}
           averagePrice={average.averagePrice}
@@ -237,6 +240,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
           currency={product.currency}
         />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

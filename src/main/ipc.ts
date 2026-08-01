@@ -7,13 +7,19 @@ import { generateDevMockProduct } from './services/mockDataGenerator';
 import { AddProductResult, ProductDetailResponse, RefreshResult, TimePeriod, PriceSnapshot } from '../shared/types';
 import { Logger } from './logger';
 
+import { parseCustomDays } from '../shared/timeUtils';
+
 const LOCAL_REFRESH_TTL_MS = 6 * 3600 * 1000; // 6 hours cache TTL for Phase 1 MVP
 const IS_DEV = Boolean(process.env.VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'development');
 
 function filterHistoryByPeriod(fullHistory: PriceSnapshot[], period: TimePeriod): PriceSnapshot[] {
   if (!fullHistory || fullHistory.length === 0) return [];
   const now = Date.now();
-  const periodDays = period === 'week' ? 7 : period === 'month' ? 30 : period === 'six_months' ? 180 : 365;
+  const parsed = parseCustomDays(period);
+  if (!isFinite(parsed.days)) {
+    return fullHistory;
+  }
+  const periodDays = parsed.days > 0 ? parsed.days : 30;
   const cutoffTime = now - periodDays * 24 * 3600 * 1000;
 
   const filtered = fullHistory.filter((item) => new Date(item.checkedAt).getTime() >= cutoffTime);

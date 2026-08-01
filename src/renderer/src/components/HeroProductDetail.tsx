@@ -292,7 +292,7 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
       </div>
 
       <PriceChart
-        key={productId}
+        key={`${productId}_${period}`}
         history={history}
         currency={product.currency}
         averagePrice={average.averagePrice}

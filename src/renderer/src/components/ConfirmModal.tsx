@@ -1,6 +1,8 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -18,17 +20,25 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onClose
 }) => {
   const { t } = useLanguage();
+  useLockBodyScroll(isOpen);
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       className="modal-overlay"
       onClick={onClose}
       style={{
-        zIndex: 999,
-        background: 'rgba(5, 7, 12, 0.75)',
-        backdropFilter: 'blur(10px)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 999999,
+        background: 'rgba(5, 7, 12, 0.8)',
+        backdropFilter: 'blur(12px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -143,6 +153,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
