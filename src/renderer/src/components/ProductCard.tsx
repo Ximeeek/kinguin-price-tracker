@@ -5,6 +5,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { useCurrency } from '../currency/CurrencyContext';
 import { ConfirmModal } from './ConfirmModal';
 import { PriceChangeIndicator } from './PriceChangeIndicator';
+import { CustomTooltip } from './CustomTooltip';
 
 import { ProductImage } from './ProductImage';
 
@@ -62,18 +63,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
           <div className="product-meta">
-            <span>ID: {product.id}</span>
-            <span>•</span>
-            <span>
-              {product.lastCheckedAt
-                ? new Date(product.lastCheckedAt).toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })
-                : t('productList.neverChecked')}
-            </span>
+            <CustomTooltip text={t('productList.idTooltip')} position="bottom">
+              <span className="product-meta-item">ID: {product.id}</span>
+            </CustomTooltip>
+            <span className="product-meta-dot">•</span>
+            <CustomTooltip text={t('productList.lastCheckedTooltip')} position="bottom">
+              <span className="product-meta-item">
+                {product.lastCheckedAt
+                  ? new Date(product.lastCheckedAt).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })
+                  : t('productList.neverChecked')}
+              </span>
+            </CustomTooltip>
           </div>
         </div>
 

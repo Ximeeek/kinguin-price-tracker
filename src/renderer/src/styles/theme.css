@@ -329,9 +329,25 @@ body::after {
 .product-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.product-meta-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.product-meta-dot {
+  opacity: 0.5;
+  user-select: none;
+  flex-shrink: 0;
 }
 
 .product-price-section {
