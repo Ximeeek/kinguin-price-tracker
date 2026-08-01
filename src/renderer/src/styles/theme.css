@@ -472,7 +472,23 @@ body::after {
   z-index: 100;
 }
 
+.nav-active-pill {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.22), rgba(6, 182, 212, 0.22));
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.25);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
 .nav-item-btn {
+  position: relative;
+  z-index: 1;
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -483,19 +499,56 @@ body::after {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
 }
 
 .nav-item-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-item-btn:active {
+  transform: scale(0.94);
 }
 
 .nav-item-btn.active {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(6, 182, 212, 0.2));
   color: var(--accent-green);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+}
+
+/* Section View Switch Transitions */
+.section-view-container {
+  width: 100%;
+  will-change: transform, opacity;
+}
+
+.section-view-container.slide-from-right {
+  animation: sectionSlideInRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.section-view-container.slide-from-left {
+  animation: sectionSlideInLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sectionSlideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(32px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes sectionSlideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-32px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
 /* Modal View */

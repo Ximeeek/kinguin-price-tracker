@@ -9,11 +9,23 @@ interface BottomNavbarProps {
   onSelectTab: (tab: NavTab) => void;
 }
 
+const TAB_INDEXES: Record<NavTab, number> = {
+  tracker: 0,
+  analytics: 1,
+  settings: 2
+};
+
 export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab, onSelectTab }) => {
   const { t } = useLanguage();
+  const activeIndex = TAB_INDEXES[activeTab] ?? 0;
 
   return (
     <div className="floating-bottom-nav">
+      <div
+        className="nav-active-pill"
+        style={{ transform: `translateX(${activeIndex * 52}px)` }}
+      />
+
       <button
         className={`nav-item-btn ${activeTab === 'tracker' ? 'active' : ''}`}
         onClick={() => onSelectTab('tracker')}
@@ -40,3 +52,4 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab, onSelectT
     </div>
   );
 };
+
