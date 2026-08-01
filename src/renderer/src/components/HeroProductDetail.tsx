@@ -206,6 +206,7 @@ export const HeroProductDetail: React.FC<HeroProductDetailProps> = ({
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: 14,
+          alignItems: 'start',
           marginBottom: 20
         }}
       >
