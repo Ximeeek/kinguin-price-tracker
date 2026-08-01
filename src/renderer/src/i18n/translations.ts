@@ -57,6 +57,11 @@ export const translations = {
     'toast.refreshSuccess': 'Price updated successfully',
     'toast.refreshError': 'Failed to update price',
 
+    // Indicator Tooltips
+    'indicator.noChange': 'Price unchanged since last check',
+    'indicator.increased': 'Price increased by {amount} since last check',
+    'indicator.decreased': 'Price dropped by {amount} since last check',
+
     // Analytics View
     'analytics.title': 'Statistical Overview',
     'analytics.emptyText': 'Add products to your tracking list first to see statistical summaries.',
@@ -146,6 +151,11 @@ export const translations = {
     // Toast Notifications
     'toast.refreshSuccess': 'Cena została pomyślnie zaktualizowana',
     'toast.refreshError': 'Nie udało się zaktualizować ceny',
+
+    // Indicator Tooltips
+    'indicator.noChange': 'Cena bez zmian od ostatniego sprawdzenia',
+    'indicator.increased': 'Cena wzrosła o {amount} od ostatniego odświeżenia',
+    'indicator.decreased': 'Cena spadła o {amount} od ostatniego odświeżenia',
 
     // Analytics View
     'analytics.title': 'Przegląd statystyczny',
