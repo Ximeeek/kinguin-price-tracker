@@ -9,7 +9,7 @@ import { BottomNavbar, NavTab } from './components/BottomNavbar';
 import { SettingsView, SearchScrollMode } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
 import { CurrencySelector } from './components/CurrencySelector';
-import { ToastNotification, ToastMessage } from './components/ToastNotification';
+import { ToastNotification, ToastMessage, FailedProductInfo } from './components/ToastNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CurrencyProvider } from './currency/CurrencyContext';
 import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles, Star, X } from 'lucide-react';
@@ -64,14 +64,50 @@ const AppContent: React.FC = () => {
   }, []);
 
   const handleRefreshAll = async () => {
+    if (products.length === 0) return;
     setRefreshingAll(true);
+    const allIds = new Set(products.map((p) => p.id));
+    setRefreshingProductIds(allIds);
+
     try {
+      const results = await Promise.all(
+        products.map(async (product) => {
+          try {
+            const res = await window.api.refreshProduct(product.id);
+            return { product, res };
+          } catch (err: any) {
+            return {
+              product,
+              res: { success: false, error: err.message || t('toast.refreshError') }
+            };
+          }
+        })
+      );
+
       await fetchProducts();
-      setToast({
-        id: Date.now().toString(),
-        type: 'success',
-        text: t('toast.refreshSuccess')
-      });
+
+      const failedProducts: FailedProductInfo[] = results
+        .filter((r) => !r.res.success)
+        .map((r) => ({
+          id: r.product.id,
+          title: r.product.title,
+          error: r.res.error
+        }));
+
+      if (failedProducts.length === 0) {
+        setToast({
+          id: Date.now().toString(),
+          type: 'success',
+          text: t('toast.refreshAllSuccess')
+        });
+      } else {
+        setToast({
+          id: Date.now().toString(),
+          type: 'error',
+          text: t('toast.refreshSomeFailed').replace('{count}', failedProducts.length.toString()),
+          failedProducts
+        });
+      }
     } catch {
       setToast({
         id: Date.now().toString(),
@@ -80,6 +116,7 @@ const AppContent: React.FC = () => {
       });
     } finally {
       setRefreshingAll(false);
+      setRefreshingProductIds(new Set());
     }
   };
 
@@ -102,13 +139,21 @@ const AppContent: React.FC = () => {
   const handleRefreshProduct = async (id: string) => {
     setRefreshingProductIds((prev) => new Set(prev).add(id));
     try {
-      await window.api.refreshProduct(id);
+      const res = await window.api.refreshProduct(id);
       await fetchProducts();
-      setToast({
-        id: Date.now().toString(),
-        type: 'success',
-        text: t('toast.refreshSuccess')
-      });
+      if (!res.success) {
+        setToast({
+          id: Date.now().toString(),
+          type: 'error',
+          text: res.error || t('toast.refreshError')
+        });
+      } else {
+        setToast({
+          id: Date.now().toString(),
+          type: 'success',
+          text: t('toast.refreshSuccess')
+        });
+      }
     } catch {
       setToast({
         id: Date.now().toString(),

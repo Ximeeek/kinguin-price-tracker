@@ -4,7 +4,7 @@ import { KinguinProductFetcher, parseKinguinUrl } from './services/kinguinFetche
 import { TrendEngine } from './services/trendEngine';
 import { AverageEngine } from './services/averageEngine';
 import { generateDevMockProduct } from './services/mockDataGenerator';
-import { AddProductResult, ProductDetailResponse, TimePeriod, PriceSnapshot } from '../shared/types';
+import { AddProductResult, ProductDetailResponse, RefreshResult, TimePeriod, PriceSnapshot } from '../shared/types';
 import { Logger } from './logger';
 
 const LOCAL_REFRESH_TTL_MS = 6 * 3600 * 1000; // 6 hours cache TTL for Phase 1 MVP
@@ -150,10 +150,12 @@ export function setupIpcHandlers(repository: PriceRepository) {
   });
 
   // Manual refresh of product price
-  ipcMain.handle('refresh-product', async (_, productId: string): Promise<ProductDetailResponse | null> => {
+  ipcMain.handle('refresh-product', async (_, productId: string): Promise<RefreshResult> => {
     Logger.info('IPC', `[refresh-product] Manual price refresh for ID: ${productId}`);
     const product = await repository.findProductById(productId);
-    if (!product) return null;
+    if (!product) return { success: false, error: 'Product not found' };
+
+    let fetchError: string | null = null;
 
     try {
       const fetched = await fetcher.fetchProduct(product.url);
@@ -171,6 +173,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
       Logger.info('IPC', `[refresh-product] Price updated in database: ${fetched.price} ${fetched.currency}`);
     } catch (err: any) {
       Logger.error('IPC', `[refresh-product] Refresh error: ${err.message}`);
+      fetchError = err.message || 'Could not fetch product details from Kinguin page.';
       await repository.updateProduct({
         id: product.id,
         status: 'unavailable'
@@ -179,19 +182,25 @@ export function setupIpcHandlers(repository: PriceRepository) {
 
     const history = await repository.getHistory(productId);
     const updatedProduct = await repository.findProductById(productId);
-    if (!updatedProduct) return null;
+    if (!updatedProduct) return { success: false, error: fetchError || 'Product not found' };
 
     const currentPrice = history.length > 0 ? history[history.length - 1].price : 0;
     const previousPrice = history.length > 1 ? history[history.length - 2].price : undefined;
     const trend = TrendEngine.analyze(history, updatedProduct.firstTrackedAt);
     const average = AverageEngine.analyze(history, currentPrice, 'month');
 
-    return {
+    const detail: ProductDetailResponse = {
       product: { ...updatedProduct, currentPrice, previousPrice },
       history,
       trend,
       average
     };
+
+    if (fetchError) {
+      return { success: false, error: fetchError, detail };
+    }
+
+    return { success: true, detail };
   });
 
   // Delete tracked product

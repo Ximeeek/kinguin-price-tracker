@@ -60,6 +60,12 @@ export interface ProductDetailResponse {
   average: AverageAnalysis;
 }
 
+export interface RefreshResult {
+  success: boolean;
+  error?: string;
+  detail?: ProductDetailResponse;
+}
+
 export interface AddProductResult {
   success: boolean;
   product?: Product;
@@ -70,7 +76,7 @@ export interface ElectronAPI {
   trackProduct: (url: string) => Promise<AddProductResult>;
   getProducts: () => Promise<Product[]>;
   getProductDetail: (id: string, period?: TimePeriod) => Promise<ProductDetailResponse | null>;
-  refreshProduct: (id: string) => Promise<ProductDetailResponse | null>;
+  refreshProduct: (id: string) => Promise<RefreshResult>;
   deleteProduct: (id: string) => Promise<boolean>;
   openExternal: (url: string) => Promise<void>;
   minimizeWindow: () => Promise<void>;

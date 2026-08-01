@@ -59,6 +59,8 @@ export const translations = {
     // Toast Notifications
     'toast.refreshSuccess': 'Price updated successfully',
     'toast.refreshError': 'Failed to update price',
+    'toast.refreshAllSuccess': 'All product prices updated successfully',
+    'toast.refreshSomeFailed': 'Failed to refresh some products ({count})',
 
     // Indicator Tooltips
     'indicator.noChange': 'Price unchanged since last check',
@@ -185,6 +187,8 @@ export const translations = {
     // Toast Notifications
     'toast.refreshSuccess': 'Cena została pomyślnie zaktualizowana',
     'toast.refreshError': 'Nie udało się zaktualizować ceny',
+    'toast.refreshAllSuccess': 'Wszystkie ceny zostały pomyślnie zaktualizowane',
+    'toast.refreshSomeFailed': 'Nie udało się odświeżyć niektórych produktów ({count})',
 
     // Indicator Tooltips
     'indicator.noChange': 'Cena bez zmian od ostatniego sprawdzenia',
