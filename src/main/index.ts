@@ -42,7 +42,7 @@ if (!gotTheLock) {
     if (backendUrl) {
       try {
         Logger.info('App', `BACKEND_API_URL set. Connecting to Remote Backend API: ${backendUrl}...`);
-        const remoteRepo = new RemoteApiRepository(backendUrl);
+        const remoteRepo = new RemoteApiRepository(backendUrl, userDataPath);
         await remoteRepo.init();
         repository = remoteRepo;
       } catch (err: any) {
