@@ -35,6 +35,10 @@ const AppContent: React.FC = () => {
     const newIdx = tabIndexes[newTab];
     setSlideDirection(newIdx > prevIdx ? 'slide-from-right' : 'slide-from-left');
     setActiveTab(newTab);
+    setSearchQuery('');
+    if (searchInputRef.current) {
+      searchInputRef.current.blur();
+    }
   };
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
