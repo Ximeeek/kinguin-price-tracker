@@ -52,7 +52,7 @@ export const translations = {
     'modal.noChartData': 'No price history to display',
     'modal.averageLineLabel': 'Average: {amount}',
     'deleteModal.title': 'Delete Tracking?',
-    'deleteModal.confirmText': 'Are you sure you want to stop tracking "{title}"? Historical price data will be removed locally only.',
+    'deleteModal.confirmText': 'Are you sure you want to stop tracking "{title}"? The game will be removed from your LOCAL database only. The entry in the online database will remain unchanged.',
     'deleteModal.cancel': 'Cancel',
     'deleteModal.delete': 'Delete',
 
@@ -286,7 +286,7 @@ export const translations = {
     'modal.noChartData': 'Brak historii cen do wyświetlenia',
     'modal.averageLineLabel': 'Średnia: {amount}',
     'deleteModal.title': 'Usunąć śledzenie?',
-    'deleteModal.confirmText': 'Czy na pewno chcesz przestać śledzić "{title}"? Historia cen tego produktu zostanie usunięta tylko lokalnie.',
+    'deleteModal.confirmText': 'Czy na pewno chcesz przestać śledzić "{title}"? Gra zostanie usunięta tylko z LOKALNEJ bazy danych na Twoim komputerze. Rekord w bazie danych online pozostanie bez zmian.',
     'deleteModal.cancel': 'Anuluj',
     'deleteModal.delete': 'Usuń',
 

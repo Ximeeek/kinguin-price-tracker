@@ -264,7 +264,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
     }
 
     // 2. Remote Neon DB / Backend API health check (if configured)
-    const remoteUrl = process.env.VITE_API_URL || process.env.BACKEND_URL;
+    const remoteUrl = process.env.BACKEND_API_URL || process.env.VITE_API_URL || process.env.BACKEND_URL;
     let remoteConnected = false;
     let remoteLatency: number | undefined;
     let remoteError: string | undefined;
@@ -275,7 +275,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
       try {
         // Ping /health/db to verify actual Neon PostgreSQL database connection
         const res = await fetch(`${baseUrl}/health/db`, {
-          signal: AbortSignal.timeout(4000)
+          signal: AbortSignal.timeout(5000)
         });
         remoteLatency = Date.now() - startRemote;
 
@@ -291,14 +291,17 @@ export function setupIpcHandlers(repository: PriceRepository) {
           }
         } else if (res.status === 404) {
           // Fallback to basic /health for legacy backend servers
-          const fallbackRes = await fetch(`${baseUrl}/health`, { signal: AbortSignal.timeout(3000) });
+          const fallbackRes = await fetch(`${baseUrl}/health`, { signal: AbortSignal.timeout(4000) });
           remoteConnected = fallbackRes.ok;
+          if (!fallbackRes.ok) {
+            remoteError = `HTTP ${fallbackRes.status}`;
+          }
         } else {
           remoteError = `HTTP ${res.status}`;
         }
       } catch (err: any) {
         remoteLatency = Date.now() - startRemote;
-        remoteError = err.name === 'TimeoutError' ? 'Timeout (4s)' : (err.message || 'Unreachable');
+        remoteError = err.name === 'TimeoutError' ? 'Wybudzanie serwera (Cold start)...' : (err.message || 'Nieosiągalny');
       }
     }
 

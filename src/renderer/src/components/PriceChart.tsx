@@ -53,7 +53,7 @@ function generateYAxisTicks(minY: number, maxY: number, targetCount = 5): number
 }
 
 function generateXAxisTicks(minX: number, maxX: number, targetCount = 6): number[] {
-  if (minX >= maxX) return [minX, maxX];
+  if (minX >= maxX) return [minX];
   const step = (maxX - minX) / Math.max(1, targetCount - 1);
   const ticks: number[] = [];
   for (let i = 0; i < targetCount; i++) {
@@ -79,7 +79,19 @@ export const PriceChart: React.FC<PriceChartProps> = ({
     if (!history || history.length === 0) return [];
     return history
       .map((item) => {
-        const d = new Date(item.checkedAt);
+        let d: Date;
+        if (typeof item.checkedAt === 'string') {
+          const dateOnly = item.checkedAt.substring(0, 10);
+          if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+            const [y, m, day] = dateOnly.split('-').map(Number);
+            d = new Date(y, m - 1, day, 12, 0, 0);
+          } else {
+            d = new Date(item.checkedAt);
+          }
+        } else {
+          d = new Date(item.checkedAt);
+        }
+
         const timestamp = d.getTime();
         const converted = convertPrice(item.price, currency);
         return {
