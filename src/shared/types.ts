@@ -83,12 +83,32 @@ export interface AddProductResult {
   errorParams?: Record<string, string | number>;
 }
 
+export interface SystemStatus {
+  online: boolean;
+  localDb: {
+    connected: boolean;
+    type: string;
+    productCount: number;
+    latencyMs: number;
+    error?: string;
+  };
+  remoteDb: {
+    enabled: boolean;
+    connected: boolean;
+    type?: string;
+    latencyMs?: number;
+    error?: string;
+  };
+  checkedAt: string;
+}
+
 export interface ElectronAPI {
   trackProduct: (url: string) => Promise<AddProductResult>;
   getProducts: () => Promise<Product[]>;
   getProductDetail: (id: string, period?: TimePeriod) => Promise<ProductDetailResponse | null>;
   refreshProduct: (id: string) => Promise<RefreshResult>;
   deleteProduct: (id: string) => Promise<boolean>;
+  checkSystemStatus: () => Promise<SystemStatus>;
   openExternal: (url: string) => Promise<void>;
   minimizeWindow: () => Promise<void>;
   maximizeWindow: () => Promise<void>;

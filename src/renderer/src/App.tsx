@@ -10,6 +10,7 @@ import { SettingsView, SearchScrollMode } from './components/SettingsView';
 import { LanguageSelector } from './components/LanguageSelector';
 import { CurrencySelector } from './components/CurrencySelector';
 import { NerdInfoModal } from './components/NerdInfoModal';
+import { StatusIndicator } from './components/StatusIndicator';
 import { ToastNotification, ToastMessage, FailedProductInfo } from './components/ToastNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CurrencyProvider } from './currency/CurrencyContext';
@@ -262,6 +263,9 @@ const AppContent: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {/* Minimalist Internet & DB Connection Status Indicator */}
+            <StatusIndicator onOpenNerdModal={() => setIsNerdModalOpen(true)} />
+
             {/* System Specs Info Button */}
             <button
               type="button"

@@ -15,6 +15,10 @@ build/
 .agents/
 .gemini/
 
+# Environment files
+.env
+.env.local
+
 # OS metadata
 Thumbs.db
 Desktop.ini

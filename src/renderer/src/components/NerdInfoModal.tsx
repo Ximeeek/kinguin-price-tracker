@@ -14,10 +14,16 @@ import {
   Layers,
   Coins,
   TrendingUp,
-  Activity
+  Activity,
+  Wifi,
+  WifiOff,
+  RotateCw,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
+import { useSystemStatus } from '../hooks/useSystemStatus';
 
 interface NerdInfoModalProps {
   onClose: () => void;
@@ -35,6 +41,7 @@ const TAB_INDEXES: Record<NerdTab, number> = {
 
 export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
   const { t } = useLanguage();
+  const { isOnline, status, isLoading, refreshStatus } = useSystemStatus();
   const [activeTab, setActiveTab] = useState<NerdTab>('stack');
   const [slideDir, setSlideDir] = useState<'slide-right' | 'slide-left'>('slide-right');
   useLockBodyScroll(true);
@@ -189,6 +196,103 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
 
         {/* Modal Body Content Container */}
         <div style={{ padding: 24, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {/* Live System Health & Diagnostics Banner */}
+          <div
+            className="glass-card"
+            style={{
+              padding: 16,
+              marginBottom: 16,
+              background: 'linear-gradient(135deg, rgba(14, 24, 36, 0.75), rgba(10, 18, 28, 0.85))',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: 14,
+              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3)',
+              flexShrink: 0
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Activity size={18} color="var(--accent-green)" />
+                <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                  {t('systemStatus.title')}
+                </h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => refreshStatus()}
+                disabled={isLoading}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '5px 12px',
+                  borderRadius: 8,
+                  background: 'rgba(34, 197, 94, 0.15)',
+                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                  color: 'var(--accent-green)',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <RotateCw size={12} className={isLoading ? 'spin' : ''} />
+                {t('systemStatus.refresh')}
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+              {/* Internet Status */}
+              <div style={{ padding: 10, borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                  {isOnline ? <Wifi size={13} color="var(--accent-green)" /> : <WifiOff size={13} color="#f59e0b" />}
+                  <span>{t('systemStatus.internet')}</span>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: isOnline ? 'var(--accent-green)' : '#f59e0b' }}>
+                  {isOnline ? t('systemStatus.online') : t('systemStatus.offline')}
+                </div>
+              </div>
+
+              {/* Local DB Status */}
+              <div style={{ padding: 10, borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                  <Database size={13} color="var(--accent-green)" />
+                  <span>{t('systemStatus.localDb')}</span>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: status?.localDb?.connected ? 'var(--accent-green)' : '#ef4444' }}>
+                  {status?.localDb?.connected ? t('systemStatus.connected') : t('systemStatus.disconnected')}
+                </div>
+                {status?.localDb?.connected && (
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
+                    {status.localDb.productCount} {t('systemStatus.productCount')} ({status.localDb.latencyMs}ms)
+                  </div>
+                )}
+              </div>
+
+              {/* Remote DB Status */}
+              {status?.remoteDb?.enabled && (
+                <div style={{ padding: 10, borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                    <Zap size={13} color="var(--accent-cyan)" />
+                    <span>{t('systemStatus.remoteDb')}</span>
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: status.remoteDb.connected ? 'var(--accent-green)' : '#f59e0b' }}>
+                    {status.remoteDb.connected ? t('systemStatus.connected') : status.remoteDb.error || t('systemStatus.disconnected')}
+                  </div>
+                  {status.remoteDb.connected && status.remoteDb.latencyMs !== undefined && (
+                    <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
+                      {t('systemStatus.latency')}: {status.remoteDb.latencyMs}ms
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: 'var(--accent-green)' }}>⚡</span>
+              <span>{t('systemStatus.optimizedNote')}</span>
+            </div>
+          </div>
+
           <div key={activeTab} className={`nerd-tab-view ${slideDir}`}>
             {activeTab === 'stack' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

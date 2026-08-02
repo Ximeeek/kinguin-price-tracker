@@ -4,7 +4,7 @@ import { KinguinProductFetcher, parseKinguinUrl } from './services/kinguinFetche
 import { TrendEngine } from './services/trendEngine';
 import { AverageEngine } from './services/averageEngine';
 import { generateDevMockProduct } from './services/mockDataGenerator';
-import { AddProductResult, ProductDetailResponse, RefreshResult, TimePeriod, PriceSnapshot } from '../shared/types';
+import { AddProductResult, ProductDetailResponse, RefreshResult, TimePeriod, PriceSnapshot, SystemStatus } from '../shared/types';
 import { Logger } from './logger';
 
 import { parseCustomDays } from '../shared/timeUtils';
@@ -239,6 +239,87 @@ export function setupIpcHandlers(repository: PriceRepository) {
     await repository.deleteProduct(productId);
     Logger.info('IPC', `[delete-product] Deleted product ID: ${productId}`);
     return true;
+  });
+
+  // Check system status & database connectivity (optimized healthcheck)
+  ipcMain.handle('check-system-status', async (): Promise<SystemStatus> => {
+    Logger.info('IPC', '[check-system-status] Diagnostics health check initiated');
+    
+    // 1. Local SQLite DB health check
+    let localConnected = false;
+    let productCount = 0;
+    let localLatency = 0;
+    let localError: string | undefined;
+
+    const startLocal = Date.now();
+    try {
+      const products = await repository.listTrackedProducts();
+      localLatency = Date.now() - startLocal;
+      localConnected = true;
+      productCount = products.length;
+    } catch (err: any) {
+      localLatency = Date.now() - startLocal;
+      localError = err.message || 'SQLite query failed';
+      Logger.error('IPC', `[check-system-status] Local SQLite check failed: ${localError}`);
+    }
+
+    // 2. Remote Neon DB / Backend API health check (if configured)
+    const remoteUrl = process.env.VITE_API_URL || process.env.BACKEND_URL;
+    let remoteConnected = false;
+    let remoteLatency: number | undefined;
+    let remoteError: string | undefined;
+
+    if (remoteUrl) {
+      const startRemote = Date.now();
+      const baseUrl = remoteUrl.replace(/\/+$/, '');
+      try {
+        // Ping /health/db to verify actual Neon PostgreSQL database connection
+        const res = await fetch(`${baseUrl}/health/db`, {
+          signal: AbortSignal.timeout(4000)
+        });
+        remoteLatency = Date.now() - startRemote;
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok) {
+            remoteConnected = true;
+            if (typeof data.latencyMs === 'number') {
+              remoteLatency = data.latencyMs;
+            }
+          } else {
+            remoteError = 'Neon DB Disconnected';
+          }
+        } else if (res.status === 404) {
+          // Fallback to basic /health for legacy backend servers
+          const fallbackRes = await fetch(`${baseUrl}/health`, { signal: AbortSignal.timeout(3000) });
+          remoteConnected = fallbackRes.ok;
+        } else {
+          remoteError = `HTTP ${res.status}`;
+        }
+      } catch (err: any) {
+        remoteLatency = Date.now() - startRemote;
+        remoteError = err.name === 'TimeoutError' ? 'Timeout (4s)' : (err.message || 'Unreachable');
+      }
+    }
+
+    return {
+      online: true,
+      localDb: {
+        connected: localConnected,
+        type: 'SQLite Engine',
+        productCount,
+        latencyMs: localLatency,
+        error: localError
+      },
+      remoteDb: {
+        enabled: Boolean(remoteUrl),
+        connected: remoteConnected,
+        type: 'PostgreSQL / Remote API',
+        latencyMs: remoteLatency,
+        error: remoteError
+      },
+      checkedAt: new Date().toISOString()
+    };
   });
 
   // Safe external URL opening

@@ -136,6 +136,26 @@ export const translations = {
     'infoModal.tabAlgorithm': 'Algorithms',
     'infoModal.tabSecurity': 'Security & IPC',
 
+    // System Status & Diagnostics
+    'systemStatus.title': 'Live System Diagnostics',
+    'systemStatus.internet': 'Internet Connection',
+    'systemStatus.online': 'Online',
+    'systemStatus.offline': 'Offline',
+    'systemStatus.localDb': 'Local Database (SQLite)',
+    'systemStatus.remoteDb': 'Remote Backend API',
+    'systemStatus.connected': 'Connected',
+    'systemStatus.disconnected': 'Disconnected',
+    'systemStatus.disabled': 'Not Configured',
+    'systemStatus.latency': 'Latency',
+    'systemStatus.productCount': 'Tracked Games',
+    'systemStatus.refresh': 'Refresh Diagnostics',
+    'systemStatus.lastChecked': 'Last Checked',
+    'systemStatus.optimizedNote': 'Zero-overhead event-driven monitoring (0 idle compute units used)',
+    'systemStatus.tooltipOk': 'All Systems Operational (Online & DB Connected)',
+    'systemStatus.tooltipOffline': 'No Internet Connection',
+    'systemStatus.tooltipDbError': 'Database Connection Issue',
+    'systemStatus.openSpecs': 'Open System Specs & Diagnostics',
+
     // Period selector
     'period.week': 'Weekly',
     'period.month': 'Monthly',
@@ -333,6 +353,26 @@ export const translations = {
     'infoModal.tabScraper': 'Parser Cen',
     'infoModal.tabAlgorithm': 'Algorytmy Predykcji',
     'infoModal.tabSecurity': 'Bezpieczeństwo IPC',
+
+    // System Status & Diagnostics
+    'systemStatus.title': 'Diagnostyka Systemu i Połączenia',
+    'systemStatus.internet': 'Połączenie z Internetem',
+    'systemStatus.online': 'Połączono (Online)',
+    'systemStatus.offline': 'Brak połączenia (Offline)',
+    'systemStatus.localDb': 'Lokalna Baza Danych (SQLite)',
+    'systemStatus.remoteDb': 'Zdalne API / Baza danych',
+    'systemStatus.connected': 'Połączono',
+    'systemStatus.disconnected': 'Rozłączono',
+    'systemStatus.disabled': 'Nieaktywne',
+    'systemStatus.latency': 'Opóźnienie',
+    'systemStatus.productCount': 'Śledzonych gier',
+    'systemStatus.refresh': 'Odśwież status',
+    'systemStatus.lastChecked': 'Ostatnie sprawdzenie',
+    'systemStatus.optimizedNote': 'Tryb zero-cost: weryfikacja sterowana zdarzeniami (0 zbędnych jednostek obliczeniowych)',
+    'systemStatus.tooltipOk': 'Wszystkie systemy działają (Online & Baza OK)',
+    'systemStatus.tooltipOffline': 'Brak połączenia z internetem',
+    'systemStatus.tooltipDbError': 'Problem z połączeniem z bazą danych',
+    'systemStatus.openSpecs': 'Otwórz Specyfikację i Diagnostykę',
 
     // Period selector
     'period.week': 'Tygodniowy',
