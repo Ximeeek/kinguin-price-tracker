@@ -245,8 +245,8 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
               </div>
               <button
                 type="button"
-                onClick={() => refreshStatus()}
-                disabled={isLoading}
+                onClick={handleRefresh}
+                disabled={isLoading || isRefreshing}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -262,7 +262,7 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
                   transition: 'all 0.2s ease'
                 }}
               >
-                <RotateCw size={12} className={isLoading ? 'spin' : ''} />
+                <RotateCw size={12} className={isLoading || isRefreshing ? 'spinning' : ''} />
                 {t('systemStatus.refresh')}
               </button>
             </div>
