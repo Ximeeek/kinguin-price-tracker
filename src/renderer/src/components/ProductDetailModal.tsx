@@ -102,9 +102,21 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ productI
 
   const { product, history, trend, average } = detail;
 
-  const totalDays = product.firstTrackedAt
-    ? Math.max(1, Math.ceil((Date.now() - new Date(product.firstTrackedAt).getTime()) / (1000 * 3600 * 24)))
-    : undefined;
+  const totalDays = (() => {
+    if (!product.firstTrackedAt) return undefined;
+    const first = new Date(product.firstTrackedAt);
+    const now = new Date();
+    const startDate = new Date(first.getFullYear(), first.getMonth(), first.getDate());
+    const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const calDays = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + 1);
+    const snapDays = history && history.length > 0
+      ? new Set(history.map(s => {
+          const d = new Date(s.checkedAt);
+          return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        })).size
+      : 0;
+    return Math.max(calDays, snapDays);
+  })();
 
   return createPortal(
     <div className="modal-overlay stats-modal-overlay" onClick={onClose} style={{ zIndex: 999999 }}>

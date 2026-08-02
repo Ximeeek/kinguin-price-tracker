@@ -304,7 +304,12 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
                       ? t('systemStatus.unreachableOffline')
                       : status.remoteDb.connected
                       ? t('systemStatus.connected')
-                      : status.remoteDb.error || t('systemStatus.disconnected')}
+                      : (status.remoteDb.error ? (
+                          status.remoteDb.error === 'COLD_START' || status.remoteDb.error.includes('Cold start') ? t('systemStatus.coldStart') :
+                          status.remoteDb.error === 'UNREACHABLE' || status.remoteDb.error === 'Nieosiągalny' ? t('systemStatus.unreachable') :
+                          status.remoteDb.error === 'NEON_DISCONNECTED' || status.remoteDb.error === 'Neon DB Disconnected' ? t('systemStatus.neonDisconnected') :
+                          status.remoteDb.error
+                        ) : t('systemStatus.disconnected'))}
                   </div>
                   <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
                     {!isOnline

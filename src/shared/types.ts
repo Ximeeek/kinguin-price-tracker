@@ -109,6 +109,7 @@ export interface ElectronAPI {
   refreshProduct: (id: string) => Promise<RefreshResult>;
   deleteProduct: (id: string) => Promise<boolean>;
   checkSystemStatus: () => Promise<SystemStatus>;
+  onBackendStatusChanged?: (callback: (data: { online: boolean }) => void) => () => void;
   openExternal: (url: string) => Promise<void>;
   minimizeWindow: () => Promise<void>;
   maximizeWindow: () => Promise<void>;

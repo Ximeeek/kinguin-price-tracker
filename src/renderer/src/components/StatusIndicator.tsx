@@ -205,7 +205,12 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ onOpenNerdModa
                     ? t('systemStatus.unreachableOffline')
                     : status.remoteDb.connected
                     ? `${t('systemStatus.connected')} (${status.remoteDb.latencyMs}ms)`
-                    : status.remoteDb.error || t('systemStatus.disconnected')}
+                    : (status.remoteDb.error ? (
+                        status.remoteDb.error === 'COLD_START' || status.remoteDb.error.includes('Cold start') ? t('systemStatus.coldStart') :
+                        status.remoteDb.error === 'UNREACHABLE' || status.remoteDb.error === 'Nieosiągalny' ? t('systemStatus.unreachable') :
+                        status.remoteDb.error === 'NEON_DISCONNECTED' || status.remoteDb.error === 'Neon DB Disconnected' ? t('systemStatus.neonDisconnected') :
+                        status.remoteDb.error
+                      ) : t('systemStatus.disconnected'))}
                 </span>
               </div>
             )}

@@ -17,12 +17,25 @@ export class TrendEngine {
 
     const firstTrackedAt = new Date(firstTrackedAtStr);
     const now = new Date();
-    const totalHistoryDays = (now.getTime() - firstTrackedAt.getTime()) / (1000 * 3600 * 24);
+
+    // Calculate calendar days tracked (inclusive of start and end day)
+    const startDate = new Date(firstTrackedAt.getFullYear(), firstTrackedAt.getMonth(), firstTrackedAt.getDate());
+    const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const calendarDays = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + 1);
+
+    // Also check unique snapshot dates if snapshots are provided
+    const snapshotDays = snapshots && snapshots.length > 0
+      ? new Set(snapshots.map(s => {
+          const d = new Date(s.checkedAt);
+          return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        })).size
+      : 0;
+
+    const currentDays = Math.max(calendarDays, snapshotDays);
 
     // Rule §8.1: Must have at least 14 days of tracked history since first_tracked_at
-    if (totalHistoryDays < TREND_CONFIG.TREND_WINDOW_DAYS) {
-      const currentDays = Math.max(1, Math.floor(totalHistoryDays));
-      const remainingDays = Math.ceil(TREND_CONFIG.TREND_WINDOW_DAYS - totalHistoryDays);
+    if (currentDays < TREND_CONFIG.TREND_WINDOW_DAYS) {
+      const remainingDays = Math.max(1, TREND_CONFIG.TREND_WINDOW_DAYS - currentDays);
       return this.insufficientData(
         `Minimum of 14 days of price history required (currently: ${currentDays} days). Missing ${remainingDays} more days.`,
         'trend.exp.insufficient14Days',

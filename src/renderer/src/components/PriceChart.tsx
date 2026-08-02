@@ -52,14 +52,50 @@ function generateYAxisTicks(minY: number, maxY: number, targetCount = 5): number
   return Array.from(new Set(ticks)).sort((a, b) => a - b);
 }
 
-function generateXAxisTicks(minX: number, maxX: number, targetCount = 6): number[] {
+function generateXAxisTicks(minX: number, maxX: number, targetCount = 6, formatter?: (val: number) => string): number[] {
   if (minX >= maxX) return [minX];
-  const step = (maxX - minX) / Math.max(1, targetCount - 1);
-  const ticks: number[] = [];
-  for (let i = 0; i < targetCount; i++) {
-    ticks.push(Math.round(minX + i * step));
+
+  const totalSpanMs = maxX - minX;
+  const dayMs = 24 * 3600 * 1000;
+  const numDaysSpan = Math.max(1, Math.round(totalSpanMs / dayMs));
+
+  let rawTicks: number[] = [];
+
+  // For short time spans (e.g. <= 7 days), generate 1 tick per calendar day
+  if (numDaysSpan <= targetCount) {
+    const start = new Date(minX);
+    const curr = new Date(start.getFullYear(), start.getMonth(), start.getDate(), 12, 0, 0);
+    while (curr.getTime() <= maxX + dayMs * 0.4) {
+      if (curr.getTime() >= minX - dayMs * 0.4) {
+        rawTicks.push(curr.getTime());
+      }
+      curr.setDate(curr.getDate() + 1);
+    }
   }
-  return ticks;
+
+  // Fallback to even interval division if daily ticks were insufficient
+  if (rawTicks.length === 0) {
+    const step = totalSpanMs / Math.max(1, targetCount - 1);
+    for (let i = 0; i < targetCount; i++) {
+      rawTicks.push(Math.round(minX + i * step));
+    }
+  }
+
+  // Deduplicate ticks based on formatted date label (e.g. "1 Aug", "2 Aug")
+  if (formatter) {
+    const seenLabels = new Set<string>();
+    const uniqueTicks: number[] = [];
+    for (const t of rawTicks) {
+      const label = formatter(t);
+      if (!seenLabels.has(label)) {
+        seenLabels.add(label);
+        uniqueTicks.push(t);
+      }
+    }
+    if (uniqueTicks.length > 0) return uniqueTicks;
+  }
+
+  return rawTicks;
 }
 
 export const PriceChart: React.FC<PriceChartProps> = ({
@@ -81,12 +117,15 @@ export const PriceChart: React.FC<PriceChartProps> = ({
       .map((item) => {
         let d: Date;
         if (typeof item.checkedAt === 'string') {
-          const dateOnly = item.checkedAt.substring(0, 10);
-          if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
-            const [y, m, day] = dateOnly.split('-').map(Number);
+          const raw = item.checkedAt.trim();
+          const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+          if (match) {
+            const y = parseInt(match[1], 10);
+            const m = parseInt(match[2], 10);
+            const day = parseInt(match[3], 10);
             d = new Date(y, m - 1, day, 12, 0, 0);
           } else {
-            d = new Date(item.checkedAt);
+            d = new Date(raw);
           }
         } else {
           d = new Date(item.checkedAt);
@@ -260,16 +299,15 @@ export const PriceChart: React.FC<PriceChartProps> = ({
 
   const currentTarget = computeTargetDomain(selectedPeriod, zoomDomain);
   const activeDomain = renderedDomain || currentTarget;
-
-  const yTicks = generateYAxisTicks(activeDomain.minY, activeDomain.maxY, 5);
-  const xTicks = generateXAxisTicks(activeDomain.minX, activeDomain.maxX, 6);
-
   const convertedAverage = averagePrice !== undefined ? convertPrice(averagePrice, currency) : undefined;
 
   const formatXAxisTick = (val: number) => {
     const d = new Date(val);
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   };
+
+  const yTicks = generateYAxisTicks(activeDomain.minY, activeDomain.maxY, 5);
+  const xTicks = generateXAxisTicks(activeDomain.minX, activeDomain.maxX, 6, formatXAxisTick);
 
   const formatYAxisTick = (val: number) => {
     const rounded = Math.round(val);

@@ -272,6 +272,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
     if (remoteUrl) {
       const startRemote = Date.now();
       const baseUrl = remoteUrl.replace(/\/+$/, '');
+      const repoIsOnline = typeof (repository as any)?.isOnline === 'function' ? (repository as any).isOnline() : false;
       try {
         // Ping /health/db to verify actual Neon PostgreSQL database connection
         const res = await fetch(`${baseUrl}/health/db`, {
@@ -287,7 +288,7 @@ export function setupIpcHandlers(repository: PriceRepository) {
               remoteLatency = data.latencyMs;
             }
           } else {
-            remoteError = 'Neon DB Disconnected';
+            remoteError = 'NEON_DISCONNECTED';
           }
         } else if (res.status === 404) {
           // Fallback to basic /health for legacy backend servers
@@ -301,7 +302,12 @@ export function setupIpcHandlers(repository: PriceRepository) {
         }
       } catch (err: any) {
         remoteLatency = Date.now() - startRemote;
-        remoteError = err.name === 'TimeoutError' ? 'Wybudzanie serwera (Cold start)...' : (err.message || 'Nieosiągalny');
+        if (repoIsOnline) {
+          remoteConnected = true;
+          remoteError = undefined;
+        } else {
+          remoteError = err.name === 'TimeoutError' ? 'COLD_START' : (err.message || 'UNREACHABLE');
+        }
       }
     }
 

@@ -30,6 +30,7 @@ export class RemoteApiRepository implements PriceRepository {
       if (res.ok) {
         this.isBackendOnline = true;
         Logger.info('RemoteRepo', 'Backend API health check successful. Connected to remote server.');
+        this.notifyStatusChange(true);
         // Initial background sync for tracked products
         this.syncAllProductsRemoteHistory().catch(() => {});
         return;
@@ -61,6 +62,7 @@ export class RemoteApiRepository implements PriceRepository {
         if (res.ok) {
           this.isBackendOnline = true;
           Logger.info('RemoteRepo', `Backend API is now ONLINE after ${attempts} background retries! Syncing data...`);
+          this.notifyStatusChange(true);
           if (this.retryIntervalTimer) {
             clearInterval(this.retryIntervalTimer);
             this.retryIntervalTimer = null;
@@ -77,6 +79,20 @@ export class RemoteApiRepository implements PriceRepository {
         }
       }
     }, 4000);
+  }
+
+  private notifyStatusChange(online: boolean): void {
+    try {
+      const { BrowserWindow } = require('electron');
+      const windows = BrowserWindow.getAllWindows();
+      for (const win of windows) {
+        if (!win.isDestroyed()) {
+          win.webContents.send('backend-status-changed', { online });
+        }
+      }
+    } catch (_) {
+      // Ignore in non-electron environment
+    }
   }
 
   private async syncAllProductsRemoteHistory(): Promise<void> {
@@ -209,14 +225,13 @@ export class RemoteApiRepository implements PriceRepository {
           const currentLocal = await this.localRepo.getHistory(productId);
           for (const row of remoteHistoryRows) {
             const price = Number(row.avgPrice);
-            const checkedAt = row.lastCheckedAt || row.day;
-            if (price > 0 && checkedAt) {
-              const dateKey = checkedAt.substring(0, 10);
+            const dateKey = row.day ? String(row.day).substring(0, 10) : (row.lastCheckedAt ? String(row.lastCheckedAt).substring(0, 10) : '');
+            if (price > 0 && dateKey) {
               const exists = currentLocal.some(
                 s => s.checkedAt.substring(0, 10) === dateKey
               );
               if (!exists) {
-                await this.localRepo.addPriceSnapshot(productId, price, checkedAt);
+                await this.localRepo.addPriceSnapshot(productId, price, dateKey);
               }
             }
           }

@@ -170,6 +170,9 @@ export const translations = {
     'systemStatus.tooltipDbError': 'Database Connection Issue',
     'systemStatus.unreachableOffline': 'Unreachable (Offline)',
     'systemStatus.requiresInternet': 'Requires internet connection',
+    'systemStatus.coldStart': 'Server waking up (Cold start)...',
+    'systemStatus.unreachable': 'Unreachable',
+    'systemStatus.neonDisconnected': 'Neon DB Disconnected',
     'systemStatus.openSpecs': 'Open System Specs & Diagnostics',
 
     // Period selector
@@ -404,6 +407,9 @@ export const translations = {
     'systemStatus.tooltipDbError': 'Problem z połączeniem z bazą danych',
     'systemStatus.unreachableOffline': 'Nie można sprawdzić (Offline)',
     'systemStatus.requiresInternet': 'Wymagane połączenie z siecią',
+    'systemStatus.coldStart': 'Wybudzanie serwera (Cold start)...',
+    'systemStatus.unreachable': 'Nieosiągalny',
+    'systemStatus.neonDisconnected': 'Baza Neon Rozłączona',
     'systemStatus.openSpecs': 'Otwórz Specyfikację i Diagnostykę',
 
     // Period selector

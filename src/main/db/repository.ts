@@ -233,7 +233,7 @@ export class LocalSqliteRepository implements PriceRepository {
         id: Number(row.id),
         productId: String(row.product_id),
         price: Number(row.price),
-        checkedAt: String(row.checked_at)
+        checkedAt: String(row.day_key || row.checked_at)
       });
     }
     stmt.free();

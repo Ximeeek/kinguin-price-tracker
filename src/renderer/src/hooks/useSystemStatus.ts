@@ -109,6 +109,14 @@ export function useSystemStatus() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
+    // Subscribe to IPC event when backend transitions from offline/cold-start to online
+    let unsubscribeStatus: (() => void) | undefined;
+    if (window.api && typeof window.api.onBackendStatusChanged === 'function') {
+      unsubscribeStatus = window.api.onBackendStatusChanged(() => {
+        checkStatus(true);
+      });
+    }
+
     // Initial load check
     checkStatus();
 
@@ -122,9 +130,23 @@ export function useSystemStatus() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      if (unsubscribeStatus) unsubscribeStatus();
       clearInterval(heartbeatTimer);
     };
   }, [checkStatus]);
+
+  // Fast-poll every 5 seconds while remote DB is waking up / cold-starting
+  useEffect(() => {
+    if (!status?.remoteDb?.enabled || status.remoteDb.connected || !isOnline) {
+      return;
+    }
+
+    const coldStartTimer = setInterval(() => {
+      checkStatus(true);
+    }, 5000);
+
+    return () => clearInterval(coldStartTimer);
+  }, [status?.remoteDb?.enabled, status?.remoteDb?.connected, isOnline, checkStatus]);
 
   return {
     isOnline,
