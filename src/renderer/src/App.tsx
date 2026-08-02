@@ -36,6 +36,7 @@ const AppContent: React.FC = () => {
     setSlideDirection(newIdx > prevIdx ? 'slide-from-right' : 'slide-from-left');
     setActiveTab(newTab);
   };
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [defaultProductId, setDefaultProductId] = useState<string | null>(() => {
     return localStorage.getItem('kinguin_default_product_id');
@@ -57,6 +58,20 @@ const AppContent: React.FC = () => {
   const [refreshingProductIds, setRefreshingProductIds] = useState<Set<string>>(new Set());
   const [refreshingAll, setRefreshingAll] = useState(false);
   const [isNerdModalOpen, setIsNerdModalOpen] = useState(false);
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    if (searchInputRef.current) {
+      searchInputRef.current.blur();
+    }
+  };
+
+  const handleSelectProductFromSearch = (product: Product) => {
+    if (searchInputRef.current) {
+      searchInputRef.current.blur();
+    }
+    setSelectedProductId(product.id);
+  };
 
   const fetchProducts = async () => {
     try {
@@ -96,6 +111,58 @@ const AppContent: React.FC = () => {
       mainEl.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && searchQuery) {
+        handleClearSearch();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [searchQuery]);
+
+  // Prevent clicks anywhere on screen from un-focusing search input unless clicking game statistics or close button
+  useEffect(() => {
+    if (!searchQuery.trim() || selectedProductId || isNerdModalOpen) return;
+
+    const handlePointerDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      // Allow focus shift if user clicks a product card to open stats, or close/clear button, or action button inside card
+      const isProductCard = target.closest('.product-item-card');
+      const isCardActionBtn = target.closest('.card-action-btn');
+      const isCloseBtn = target.closest('.search-overlay-close-btn') || target.closest('.sticky-search-clear');
+      const isModal = target.closest('.modal-overlay') || target.closest('.confirm-modal-overlay');
+
+      if (isProductCard || isCardActionBtn || isCloseBtn || isModal) {
+        return;
+      }
+
+      // Prevent focus stealing for all other clicks
+      e.preventDefault();
+      if (searchInputRef.current && document.activeElement !== searchInputRef.current) {
+        searchInputRef.current.focus({ preventScroll: true });
+      }
+    };
+
+    window.addEventListener('mousedown', handlePointerDown, true);
+    return () => {
+      window.removeEventListener('mousedown', handlePointerDown, true);
+    };
+  }, [searchQuery, selectedProductId, isNerdModalOpen]);
+
+  // Re-focus search input when returning from game statistics modal if text is still present in search bar
+  useEffect(() => {
+    if (searchQuery.trim().length > 0 && !selectedProductId && !isNerdModalOpen) {
+      if (document.activeElement !== searchInputRef.current) {
+        searchInputRef.current?.focus({ preventScroll: true });
+      }
+    }
+  }, [selectedProductId, searchQuery, isNerdModalOpen]);
 
   const handleRefreshAll = async () => {
     if (products.length === 0) return;
@@ -334,12 +401,13 @@ const AppContent: React.FC = () => {
 
         {/* Animated Section Content Container */}
         <div key={activeTab} className={`section-view-container ${slideDirection}`}>
-          {/* Sticky Search Bar */}
+          {/* Sticky Search Bar Container */}
           {(activeTab === 'tracker' || activeTab === 'analytics') && (
-            <div className={`sticky-search-container ${isScrolled ? 'is-scrolled' : ''} mode-${searchScrollMode}`}>
+            <div className={`sticky-search-container ${isScrolled ? 'is-scrolled' : ''} mode-${searchScrollMode} ${searchQuery.trim() ? 'has-active-query' : ''}`}>
               <div className="sticky-search-inner">
                 <Search size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   placeholder={t('header.searchPlaceholder')}
                   value={searchQuery}
@@ -349,7 +417,7 @@ const AppContent: React.FC = () => {
                 {searchQuery && (
                   <button
                     type="button"
-                    onClick={() => setSearchQuery('')}
+                    onClick={handleClearSearch}
                     className="sticky-search-clear"
                     title={t('tooltip.clearSearch')}
                   >
@@ -357,11 +425,67 @@ const AppContent: React.FC = () => {
                   </button>
                 )}
               </div>
+
+              {/* Search Overlay attached to sticky search bar (on tracker tab) */}
+              {activeTab === 'tracker' && searchQuery.trim().length > 0 && (
+                <div className="search-results-overlay">
+                  <div className="search-overlay-header">
+                    <div className="search-overlay-title-group">
+                      <Search size={18} color="var(--accent-green)" />
+                      <span className="search-overlay-title">
+                        {t('searchOverlay.title', { count: filteredProducts.length })}
+                      </span>
+                      <span className="search-overlay-query-badge">
+                        "{searchQuery.trim()}"
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleClearSearch}
+                      className="search-overlay-close-btn"
+                      title={t('searchOverlay.close')}
+                    >
+                      <X size={14} />
+                      <span>{t('searchOverlay.close')}</span>
+                    </button>
+                  </div>
+
+                  {filteredProducts.length === 0 ? (
+                    <div className="search-overlay-empty">
+                      <Search className="empty-state-icon" style={{ width: 48, height: 48, margin: '0 auto 12px', opacity: 0.4 }} />
+                      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+                        {t('productList.noSearchResults')}
+                      </div>
+                      <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                        {t('searchOverlay.noResults', { query: searchQuery.trim() })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="search-overlay-scroll-container">
+                      <div className="product-grid">
+                        {filteredProducts.map((product) => (
+                          <ProductCard
+                            key={product.id}
+                            product={product}
+                            isDefault={activeDefaultProduct?.id === product.id}
+                            isRefreshing={refreshingProductIds.has(product.id)}
+                            onSelect={handleSelectProductFromSearch}
+                            onRefresh={handleRefreshProduct}
+                            onDelete={handleDeleteProduct}
+                            onSetDefault={handleSetDefaultProduct}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === 'tracker' && (
-            <>
+            <div>
+
               {/* Prominent Track Product Input Bar */}
               <div style={{ marginBottom: 24 }}>
                 <AddProductBar onAddProduct={handleAddProduct} onAutoPasted={handleAutoPasted} />
@@ -431,42 +555,28 @@ const AppContent: React.FC = () => {
                   {/* All Tracked Products List Header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
-                      {t('productList.trackedCount', { count: filteredProducts.length })}
-                      {searchQuery.trim() && (
-                        <span style={{ color: 'var(--accent-gold)', fontWeight: 600 }}>
-                          {` | ${searchQuery.trim()}`}
-                        </span>
-                      )}
+                      {t('productList.trackedCount', { count: products.length })}
                     </h3>
                   </div>
 
                   {/* Product Grid */}
-                  {filteredProducts.length === 0 ? (
-                    <div className="empty-state">
-                      <Search className="empty-state-icon" />
-                      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                        {t('productList.noSearchResults')}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="product-grid">
-                      {filteredProducts.map((product) => (
-                        <ProductCard
-                          key={product.id}
-                          product={product}
-                          isDefault={activeDefaultProduct?.id === product.id}
-                          isRefreshing={refreshingProductIds.has(product.id)}
-                          onSelect={(p) => setSelectedProductId(p.id)}
-                          onRefresh={handleRefreshProduct}
-                          onDelete={handleDeleteProduct}
-                          onSetDefault={handleSetDefaultProduct}
-                        />
-                      ))}
-                    </div>
-                  )}
+                  <div className="product-grid">
+                    {products.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        isDefault={activeDefaultProduct?.id === product.id}
+                        isRefreshing={refreshingProductIds.has(product.id)}
+                        onSelect={(p) => setSelectedProductId(p.id)}
+                        onRefresh={handleRefreshProduct}
+                        onDelete={handleDeleteProduct}
+                        onSetDefault={handleSetDefaultProduct}
+                      />
+                    ))}
+                  </div>
                 </>
               )}
-            </>
+            </div>
           )}
 
           {activeTab === 'analytics' && (

@@ -100,6 +100,11 @@ export const translations = {
     'tooltip.changeCurrency': 'Change Currency',
     'tooltip.changeLanguage': 'Change Language',
 
+    // Search Overlay Screen
+    'searchOverlay.title': 'Search Results ({count})',
+    'searchOverlay.noResults': 'No games matching "{query}" were found.',
+    'searchOverlay.close': 'Close search',
+
     // Indicator Tooltips
     'indicator.noChange': 'Price unchanged since last check',
     'indicator.increased': 'Price increased by {amount} since last check',
@@ -339,6 +344,11 @@ export const translations = {
     'tooltip.closeModal': 'Zamknij okno',
     'tooltip.changeCurrency': 'Zmień walutę',
     'tooltip.changeLanguage': 'Zmień język',
+
+    // Search Overlay Screen
+    'searchOverlay.title': 'Wyniki wyszukiwania ({count})',
+    'searchOverlay.noResults': 'Nie znaleziono w bazie gier pasujących do "{query}".',
+    'searchOverlay.close': 'Zamknij wyszukiwanie',
 
     // Indicator Tooltips
     'indicator.noChange': 'Cena bez zmian od ostatniego sprawdzenia',
