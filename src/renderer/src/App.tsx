@@ -11,7 +11,7 @@ import { LanguageSelector } from './components/LanguageSelector';
 import { CurrencySelector } from './components/CurrencySelector';
 import { NerdInfoModal } from './components/NerdInfoModal';
 import { StatusIndicator } from './components/StatusIndicator';
-import { ToastNotification, ToastMessage, FailedProductInfo } from './components/ToastNotification';
+import { ToastNotification, ToastMessage, ToastProductInfo } from './components/ToastNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CurrencyProvider } from './currency/CurrencyContext';
 import { ShoppingBag, TrendingUp, Search, RefreshCw, Sparkles, Star, X, Info } from 'lucide-react';
@@ -44,7 +44,16 @@ const AppContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
-  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const addToast = (toast: Omit<ToastMessage, 'id'>) => {
+    const id = Date.now().toString() + '_' + Math.random().toString(36).substring(2, 7);
+    setToasts((prev) => [...prev, { ...toast, id }]);
+  };
+
+  const handleDismissToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
   const [refreshingProductIds, setRefreshingProductIds] = useState<Set<string>>(new Set());
   const [refreshingAll, setRefreshingAll] = useState(false);
   const [isNerdModalOpen, setIsNerdModalOpen] = useState(false);
@@ -116,7 +125,14 @@ const AppContent: React.FC = () => {
 
       await fetchProducts();
 
-      const failedProducts: FailedProductInfo[] = results
+      const succeededProducts: ToastProductInfo[] = results
+        .filter((r) => r.res.success)
+        .map((r) => ({
+          id: r.product.id,
+          title: r.product.title
+        }));
+
+      const failedProducts: ToastProductInfo[] = results
         .filter((r) => !r.res.success)
         .map((r) => ({
           id: r.product.id,
@@ -126,23 +142,31 @@ const AppContent: React.FC = () => {
           errorParams: r.res.errorParams
         }));
 
-      if (failedProducts.length === 0) {
-        setToast({
-          id: Date.now().toString(),
+      // 1. Success toast handling
+      if (succeededProducts.length === 1) {
+        addToast({
           type: 'success',
-          text: t('toast.refreshAllSuccess')
+          text: t('toast.refreshSingleSuccess', { title: succeededProducts[0].title }),
+          products: succeededProducts
         });
-      } else {
-        setToast({
-          id: Date.now().toString(),
+      } else if (succeededProducts.length > 1) {
+        addToast({
+          type: 'success',
+          text: t('toast.refreshMultipleSuccess', { count: succeededProducts.length }),
+          products: succeededProducts
+        });
+      }
+
+      // 2. Error toast handling
+      if (failedProducts.length > 0) {
+        addToast({
           type: 'error',
-          text: t('toast.refreshSomeFailed').replace('{count}', failedProducts.length.toString()),
-          failedProducts
+          text: t('toast.refreshSomeFailed', { count: failedProducts.length }),
+          products: failedProducts
         });
       }
     } catch {
-      setToast({
-        id: Date.now().toString(),
+      addToast({
         type: 'error',
         text: t('toast.refreshError')
       });
@@ -169,6 +193,7 @@ const AppContent: React.FC = () => {
   };
 
   const handleRefreshProduct = async (id: string) => {
+    const product = products.find((p) => p.id === id);
     setRefreshingProductIds((prev) => new Set(prev).add(id));
     try {
       const res = await window.api.refreshProduct(id);
@@ -177,21 +202,21 @@ const AppContent: React.FC = () => {
         const errorText = res.errorKey
           ? t(res.errorKey as any, res.errorParams)
           : res.error || t('toast.refreshError');
-        setToast({
-          id: Date.now().toString(),
+        addToast({
           type: 'error',
-          text: errorText
+          text: errorText,
+          products: product ? [{ id: product.id, title: product.title, error: errorText }] : undefined
         });
       } else {
-        setToast({
-          id: Date.now().toString(),
+        const title = product ? product.title : '';
+        addToast({
           type: 'success',
-          text: t('toast.refreshSuccess')
+          text: title ? t('toast.refreshSingleSuccess', { title }) : t('toast.refreshSuccess'),
+          products: product ? [{ id: product.id, title: product.title }] : undefined
         });
       }
     } catch {
-      setToast({
-        id: Date.now().toString(),
+      addToast({
         type: 'error',
         text: t('toast.refreshError')
       });
@@ -225,8 +250,7 @@ const AppContent: React.FC = () => {
   );
 
   const handleAutoPasted = () => {
-    setToast({
-      id: Date.now().toString(),
+    addToast({
       type: 'success',
       text: t('toast.autoPasted')
     });
@@ -507,8 +531,8 @@ const AppContent: React.FC = () => {
         <NerdInfoModal onClose={() => setIsNerdModalOpen(false)} />
       )}
 
-      {/* Toast Notification Alert */}
-      <ToastNotification toast={toast} onDismiss={() => setToast(null)} />
+      {/* Toast Notification Alert Stack */}
+      <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
 
       {/* Floating Bottom Glass Navigation Bar */}
       <BottomNavbar activeTab={activeTab} onSelectTab={handleSelectTab} />

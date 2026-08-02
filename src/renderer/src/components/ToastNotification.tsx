@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckCircle2, AlertCircle, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
-export interface FailedProductInfo {
+export interface ToastProductInfo {
   id: string;
   title: string;
   error?: string;
@@ -10,56 +10,44 @@ export interface FailedProductInfo {
   errorParams?: Record<string, string | number>;
 }
 
+export type FailedProductInfo = ToastProductInfo;
+
 export interface ToastMessage {
   id: string;
   type: 'success' | 'error';
   text: string;
-  failedProducts?: FailedProductInfo[];
+  products?: ToastProductInfo[];
+  failedProducts?: ToastProductInfo[];
 }
 
 interface ToastNotificationProps {
-  toast: ToastMessage | null;
-  onDismiss: () => void;
+  toasts: ToastMessage[];
+  onDismiss: (id: string) => void;
 }
 
-export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onDismiss }) => {
+const ToastItem: React.FC<{ toast: ToastMessage; onDismiss: () => void }> = ({ toast, onDismiss }) => {
   const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Reset expand state when toast changes
+  const productsList = toast.products || toast.failedProducts;
+  const isExpandable = Boolean(productsList && productsList.length > 1);
+
   useEffect(() => {
-    setIsExpanded(false);
-  }, [toast?.id]);
+    if (isExpanded) return;
 
-  // Handle auto-dismiss timer (paused when expanded)
-  useEffect(() => {
-    if (!toast) return;
-
-    if (isExpanded) {
-      // Pause auto-dismiss when user expands details to read failed items
-      return;
-    }
-
-    const duration = toast.failedProducts && toast.failedProducts.length > 0 ? 6000 : 3500;
+    const duration = productsList && productsList.length > 0 ? 6000 : 3500;
     const timer = setTimeout(() => {
       onDismiss();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [toast, isExpanded, onDismiss]);
-
-  if (!toast) return null;
+  }, [toast.id, isExpanded, onDismiss, productsList]);
 
   const isSuccess = toast.type === 'success';
-  const hasFailedProducts = Boolean(toast.failedProducts && toast.failedProducts.length > 0);
 
   return (
     <div
       style={{
-        position: 'fixed',
-        top: 24,
-        right: 24,
-        zIndex: 1000,
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '14px',
@@ -73,15 +61,15 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
         color: 'var(--text-primary)',
         animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         backdropFilter: 'blur(12px)',
-        width: 'calc(100vw - 48px)',
-        maxWidth: 400,
-        overflow: 'hidden'
+        width: '100%',
+        overflow: 'hidden',
+        pointerEvents: 'auto'
       }}
     >
       {/* Toast Header */}
       <div
         onClick={() => {
-          if (hasFailedProducts) {
+          if (isExpandable) {
             setIsExpanded((prev) => !prev);
           }
         }}
@@ -90,7 +78,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
           alignItems: 'center',
           gap: 12,
           padding: '12px 16px',
-          cursor: hasFailedProducts ? 'pointer' : 'default',
+          cursor: isExpandable ? 'pointer' : 'default',
           userSelect: 'none'
         }}
       >
@@ -102,13 +90,13 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
           {toast.text}
         </div>
 
-        {hasFailedProducts && (
+        {isExpandable && (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              color: 'var(--accent-red)',
+              color: isSuccess ? 'var(--accent-green)' : 'var(--accent-red)',
               fontSize: 12,
               fontWeight: 500,
               flexShrink: 0
@@ -139,24 +127,24 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
         </button>
       </div>
 
-      {/* Expanded Failed Products List */}
-      {hasFailedProducts && isExpanded && (
+      {/* Expanded Products List */}
+      {isExpandable && isExpanded && productsList && (
         <div
           style={{
-            borderTop: '1px solid rgba(239, 68, 68, 0.25)',
+            borderTop: isSuccess ? '1px solid rgba(34, 197, 94, 0.25)' : '1px solid rgba(239, 68, 68, 0.25)',
             padding: '8px 16px 14px 16px',
             maxHeight: 220,
             overflowY: 'auto',
             background: 'rgba(0, 0, 0, 0.2)'
           }}
         >
-          {toast.failedProducts!.map((item, idx) => (
+          {productsList.map((item, idx) => (
             <div
               key={item.id + '_' + idx}
               style={{
                 padding: '8px 0',
                 borderBottom:
-                  idx < toast.failedProducts!.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none'
+                  idx < productsList.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none'
               }}
             >
               <div
@@ -174,7 +162,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
                 <div
                   style={{
                     fontSize: 11,
-                    color: 'rgba(239, 68, 68, 0.9)',
+                    color: isSuccess ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)',
                     marginTop: 3,
                     wordBreak: 'break-word',
                     lineHeight: 1.3
@@ -187,6 +175,31 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({ toast, onD
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+export const ToastNotification: React.FC<ToastNotificationProps> = ({ toasts, onDismiss }) => {
+  if (!toasts || toasts.length === 0) return null;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 24,
+        right: 24,
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        width: 'calc(100vw - 48px)',
+        maxWidth: 400,
+        pointerEvents: 'none'
+      }}
+    >
+      {toasts.map((toast) => (
+        <ToastItem key={toast.id} toast={toast} onDismiss={() => onDismiss(toast.id)} />
+      ))}
     </div>
   );
 };
