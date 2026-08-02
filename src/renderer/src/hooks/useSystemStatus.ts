@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { SystemStatus } from '../../../shared/types';
 
 const CACHE_TTL_MS = 60_000; // 60 seconds cache TTL to avoid wasting compute/DB calls
+const HEARTBEAT_INTERVAL_MS = 5 * 60_000; // 5 minutes gentle heartbeat for idle app sessions
 
 export function useSystemStatus() {
   const [isOnline, setIsOnline] = useState<boolean>(() =>
@@ -9,13 +10,17 @@ export function useSystemStatus() {
   );
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const lastCheckedRef = useRef<number>(0);
 
+  const lastCheckedRef = useRef<number>(0);
+  const statusRef = useRef<SystemStatus | null>(status);
+  statusRef.current = status;
+
+  // Stable checkStatus function with empty dependency array
   const checkStatus = useCallback(async (force: boolean = false) => {
     const now = Date.now();
 
     // 1. Return cached status if checked recently and force is false
-    if (!force && status && now - lastCheckedRef.current < CACHE_TTL_MS) {
+    if (!force && statusRef.current && now - lastCheckedRef.current < CACHE_TTL_MS) {
       return;
     }
 
@@ -80,7 +85,7 @@ export function useSystemStatus() {
     } finally {
       setIsLoading(false);
     }
-  }, [status]);
+  }, []); // Empty dependencies for 100% stable reference
 
   useEffect(() => {
     const handleOnline = () => {
@@ -107,9 +112,17 @@ export function useSystemStatus() {
     // Initial load check
     checkStatus();
 
+    // 5-minute gentle background heartbeat for long idle app sessions
+    const heartbeatTimer = setInterval(() => {
+      if (navigator.onLine) {
+        checkStatus(true);
+      }
+    }, HEARTBEAT_INTERVAL_MS);
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      clearInterval(heartbeatTimer);
     };
   }, [checkStatus]);
 
