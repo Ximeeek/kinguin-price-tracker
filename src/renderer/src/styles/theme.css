@@ -634,6 +634,7 @@ body::after {
   to { transform: rotate(360deg); }
 }
 
+.spin,
 .spinning {
   animation: spin 0.75s linear infinite;
 }

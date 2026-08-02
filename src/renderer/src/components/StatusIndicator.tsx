@@ -11,7 +11,21 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ onOpenNerdModa
   const { t } = useLanguage();
   const { isOnline, status, isLoading, refreshStatus } = useSystemStatus();
   const [isOpen, setIsOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleRefresh = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isLoading || isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await refreshStatus();
+    } finally {
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 750);
+    }
+  };
 
   // Close popover when clicking outside
   useEffect(() => {
@@ -131,8 +145,8 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ onOpenNerdModa
             </div>
             <button
               type="button"
-              onClick={refreshStatus}
-              disabled={isLoading}
+              onClick={handleRefresh}
+              disabled={isLoading || isRefreshing}
               title={t('systemStatus.refresh')}
               style={{
                 background: 'rgba(255, 255, 255, 0.06)',
@@ -147,7 +161,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ onOpenNerdModa
                 transition: 'all 0.2s ease'
               }}
             >
-              <RotateCw size={13} className={isLoading ? 'spin' : ''} />
+              <RotateCw size={13} className={isLoading || isRefreshing ? 'spinning' : ''} />
             </button>
           </div>
 
@@ -171,8 +185,8 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ onOpenNerdModa
                 <span>{t('systemStatus.localDb')}</span>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontWeight: 700, color: status?.localDb?.connected ? 'var(--accent-green)' : '#ef4444' }}>
-                  {status?.localDb?.connected ? t('systemStatus.connected') : t('systemStatus.disconnected')}
+                <div style={{ fontWeight: 700, color: status ? (status.localDb.connected ? 'var(--accent-green)' : '#ef4444') : 'var(--text-muted)' }}>
+                  {status ? (status.localDb.connected ? t('systemStatus.connected') : t('systemStatus.disconnected')) : t('systemStatus.checking')}
                 </div>
                 {status?.localDb?.connected && (
                   <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
@@ -200,18 +214,25 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ onOpenNerdModa
                   <Zap size={13} color={isOnline ? "var(--accent-cyan)" : "#6b7280"} />
                   <span>{t('systemStatus.remoteDb')}</span>
                 </div>
-                <span style={{ fontWeight: 700, color: isOnline ? (status.remoteDb.connected ? 'var(--accent-green)' : '#f59e0b') : '#9ca3af' }}>
-                  {!isOnline
-                    ? t('systemStatus.unreachableOffline')
-                    : status.remoteDb.connected
-                    ? `${t('systemStatus.connected')} (${status.remoteDb.latencyMs}ms)`
-                    : (status.remoteDb.error ? (
-                        status.remoteDb.error === 'COLD_START' || status.remoteDb.error.includes('Cold start') ? t('systemStatus.coldStart') :
-                        status.remoteDb.error === 'UNREACHABLE' || status.remoteDb.error === 'Nieosiągalny' ? t('systemStatus.unreachable') :
-                        status.remoteDb.error === 'NEON_DISCONNECTED' || status.remoteDb.error === 'Neon DB Disconnected' ? t('systemStatus.neonDisconnected') :
-                        status.remoteDb.error
-                      ) : t('systemStatus.disconnected'))}
-                </span>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontWeight: 700, color: isOnline ? (status.remoteDb.connected ? 'var(--accent-green)' : '#f59e0b') : '#9ca3af' }}>
+                    {!isOnline
+                      ? t('systemStatus.unreachableOffline')
+                      : status.remoteDb.connected
+                      ? t('systemStatus.connected')
+                      : (status.remoteDb.error ? (
+                          status.remoteDb.error === 'COLD_START' || status.remoteDb.error.includes('Cold start') ? t('systemStatus.coldStart') :
+                          status.remoteDb.error === 'UNREACHABLE' || status.remoteDb.error === 'Nieosiągalny' ? t('systemStatus.unreachable') :
+                          status.remoteDb.error === 'NEON_DISCONNECTED' || status.remoteDb.error === 'Neon DB Disconnected' ? t('systemStatus.neonDisconnected') :
+                          status.remoteDb.error
+                        ) : t('systemStatus.disconnected'))}
+                  </div>
+                  {isOnline && status.remoteDb.connected && status.remoteDb.latencyMs !== undefined && (
+                    <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                      ({status.remoteDb.latencyMs}ms)
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

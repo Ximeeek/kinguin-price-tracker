@@ -145,6 +145,12 @@ export class RemoteApiRepository implements PriceRepository {
     product: Omit<Product, 'currentPrice'> & { currentPrice?: number },
     force: boolean = false
   ): Promise<void> {
+    // Block dev test mock products from being sent to backend database
+    if (product.id?.toLowerCase().startsWith('mock-') || product.url?.includes('/category/10')) {
+      Logger.info('RemoteRepo', `Skipping sync to remote DB for dev mock product ID: ${product.id}`);
+      return;
+    }
+
     try {
       const res = await fetch(`${this.baseUrl}/products`, {
         method: 'POST',
@@ -210,6 +216,9 @@ export class RemoteApiRepository implements PriceRepository {
   }
 
   private async syncRemoteHistory(productId: string, since?: Date): Promise<void> {
+    if (productId.toLowerCase().startsWith('mock-')) {
+      return;
+    }
     try {
       let url = `${this.baseUrl}/products/${encodeURIComponent(productId)}/history`;
       if (since) {

@@ -47,9 +47,22 @@ const TAB_INDEXES: Record<NerdTab, number> = {
 export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
   const { t } = useLanguage();
   const { isOnline, status, isLoading, refreshStatus } = useSystemStatus();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<NerdTab>('stack');
   const [slideDir, setSlideDir] = useState<'slide-right' | 'slide-left'>('slide-right');
   useLockBodyScroll(true);
+
+  const handleRefresh = async () => {
+    if (isLoading || isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await refreshStatus();
+    } finally {
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 750);
+    }
+  };
 
   const handleTabChange = (newTab: NerdTab) => {
     if (newTab === activeTab) return;
@@ -272,8 +285,8 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
                   <Database size={13} color="var(--accent-green)" />
                   <span>{t('systemStatus.localDb')}</span>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: status?.localDb?.connected ? 'var(--accent-green)' : '#ef4444' }}>
-                  {status?.localDb?.connected ? t('systemStatus.connected') : t('systemStatus.disconnected')}
+                <div style={{ fontSize: 13, fontWeight: 800, color: status ? (status.localDb.connected ? 'var(--accent-green)' : '#ef4444') : 'var(--text-muted)' }}>
+                  {status ? (status.localDb.connected ? t('systemStatus.connected') : t('systemStatus.disconnected')) : t('systemStatus.checking')}
                 </div>
                 {status?.localDb?.connected && (
                   <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>

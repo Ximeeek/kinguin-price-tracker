@@ -176,6 +176,7 @@ export const translations = {
     'systemStatus.unreachable': 'Unreachable',
     'systemStatus.neonDisconnected': 'Neon DB Disconnected',
     'systemStatus.openSpecs': 'Open System Specs & Diagnostics',
+    'systemStatus.checking': 'Checking status...',
 
     // Period selector
     'period.week': 'Weekly',
@@ -415,6 +416,7 @@ export const translations = {
     'systemStatus.unreachable': 'Nieosiągalny',
     'systemStatus.neonDisconnected': 'Baza Neon Rozłączona',
     'systemStatus.openSpecs': 'Otwórz Specyfikację i Diagnostykę',
+    'systemStatus.checking': 'Sprawdzanie statusu...',
 
     // Period selector
     'period.week': 'Tygodniowy',

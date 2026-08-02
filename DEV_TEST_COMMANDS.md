@@ -38,3 +38,5 @@ The application includes built-in test commands that generate realistic historic
 
 - Running `npm run build` sets `NODE_ENV=production` and omits `VITE_DEV_SERVER_URL`.
 - In production builds, typing `test1` or any test string will be treated as an invalid URL string and fail gracefully with: *"Provided link is not a valid Kinguin product URL."*
+- **Mock Product Isolation**: All mock products MUST use an ID prefixed with `mock-` (e.g. `mock-101`). `RemoteRepository` automatically blocks any product starting with `mock-` from syncing to the remote backend database.
+
