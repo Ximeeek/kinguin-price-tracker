@@ -184,13 +184,28 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ onOpenNerdModa
 
             {/* Remote DB Status */}
             {status?.remoteDb?.enabled && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255, 255, 255, 0.03)', padding: '6px 10px', borderRadius: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)' }}>
-                  <Zap size={13} color="var(--accent-cyan)" />
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: isOnline ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.01)',
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  opacity: isOnline ? 1 : 0.5,
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: isOnline ? 'var(--text-secondary)' : '#9ca3af' }}>
+                  <Zap size={13} color={isOnline ? "var(--accent-cyan)" : "#6b7280"} />
                   <span>{t('systemStatus.remoteDb')}</span>
                 </div>
-                <span style={{ fontWeight: 700, color: status.remoteDb.connected ? 'var(--accent-green)' : '#f59e0b' }}>
-                  {status.remoteDb.connected ? `${t('systemStatus.connected')} (${status.remoteDb.latencyMs}ms)` : status.remoteDb.error || t('systemStatus.disconnected')}
+                <span style={{ fontWeight: 700, color: isOnline ? (status.remoteDb.connected ? 'var(--accent-green)' : '#f59e0b') : '#9ca3af' }}>
+                  {!isOnline
+                    ? t('systemStatus.unreachableOffline')
+                    : status.remoteDb.connected
+                    ? `${t('systemStatus.connected')} (${status.remoteDb.latencyMs}ms)`
+                    : status.remoteDb.error || t('systemStatus.disconnected')}
                 </span>
               </div>
             )}

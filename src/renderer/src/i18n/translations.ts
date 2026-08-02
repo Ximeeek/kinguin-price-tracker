@@ -135,6 +135,20 @@ export const translations = {
     'infoModal.tabScraper': 'Scraper Pipeline',
     'infoModal.tabAlgorithm': 'Algorithms',
     'infoModal.tabSecurity': 'Security & IPC',
+    'infoModal.tabRoadmap': 'Future Plans',
+    'infoModal.roadmapTitle': 'Future Plans & Development Roadmap',
+    'infoModal.roadmapSubtitle': 'Upcoming features and architectural expansion roadmap.',
+    'infoModal.roadmapMultiStoreTitle': 'Multi-Store & Global E-Commerce Support',
+    'infoModal.roadmapMultiStoreDesc': 'Expanding the data collection engine to support major online stores and marketplaces (Steam, G2A, Eneba, Amazon, Allegro, Ceneo, etc.). A single unified dashboard to track prices for games and electronics across the entire web.',
+    'infoModal.roadmapAiTitle': 'Context-Aware AI Predictive Engine',
+    'infoModal.roadmapAiDesc': 'Upgrading prediction algorithms beyond historical chart regression. The new ML model will incorporate calendar events, seasonal sale cycles (Steam Summer/Winter Sales, Black Friday), holiday price surges, and publisher release schedules. The system will predict price drops during Summer Sales even if prior charts showed an upward trend!',
+    'infoModal.roadmapAlertsTitle': 'Smart Price Drop Alerts & Multi-Channel Push',
+    'infoModal.roadmapAlertsDesc': 'Target price drop thresholds ("Notify me when price drops below $X") with desktop toasts, Discord webhooks, Telegram bots, and email alerts.',
+    'infoModal.roadmapExtensionTitle': 'Cross-Browser Price Companion Extension',
+    'infoModal.roadmapExtensionDesc': 'Lightweight Chrome & Firefox browser extension enabling instant price history lookup and store deal comparisons directly on product pages.',
+    'infoModal.statusInDev': 'In Progress',
+    'infoModal.statusPlanned': 'Planned',
+    'infoModal.statusConcept': 'Concept',
 
     // System Status & Diagnostics
     'systemStatus.title': 'Live System Diagnostics',
@@ -154,6 +168,8 @@ export const translations = {
     'systemStatus.tooltipOk': 'All Systems Operational (Online & DB Connected)',
     'systemStatus.tooltipOffline': 'No Internet Connection',
     'systemStatus.tooltipDbError': 'Database Connection Issue',
+    'systemStatus.unreachableOffline': 'Unreachable (Offline)',
+    'systemStatus.requiresInternet': 'Requires internet connection',
     'systemStatus.openSpecs': 'Open System Specs & Diagnostics',
 
     // Period selector
@@ -353,6 +369,20 @@ export const translations = {
     'infoModal.tabScraper': 'Parser Cen',
     'infoModal.tabAlgorithm': 'Algorytmy Predykcji',
     'infoModal.tabSecurity': 'Bezpieczeństwo IPC',
+    'infoModal.tabRoadmap': 'Plany na przyszłość',
+    'infoModal.roadmapTitle': 'Plany Rozwoju i Przyszłe Funkcje',
+    'infoModal.roadmapSubtitle': 'Nadchodzące usprawnienia i kierunki rozwoju aplikacji Kinguin Tracker.',
+    'infoModal.roadmapMultiStoreTitle': 'Wsparcie dla większości sklepów internetowych (Multi-Store)',
+    'infoModal.roadmapMultiStoreDesc': 'Rozszerzenie silnika zbierania danych o kluczowe sklepy internetowe i platformy handlowe (Steam, G2A, Eneba, Amazon, Allegro, Ceneo i inne). Jeden natywny panel do śledzenia cen dowolnych produktów i gier w całym internecie.',
+    'infoModal.roadmapAiTitle': 'Inteligentny Silnik Predykcji Context-Aware AI',
+    'infoModal.roadmapAiDesc': 'Udoskonalenie algorytmów predykcyjnych tak, by nie bazowały wyłącznie na samym wykresie historycznym. Nowy model uwzględni cykliczne wydarzenia kalendarzowe (Steam Summer/Winter Sale, Black Friday), wzrosty cen przed świętami oraz wyprzedaże sezonowe. System przewidzi spadek ceny podczas Summer Sale, nawet jeśli dotychczasowy wykres wskazywał na trend wzrostowy!',
+    'infoModal.roadmapAlertsTitle': 'Powiadomienia i Alerty Cenowe (Multi-Channel)',
+    'infoModal.roadmapAlertsDesc': 'Ustawianie docelowych progów cenowych ("Kup, gdy cena spadnie poniżej X zł") z natywnymi powiadomieniami desktop, webhookami Discord, powiadomieniami e-mail oraz botem Telegram.',
+    'infoModal.roadmapExtensionTitle': 'Wtyczka do Przeglądarek (Browser Extension)',
+    'infoModal.roadmapExtensionDesc': 'Lekkie rozszerzenie dla Chrome i Firefox pozwalające na natychmiastowe sprawdzanie historii cen i porównywanie ofert bezpośrednio na stronach sklepów.',
+    'infoModal.statusInDev': 'W trakcie',
+    'infoModal.statusPlanned': 'Planowane',
+    'infoModal.statusConcept': 'Koncepcja',
 
     // System Status & Diagnostics
     'systemStatus.title': 'Diagnostyka Systemu i Połączenia',
@@ -372,6 +402,8 @@ export const translations = {
     'systemStatus.tooltipOk': 'Wszystkie systemy działają (Online & Baza OK)',
     'systemStatus.tooltipOffline': 'Brak połączenia z internetem',
     'systemStatus.tooltipDbError': 'Problem z połączeniem z bazą danych',
+    'systemStatus.unreachableOffline': 'Nie można sprawdzić (Offline)',
+    'systemStatus.requiresInternet': 'Wymagane połączenie z siecią',
     'systemStatus.openSpecs': 'Otwórz Specyfikację i Diagnostykę',
 
     // Period selector

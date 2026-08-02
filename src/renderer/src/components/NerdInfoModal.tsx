@@ -19,7 +19,11 @@ import {
   WifiOff,
   RotateCw,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Rocket,
+  ShoppingBag,
+  Brain,
+  Bell
 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
@@ -29,14 +33,15 @@ interface NerdInfoModalProps {
   onClose: () => void;
 }
 
-type NerdTab = 'stack' | 'database' | 'scraper' | 'algorithm' | 'security';
+type NerdTab = 'stack' | 'database' | 'scraper' | 'algorithm' | 'security' | 'roadmap';
 
 const TAB_INDEXES: Record<NerdTab, number> = {
   stack: 0,
   database: 1,
   scraper: 2,
   algorithm: 3,
-  security: 4
+  security: 4,
+  roadmap: 5
 };
 
 export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
@@ -192,6 +197,15 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
             <ShieldCheck size={14} />
             {t('infoModal.tabSecurity')}
           </button>
+          <button
+            type="button"
+            className={`pill-button ${activeTab === 'roadmap' ? 'active' : ''}`}
+            onClick={() => handleTabChange('roadmap')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px', height: 34 }}
+          >
+            <Rocket size={14} />
+            {t('infoModal.tabRoadmap')}
+          </button>
         </div>
 
         {/* Modal Body Content Container */}
@@ -270,19 +284,35 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
 
               {/* Remote DB Status */}
               {status?.remoteDb?.enabled && (
-                <div style={{ padding: 10, borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                    <Zap size={13} color="var(--accent-cyan)" />
+                <div
+                  style={{
+                    padding: 10,
+                    borderRadius: 10,
+                    background: isOnline ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.01)',
+                    border: isOnline ? '1px solid rgba(255, 255, 255, 0.06)' : '1px dashed rgba(255, 255, 255, 0.08)',
+                    opacity: isOnline ? 1 : 0.55,
+                    filter: isOnline ? 'none' : 'grayscale(80%)',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: isOnline ? 'var(--text-secondary)' : '#9ca3af', marginBottom: 4 }}>
+                    <Zap size={13} color={isOnline ? "var(--accent-cyan)" : "#6b7280"} />
                     <span>{t('systemStatus.remoteDb')}</span>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: status.remoteDb.connected ? 'var(--accent-green)' : '#f59e0b' }}>
-                    {status.remoteDb.connected ? t('systemStatus.connected') : status.remoteDb.error || t('systemStatus.disconnected')}
+                  <div style={{ fontSize: 13, fontWeight: 800, color: isOnline ? (status.remoteDb.connected ? 'var(--accent-green)' : '#f59e0b') : '#9ca3af' }}>
+                    {!isOnline
+                      ? t('systemStatus.unreachableOffline')
+                      : status.remoteDb.connected
+                      ? t('systemStatus.connected')
+                      : status.remoteDb.error || t('systemStatus.disconnected')}
                   </div>
-                  {status.remoteDb.connected && status.remoteDb.latencyMs !== undefined && (
-                    <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
-                      {t('systemStatus.latency')}: {status.remoteDb.latencyMs}ms
-                    </div>
-                  )}
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
+                    {!isOnline
+                      ? t('systemStatus.requiresInternet')
+                      : status.remoteDb.connected && status.remoteDb.latencyMs !== undefined
+                      ? `${t('systemStatus.latency')}: ${status.remoteDb.latencyMs}ms`
+                      : null}
+                  </div>
                 </div>
               )}
             </div>
@@ -514,6 +544,229 @@ export const NerdInfoModal: React.FC<NerdInfoModalProps> = ({ onClose }) => {
                     <span><strong>Input Validation & Sanitization:</strong> All incoming Kinguin URLs are validated against URL schemas and numerical product ID formats prior to database insertion.</span>
                   </li>
                 </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'roadmap' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {/* Future Plans Header Banner */}
+              <div
+                className="glass-card"
+                style={{
+                  padding: '16px 20px',
+                  background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.12), rgba(34, 197, 94, 0.08))',
+                  border: '1px solid rgba(234, 179, 8, 0.3)',
+                  borderRadius: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 10,
+                      background: 'rgba(234, 179, 8, 0.2)',
+                      border: '1px solid rgba(234, 179, 8, 0.4)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'var(--accent-gold)'
+                    }}
+                  >
+                    <Rocket size={22} />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                      {t('infoModal.roadmapTitle')}
+                    </h4>
+                    <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2, margin: 0 }}>
+                      {t('infoModal.roadmapSubtitle')}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    padding: '3px 10px',
+                    borderRadius: '9999px',
+                    background: 'rgba(234, 179, 8, 0.2)',
+                    color: 'var(--accent-gold)',
+                    border: '1px solid rgba(234, 179, 8, 0.4)',
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  2026+ Vision
+                </span>
+              </div>
+
+              {/* Feature 1: Multi-Store Support */}
+              <div
+                className="glass-card"
+                style={{ padding: 18, background: 'rgba(18, 24, 36, 0.6)', border: '1px solid rgba(34, 197, 94, 0.25)' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div
+                      style={{
+                        padding: 6,
+                        borderRadius: 8,
+                        background: 'rgba(34, 197, 94, 0.15)',
+                        color: 'var(--accent-green)',
+                        display: 'flex'
+                      }}
+                    >
+                      <ShoppingBag size={18} />
+                    </div>
+                    <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                      {t('infoModal.roadmapMultiStoreTitle')}
+                    </h4>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      background: 'rgba(34, 197, 94, 0.15)',
+                      color: 'var(--accent-green)',
+                      border: '1px solid rgba(34, 197, 94, 0.3)'
+                    }}
+                  >
+                    {t('infoModal.statusInDev')}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                  {t('infoModal.roadmapMultiStoreDesc')}
+                </p>
+              </div>
+
+              {/* Feature 2: Context-Aware AI Prediction Engine */}
+              <div
+                className="glass-card"
+                style={{ padding: 18, background: 'rgba(18, 24, 36, 0.6)', border: '1px solid rgba(234, 179, 8, 0.25)' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div
+                      style={{
+                        padding: 6,
+                        borderRadius: 8,
+                        background: 'rgba(234, 179, 8, 0.15)',
+                        color: 'var(--accent-gold)',
+                        display: 'flex'
+                      }}
+                    >
+                      <Brain size={18} />
+                    </div>
+                    <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                      {t('infoModal.roadmapAiTitle')}
+                    </h4>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      background: 'rgba(234, 179, 8, 0.15)',
+                      color: 'var(--accent-gold)',
+                      border: '1px solid rgba(234, 179, 8, 0.3)'
+                    }}
+                  >
+                    {t('infoModal.statusInDev')}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                  {t('infoModal.roadmapAiDesc')}
+                </p>
+              </div>
+
+              {/* Feature 3: Smart Alerts & Notifications */}
+              <div
+                className="glass-card"
+                style={{ padding: 18, background: 'rgba(18, 24, 36, 0.6)', border: '1px solid rgba(6, 182, 212, 0.25)' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div
+                      style={{
+                        padding: 6,
+                        borderRadius: 8,
+                        background: 'rgba(6, 182, 212, 0.15)',
+                        color: 'var(--accent-cyan)',
+                        display: 'flex'
+                      }}
+                    >
+                      <Bell size={18} />
+                    </div>
+                    <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                      {t('infoModal.roadmapAlertsTitle')}
+                    </h4>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      background: 'rgba(6, 182, 212, 0.15)',
+                      color: 'var(--accent-cyan)',
+                      border: '1px solid rgba(6, 182, 212, 0.3)'
+                    }}
+                  >
+                    {t('infoModal.statusPlanned')}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                  {t('infoModal.roadmapAlertsDesc')}
+                </p>
+              </div>
+
+              {/* Feature 4: Cross-Browser Companion Extension */}
+              <div
+                className="glass-card"
+                style={{ padding: 18, background: 'rgba(18, 24, 36, 0.6)', border: '1px solid rgba(168, 85, 247, 0.25)' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div
+                      style={{
+                        padding: 6,
+                        borderRadius: 8,
+                        background: 'rgba(168, 85, 247, 0.15)',
+                        color: '#c084fc',
+                        display: 'flex'
+                      }}
+                    >
+                      <Globe size={18} />
+                    </div>
+                    <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                      {t('infoModal.roadmapExtensionTitle')}
+                    </h4>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      background: 'rgba(168, 85, 247, 0.15)',
+                      color: '#c084fc',
+                      border: '1px solid rgba(168, 85, 247, 0.3)'
+                    }}
+                  >
+                    {t('infoModal.statusConcept')}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                  {t('infoModal.roadmapExtensionDesc')}
+                </p>
               </div>
             </div>
           )}
